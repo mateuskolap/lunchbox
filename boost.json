@@ -10,7 +10,8 @@
     "mcp": true,
     "nightwatch": false,
     "packages": [
-        "spatie/laravel-permission"
+        "spatie/laravel-permission",
+        "spatie/laravel-activitylog"
     ],
     "sail": false,
     "skills": [
