@@ -16,11 +16,14 @@ class PermissionSeeder extends Seeder
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         $permissions = [
-            'users.create',
-            'users.read',
+            'users.index',
+            'users.store',
             'users.update',
-            'users.delete',
-            'products.index'
+            'users.destroy',
+            'products.index',
+            'products.store',
+            'products.update',
+            'products.destroy'
         ];
 
         Permission::whereNotIn('name', $permissions)->delete();

@@ -19,28 +19,43 @@ class ProductController extends Controller
     public function store(Request $request): RedirectResponse {
         $validated = $request->validate([
             'name' => ['required', 'string'],
-            'price' => ['required', 'decimal:10,2', 'min:0']
+            'price' => ['required', 'decimal:2', 'min:0']
         ]);
 
         Product::create($validated);
 
-        return redirect()->route('products.index');
+        return redirect()->route('products.index')->with('flash', [
+            'toast' => [
+                'type' => 'success',
+                'message' => 'Produto criado com sucesso!',
+            ],
+        ]);
     }
 
     public function update(Request $request, Product $product): RedirectResponse {
         $validate = $request->validate([
             'name' => ['nullable', 'string'],
-            'price' => ['nullable', 'decimal:10,2', 'min:0']
+            'price' => ['nullable', 'decimal:2', 'min:0']
         ]);
 
         $product->update(array_filter($validate));
 
-        return redirect()->route('products.index');
+        return redirect()->route('products.index')->with('flash', [
+            'toast' => [
+                'type' => 'success',
+                'message' => 'Produto atualizado com sucesso!',
+            ],
+        ]);
     }
 
     public function destroy(Product $product): RedirectResponse {
         $product->delete();
         
-        return redirect()->route('products.index');
+        return redirect()->route('products.index')->with('flash', [
+            'toast' => [
+                'type' => 'success',
+                'message' => 'Produto excluído com sucesso!',
+            ],
+        ]);
     }
 }

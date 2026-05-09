@@ -17,7 +17,7 @@ class Product extends Model
     ];
 
     protected $casts = [
-        'price' => 'decimal'
+        'price' => 'decimal:2'
     ];
 
     public function getActivitylogOptions(): LogOptions

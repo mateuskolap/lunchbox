@@ -23,6 +23,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Products routes
     Route::prefix('/produtos')->name('products.')->group(function () {
         Route::middleware('can:products.index')->get('/', [ProductController::class, 'index'])->name('index');
+        Route::middleware('can:products.store')->post('/', [ProductController::class, 'store'])->name('store');
+        Route::middleware('can:products.update')->put('/{product}', [ProductController::class, 'update'])->name('update');
+        Route::middleware('can:products.destroy')->delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
     });
 });
 
