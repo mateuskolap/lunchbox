@@ -24,6 +24,7 @@ import type { Product, PaginatedResponse } from '@/types';
 import { index as productsIndex } from '@/routes/products';
 import { formatCurrency } from '@/lib/formatters';
 import EmptyState from '@/components/EmptyState.vue';
+import { usePermissions } from '@/composables/usePermissions';
 
 defineOptions({
     layout: {
@@ -40,6 +41,7 @@ const props = defineProps<{
     products: PaginatedResponse<Product>;
 }>();
 
+const { can, canAny } = usePermissions();
 
 </script>
 
@@ -52,7 +54,7 @@ const props = defineProps<{
                 title="Produtos"
                 description="Gerencie os produtos do sistema."
             />
-            <CreateProductDialog />
+            <CreateProductDialog v-if="can('products.store')" />
         </div>
 
         <div class="flex-1 rounded-xl border border-sidebar-border/70 dark:border-sidebar-border bg-card overflow-hidden flex flex-col">
@@ -62,7 +64,7 @@ const props = defineProps<{
                 title="Nenhum produto encontrado"
                 description="Você ainda não tem nenhum produto cadastrado. Adicione um novo produto para começar."
             >
-                <CreateProductDialog />
+                <CreateProductDialog v-if="can('products.store')" />
             </EmptyState>
 
             <div v-else class="flex flex-col flex-1 overflow-auto">
@@ -71,17 +73,17 @@ const props = defineProps<{
                         <TableRow>
                             <TableHead>Nome</TableHead>
                             <TableHead>Preço</TableHead>
-                            <TableHead class="w-[100px] text-right">Ações</TableHead>
+                            <TableHead v-if="canAny(['products.update', 'products.destroy'])" class="w-[100px] text-right">Ações</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         <TableRow v-for="product in products.data" :key="product.id">
                             <TableCell class="font-medium">{{ product.name }}</TableCell>
                             <TableCell>{{ formatCurrency(product.price) }}</TableCell>
-                            <TableCell class="text-right">
+                            <TableCell v-if="canAny(['products.update', 'products.destroy'])" class="text-right">
                                 <div class="flex items-center justify-end gap-1">
-                                    <EditProductDialog :product="product" />
-                                    <DeleteProductDialog :product="product" />
+                                    <EditProductDialog v-if="can('products.update')" :product="product" />
+                                    <DeleteProductDialog v-if="can('products.destroy')" :product="product" />
                                 </div>
                             </TableCell>
                         </TableRow>

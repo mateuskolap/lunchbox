@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -16,18 +18,60 @@ class UserController extends Controller
         ]);
     }
 
-    public function store(): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
-        return redirect()->route('users.index');
+        $validated = $request->validate([
+            'name' => ['required', 'string'],
+            'email' => ['required', 'email', 'unique:users,email'],
+            'password' => ['required', 'string', Password::default(), 'confirmed'],
+        ]);
+
+        User::create($validated);
+
+        return redirect()->route('users.index')->with('flash', [
+            'toast' => [
+                'type' => 'success',
+                'message' => 'Usuário criado com sucesso!',
+            ],
+        ]);
     }
 
-    public function update(): RedirectResponse
+    public function update(Request $request, User $user): RedirectResponse
     {
-        return redirect()->route('users.index');
+        $validated = $request->validate([
+            'name' => ['nullable', 'string'],
+            'email' => ['nullable', 'email', 'unique:users,email,'.$user->id],
+            'password' => ['nullable', 'string', Password::default(), 'confirmed'],
+        ]);
+
+        $user->update(array_filter($validated));
+
+        return redirect()->route('users.index')->with('flash', [
+            'toast' => [
+                'type' => 'success',
+                'message' => 'Usuário atualizado com sucesso!',
+            ],
+        ]);
     }
 
-    public function destroy(): RedirectResponse
+    public function destroy(User $user): RedirectResponse
     {
-        return redirect()->route('users.index');
+        if ($user->id === auth()->id()) {
+            return redirect()->route('users.index')->with('flash', [
+                'toast' => [
+                    'type' => 'error',
+                    'message' => 'Você não pode excluir sua própria conta!',
+                ],
+            ]);
+        }
+
+        $user->delete();
+
+        return redirect()->route('users.index')->with('flash', [
+            'toast' => [
+                'type' => 'success',
+                'message' => 'Usuário excluído com sucesso!',
+            ],
+        ]);
     }
 }

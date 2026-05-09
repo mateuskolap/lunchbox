@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -14,10 +14,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // User routes
     Route::prefix('usuarios')->name('users.')->group(function () {
-        Route::get('/', [UserController::class, 'index'])->name('index');
-        Route::post('/', [UserController::class, 'store'])->name('store');
-        Route::put('/{user}', [UserController::class, 'update'])->name('update');
-        Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
+        Route::middleware('can:users.index')->get('/', [UserController::class, 'index'])->name('index');
+        Route::middleware('can:users.store')->post('/', [UserController::class, 'store'])->name('store');
+        Route::middleware('can:users.update')->put('/{user}', [UserController::class, 'update'])->name('update');
+        Route::middleware('can:users.destroy')->delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
     });
 
     // Products routes
@@ -29,4 +29,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
-require __DIR__ . '/settings.php';
+require __DIR__.'/settings.php';

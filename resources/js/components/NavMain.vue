@@ -10,18 +10,26 @@ import {
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import type { NavItem } from '@/types';
 
-defineProps<{
+const props = defineProps<{
     items: NavItem[];
 }>();
 
 const { isCurrentUrl } = useCurrentUrl();
+import { usePermissions } from '@/composables/usePermissions';
+import { computed } from 'vue';
+
+const { can } = usePermissions();
+
+const visibleItems = computed(() =>
+    props.items.filter(item => !item.permission || can(item.permission))
+);
 </script>
 
 <template>
     <SidebarGroup class="px-2 py-0">
         <SidebarGroupLabel>Platform</SidebarGroupLabel>
         <SidebarMenu>
-            <SidebarMenuItem v-for="item in items" :key="item.title">
+            <SidebarMenuItem v-for="item in visibleItems" :key="item.title">
                 <SidebarMenuButton
                     as-child
                     :is-active="isCurrentUrl(item.href)"
