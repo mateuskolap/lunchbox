@@ -11,12 +11,6 @@ if [ ! -d "node_modules" ]; then
   npm install
 fi
 
-echo "# Aguardando banco de dados..."
-until php artisan db:show > /dev/null 2>&1; do
-    echo "Banco de dados indisponível - aguardando..."
-    sleep 2
-done
-
 echo "# Rodando migrações..."
 php artisan migrate --seed --force
 
