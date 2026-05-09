@@ -28,12 +28,12 @@ class UserController extends Controller
 
         User::create($validated);
 
-        return redirect()->route('users.index')->with('flash', [
-            'toast' => [
-                'type' => 'success',
-                'message' => 'Usuário criado com sucesso!',
-            ],
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => 'Usuário criado com sucesso!',
         ]);
+
+        return redirect()->route('users.index');
     }
 
     public function update(Request $request, User $user): RedirectResponse
@@ -46,32 +46,32 @@ class UserController extends Controller
 
         $user->update(array_filter($validated));
 
-        return redirect()->route('users.index')->with('flash', [
-            'toast' => [
-                'type' => 'success',
-                'message' => 'Usuário atualizado com sucesso!',
-            ],
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => 'Usuário atualizado com sucesso!',
         ]);
+
+        return redirect()->route('users.index');
     }
 
     public function destroy(User $user): RedirectResponse
     {
         if ($user->id === auth()->id()) {
-            return redirect()->route('users.index')->with('flash', [
-                'toast' => [
-                    'type' => 'error',
-                    'message' => 'Você não pode excluir sua própria conta!',
-                ],
+            Inertia::flash('toast', [
+                'type' => 'error',
+                'message' => 'Você não pode excluir sua própria conta!',
             ]);
+
+            return redirect()->route('users.index');
         }
 
         $user->delete();
 
-        return redirect()->route('users.index')->with('flash', [
-            'toast' => [
-                'type' => 'success',
-                'message' => 'Usuário excluído com sucesso!',
-            ],
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => 'Usuário excluído com sucesso!',
         ]);
+
+        return redirect()->route('users.index');
     }
 }
