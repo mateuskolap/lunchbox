@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { Form } from '@inertiajs/vue3';
 import ProductController from '@/actions/App/Http/Controllers/ProductController';
-import InputError from '@/components/InputError.vue';
+import FormField from '@/components/FormField.vue';
+import { Spinner } from '@/components/ui/spinner';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -14,19 +16,20 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import type { Product } from '@/types/product';
 import { Pencil } from 'lucide-vue-next';
 
 const props = defineProps<{
     product: Product;
 }>();
+
+const isOpen = ref(false);
 </script>
 
 <template>
-    <Dialog>
+    <Dialog v-model:open="isOpen">
         <DialogTrigger as-child>
-            <Button variant="ghost" size="icon" title="Editar">
+            <Button variant="ghost" size="icon" title="Editar" data-test="edit-product-button">
                 <Pencil class="size-4" />
                 <span class="sr-only">Editar</span>
             </Button>
@@ -34,6 +37,7 @@ const props = defineProps<{
         <DialogContent>
             <Form
                 v-bind="ProductController.update.form(product.id)"
+                @success="isOpen = false"
                 class="space-y-6"
                 v-slot="{ errors, processing, reset, clearErrors }"
             >
@@ -45,22 +49,19 @@ const props = defineProps<{
                 </DialogHeader>
 
                 <div class="grid gap-4">
-                    <div class="grid gap-2">
-                        <Label for="name">Nome</Label>
+                    <FormField label="Nome" field-id="edit-product-name" :error="errors.name">
                         <Input
-                            id="name"
+                            id="edit-product-name"
                             name="name"
                             :default-value="product.name"
                             placeholder="Nome do produto"
                             required
                         />
-                        <InputError :message="errors.name" />
-                    </div>
+                    </FormField>
 
-                    <div class="grid gap-2">
-                        <Label for="price">Preço</Label>
+                    <FormField label="Preço" field-id="edit-product-price" :error="errors.price">
                         <Input
-                            id="price"
+                            id="edit-product-price"
                             name="price"
                             type="number"
                             step="0.01"
@@ -69,26 +70,21 @@ const props = defineProps<{
                             placeholder="0.00"
                             required
                         />
-                        <InputError :message="errors.price" />
-                    </div>
+                    </FormField>
                 </div>
 
                 <DialogFooter class="gap-2">
                     <DialogClose as-child>
                         <Button
                             variant="secondary"
-                            @click="
-                                () => {
-                                    clearErrors();
-                                    reset();
-                                }
-                            "
+                            @click="() => { clearErrors(); reset(); }"
                         >
                             Cancelar
                         </Button>
                     </DialogClose>
 
-                    <Button type="submit" :disabled="processing">
+                    <Button type="submit" :disabled="processing" data-test="save-edit-product-button">
+                        <Spinner v-if="processing" />
                         {{ processing ? 'Salvando...' : 'Salvar' }}
                     </Button>
                 </DialogFooter>

@@ -6,9 +6,10 @@ export type User = {
     email_verified_at: string | null;
     created_at: string;
     updated_at: string;
-    [key: string]: unknown;
+    two_factor_enabled?: boolean;
+    permissions?: string[];
+    roles?: string[];
 };
-
 export type Auth = {
     user: User;
 };

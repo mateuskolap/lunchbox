@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { Form } from '@inertiajs/vue3';
 import ProductController from '@/actions/App/Http/Controllers/ProductController';
-import InputError from '@/components/InputError.vue';
+import FormField from '@/components/FormField.vue';
+import { Spinner } from '@/components/ui/spinner';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -14,18 +16,20 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+
+const isOpen = ref(false);
 </script>
 
 <template>
-    <Dialog>
+    <Dialog v-model:open="isOpen">
         <DialogTrigger as-child>
-            <Button>Novo Produto</Button>
+            <Button data-test="create-product-button">Novo Produto</Button>
         </DialogTrigger>
         <DialogContent>
             <Form
                 v-bind="ProductController.store.form()"
                 reset-on-success
+                @success="isOpen = false"
                 class="space-y-6"
                 v-slot="{ errors, processing, reset, clearErrors }"
             >
@@ -37,21 +41,18 @@ import { Label } from '@/components/ui/label';
                 </DialogHeader>
 
                 <div class="grid gap-4">
-                    <div class="grid gap-2">
-                        <Label for="name">Nome</Label>
+                    <FormField label="Nome" field-id="create-product-name" :error="errors.name">
                         <Input
-                            id="name"
+                            id="create-product-name"
                             name="name"
                             placeholder="Nome do produto"
                             required
                         />
-                        <InputError :message="errors.name" />
-                    </div>
+                    </FormField>
 
-                    <div class="grid gap-2">
-                        <Label for="price">Preço</Label>
+                    <FormField label="Preço" field-id="create-product-price" :error="errors.price">
                         <Input
-                            id="price"
+                            id="create-product-price"
                             name="price"
                             type="number"
                             step="0.01"
@@ -59,26 +60,21 @@ import { Label } from '@/components/ui/label';
                             placeholder="0.00"
                             required
                         />
-                        <InputError :message="errors.price" />
-                    </div>
+                    </FormField>
                 </div>
 
                 <DialogFooter class="gap-2">
                     <DialogClose as-child>
                         <Button
                             variant="secondary"
-                            @click="
-                                () => {
-                                    clearErrors();
-                                    reset();
-                                }
-                            "
+                            @click="() => { clearErrors(); reset(); }"
                         >
                             Cancelar
                         </Button>
                     </DialogClose>
 
-                    <Button type="submit" :disabled="processing">
+                    <Button type="submit" :disabled="processing" data-test="save-create-product-button">
+                        <Spinner v-if="processing" />
                         {{ processing ? 'Salvando...' : 'Salvar' }}
                     </Button>
                 </DialogFooter>

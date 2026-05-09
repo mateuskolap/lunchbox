@@ -19,7 +19,7 @@ class ProductController extends Controller
     public function store(Request $request): RedirectResponse {
         $validated = $request->validate([
             'name' => ['required', 'string'],
-            'price' => ['required', 'decimal:2', 'min:0']
+            'price' => ['required', 'numeric', 'min:0']
         ]);
 
         Product::create($validated);
@@ -35,7 +35,7 @@ class ProductController extends Controller
     public function update(Request $request, Product $product): RedirectResponse {
         $validate = $request->validate([
             'name' => ['nullable', 'string'],
-            'price' => ['nullable', 'decimal:2', 'min:0']
+            'price' => ['nullable', 'numeric', 'min:0']
         ]);
 
         $product->update(array_filter($validate));
