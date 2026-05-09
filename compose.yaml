@@ -1,0 +1,15 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/prod/Dockerfile
+      args:
+        - USER_ID=${UID:-1000}
+        - GROUP_ID=${GID:-1000}
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD", "php", "-r", "file_get_contents('http://localhost:8000/up') ?: exit(1);" ]
+      interval: 5s
+      retries: 3
+      timeout: 5s
