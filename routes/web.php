@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -17,6 +18,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', [UserController::class, 'store'])->name('store');
         Route::put('/{user}', [UserController::class, 'update'])->name('update');
         Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
+    });
+
+    // Products routes
+    Route::prefix('/produtos')->name('products.')->group(function () {
+        Route::middleware('can:products.index')->get('/', [ProductController::class, 'index'])->name('index');
     });
 });
 

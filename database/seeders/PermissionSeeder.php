@@ -20,6 +20,7 @@ class PermissionSeeder extends Seeder
             'users.read',
             'users.update',
             'users.delete',
+            'products.index'
         ];
 
         Permission::whereNotIn('name', $permissions)->delete();
