@@ -11,6 +11,11 @@ if [ ! -d "node_modules" ]; then
   npm install
 fi
 
+echo "# Garantindo permissões de execução nos binários do npm..."
+if [ -d "node_modules/.bin" ]; then
+  chmod +x node_modules/.bin/*
+fi
+
 echo "# Rodando migrações..."
 php artisan migrate --seed --force
 

@@ -20,9 +20,6 @@ services:
     depends_on:
       pgsql:
         condition: service_healthy
-    environment:
-      # Informa ao laravel-vite-plugin onde o Vite dev server está rodando
-      VITE_DEV_SERVER_URL: 'http://localhost:5173'
     volumes:
       - .:/var/www/html
       - ~/.composer:/home/www-data/.composer
