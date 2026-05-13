@@ -5,6 +5,7 @@ import CreateUserDialog from './CreateUserDialog.vue';
 import EditUserDialog from './EditUserDialog.vue';
 import DeleteUserDialog from './DeleteUserDialog.vue';
 import Heading from '@/components/Heading.vue';
+import TablePagination from '@/components/TablePagination.vue';
 import {
     Table,
     TableBody,
@@ -13,12 +14,6 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import {
-    Pagination,
-    PaginationContent,
-    PaginationNext,
-    PaginationPrevious,
-} from '@/components/ui/pagination';
 import { Users } from 'lucide-vue-next';
 import type { PaginatedResponse } from '@/types';
 import type { User } from '@/types/auth';
@@ -93,30 +88,7 @@ const { can, canAny } = usePermissions();
                     </TableBody>
                 </Table>
 
-                <div v-if="users.last_page > 1" class="mt-auto border-t border-border p-4 flex items-center justify-between">
-                    <p class="text-sm text-muted-foreground">
-                        Mostrando <span class="font-medium">{{ users.data.length }}</span> de <span class="font-medium">{{ users.total }}</span> resultados
-                    </p>
-                    <Pagination
-                        :total="users.total"
-                        :items-per-page="users.per_page"
-                        :sibling-count="1"
-                        show-edges
-                        :default-page="users.current_page"
-                    >
-                        <PaginationContent class="flex items-center gap-1">
-                            <Link v-if="users.prev_page_url" :href="users.prev_page_url">
-                                <PaginationPrevious />
-                            </Link>
-                            <PaginationPrevious v-else disabled />
-                            
-                            <Link v-if="users.next_page_url" :href="users.next_page_url">
-                                <PaginationNext />
-                            </Link>
-                            <PaginationNext v-else disabled />
-                        </PaginationContent>
-                    </Pagination>
-                </div>
+                <TablePagination :paginator="users" />
             </div>
         </div>
     </div>

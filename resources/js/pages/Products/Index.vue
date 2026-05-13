@@ -4,6 +4,7 @@ import CreateProductDialog from './CreateProductDialog.vue';
 import EditProductDialog from './EditProductDialog.vue';
 import DeleteProductDialog from './DeleteProductDialog.vue';
 import Heading from '@/components/Heading.vue';
+import TablePagination from '@/components/TablePagination.vue';
 import {
     Table,
     TableBody,
@@ -12,14 +13,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import {
-    Pagination,
-    PaginationContent,
-    PaginationNext,
-    PaginationPrevious,
-} from '@/components/ui/pagination';
 import { PackageOpen } from 'lucide-vue-next';
-import { Link } from '@inertiajs/vue3';
 import type { Product, PaginatedResponse } from '@/types';
 import { index as productsIndex } from '@/routes/products';
 import { formatCurrency } from '@/lib/formatters';
@@ -42,7 +36,6 @@ const props = defineProps<{
 }>();
 
 const { can, canAny } = usePermissions();
-
 </script>
 
 <template>
@@ -90,30 +83,7 @@ const { can, canAny } = usePermissions();
                     </TableBody>
                 </Table>
 
-                <div v-if="products.last_page > 1" class="mt-auto border-t border-border p-4 flex items-center justify-between">
-                    <p class="text-sm text-muted-foreground">
-                        Mostrando <span class="font-medium">{{ products.data.length }}</span> de <span class="font-medium">{{ products.total }}</span> resultados
-                    </p>
-                    <Pagination
-                        :total="products.total"
-                        :items-per-page="products.per_page"
-                        :sibling-count="1"
-                        show-edges
-                        :default-page="products.current_page"
-                    >
-                        <PaginationContent class="flex items-center gap-1">
-                            <Link v-if="products.prev_page_url" :href="products.prev_page_url">
-                                <PaginationPrevious />
-                            </Link>
-                            <PaginationPrevious v-else disabled />
-                            
-                            <Link v-if="products.next_page_url" :href="products.next_page_url">
-                                <PaginationNext />
-                            </Link>
-                            <PaginationNext v-else disabled />
-                        </PaginationContent>
-                    </Pagination>
-                </div>
+                <TablePagination :paginator="products" />
             </div>
         </div>
     </div>
