@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::middleware('can:products.store')->post('/', [ProductController::class, 'store'])->name('store');
         Route::middleware('can:products.update')->put('/{product}', [ProductController::class, 'update'])->name('update');
         Route::middleware('can:products.destroy')->delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
+    });
+
+    // Customers routes
+    Route::prefix('/clientes')->name('customers.')->group(function () {
+        Route::middleware('can:customers.index')->get('/', [CustomerController::class, 'index'])->name('index');
+        Route::middleware('can:customers.store')->post('/', [CustomerController::class, 'store'])->name('store');
+        Route::middleware('can:customers.update')->put('/{customer}', [CustomerController::class, 'update'])->name('update');
+        Route::middleware('can:customers.destroy')->delete('/{customer}', [CustomerController::class, 'destroy'])->name('destroy');
     });
 });
 
