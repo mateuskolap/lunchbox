@@ -19,6 +19,7 @@ class Order extends Model
         'total_amount',
         'total_items_amount',
         'status',
+        'observation',
         'date',
     ];
 

@@ -11,17 +11,33 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rules\Enum;
 use Inertia\Inertia;
 use Inertia\Response;
 use Throwable;
 
 class OrderController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $validated = $request->validate([
+            'customer_id' => ['nullable', 'exists:customers,id'],
+            'status' => ['nullable', new Enum(OrderStatusEnum::class)],
+            'date' => ['nullable', 'date'],
+        ]);
+
         return Inertia::render('Orders/Index', [
             'orders' => Order::with('customer')
                 ->latest()
+                ->when(!empty($validated['customer_id']), function ($query) use ($validated) {
+                    $query->where('customer_id', $validated['customer_id']);
+                })
+                ->when(!empty($validated['status']), function ($query) use ($validated) {
+                    $query->where('status', $validated['status']);
+                })
+                ->when(!empty($validated['date']), function ($query) use ($validated) {
+                    $query->whereDate('date', $validated['date']);
+                })
                 ->paginate(25),
         ]);
     }
@@ -41,6 +57,7 @@ class OrderController extends Controller
         $validated = $request->validate([
             'customer_id' => ['required', 'exists:customers,id'],
             'total_amount' => ['required', 'numeric'],
+            'observation' => ['nullable', 'string'],
             'date' => ['nullable', 'date'],
             'order_items' => ['required', 'array'],
             'order_items.*.product_id' => ['required', 'exists:products,id'],
@@ -53,6 +70,7 @@ class OrderController extends Controller
                     'customer_id' => $validated['customer_id'],
                     'total_amount' => $validated['total_amount'],
                     'status' => OrderStatusEnum::PENDING,
+                    'observation' => $validated['observation'] ?? null,
                     'date' => $validated['date'] ?? now(),
                 ]);
 
@@ -87,6 +105,7 @@ class OrderController extends Controller
         $validated = $request->validate([
             'total_amount' => ['required', 'numeric'],
             'date' => ['required', 'date'],
+            'observation' => ['nullable', 'string'],
         ]);
 
         $order->update($validated);
