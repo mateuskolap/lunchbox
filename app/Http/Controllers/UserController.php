@@ -39,8 +39,8 @@ class UserController extends Controller
     public function update(Request $request, User $user): RedirectResponse
     {
         $validated = $request->validate([
-            'name' => ['nullable', 'string'],
-            'email' => ['nullable', 'email', 'unique:users,email,'.$user->id],
+            'name' => ['required', 'string'],
+            'email' => ['required', 'email', 'unique:users,email,'.$user->id],
             'password' => ['nullable', 'string', Password::default(), 'confirmed'],
         ]);
 

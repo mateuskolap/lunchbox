@@ -21,11 +21,11 @@ class CustomerController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string'],
-            'phone' => ['required', 'string', 'min:10', 'max:11']
+            'phone' => ['required', 'string', 'min:10', 'max:11'],
         ]);
 
         Customer::create($validated);
-        
+
         Inertia::flash('toast', [
             'type' => 'success',
             'message' => 'Cliente criado com sucesso!',
@@ -37,11 +37,11 @@ class CustomerController extends Controller
     public function update(Request $request, Customer $customer): RedirectResponse
     {
         $validated = $request->validate([
-            'name' => ['nullable', 'string'],
-            'phone' => ['nullable', 'string', 'min:10', 'max:11']
+            'name' => ['required', 'string'],
+            'phone' => ['required', 'string', 'min:10', 'max:11'],
         ]);
 
-        $customer->update(array_filter($validated));
+        $customer->update($validated);
 
         Inertia::flash('toast', [
             'type' => 'success',

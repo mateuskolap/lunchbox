@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -35,6 +36,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::middleware('can:customers.store')->post('/', [CustomerController::class, 'store'])->name('store');
         Route::middleware('can:customers.update')->put('/{customer}', [CustomerController::class, 'update'])->name('update');
         Route::middleware('can:customers.destroy')->delete('/{customer}', [CustomerController::class, 'destroy'])->name('destroy');
+    });
+
+    // Orders routes
+    Route::prefix('/pedidos')->name('orders.')->group(function () {
+        Route::middleware('can:orders.index')->get('/', [OrderController::class, 'index'])->name('index');
+        Route::middleware('can:orders.store')->post('/', [OrderController::class, 'store'])->name('store');
+
+        Route::prefix('/{order}')->group(function () {
+            Route::middleware('can:orders.update')->put('/', [OrderController::class, 'update'])->name('update');
+            Route::middleware('can:orders.update')->get('/editar', [OrderController::class, 'show'])->name('show');
+            Route::middleware('can:orders.update')->patch('/concluir', [OrderController::class, 'conclude'])->name('conclude');
+            Route::middleware('can:orders.update')->patch('/cancelar', [OrderController::class, 'cancel'])->name('cancel');
+            Route::middleware('can:orders.update')->patch('/reabrir', [OrderController::class, 'reopen'])->name('reopen');
+
+            Route::prefix('/itens')->group(function () {
+                Route::middleware('can:orders.update')->post('/', [OrderController::class, 'addItems'])->name('add-items');
+                Route::middleware('can:orders.update')->delete('/{orderItem}', [OrderController::class, 'removeItem'])->name('remove-item')->scopeBindings();
+            });
+        });
     });
 });
 

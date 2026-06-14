@@ -37,11 +37,11 @@ class ProductController extends Controller
     public function update(Request $request, Product $product): RedirectResponse
     {
         $validate = $request->validate([
-            'name' => ['nullable', 'string'],
-            'price' => ['nullable', 'numeric', 'min:0'],
+            'name' => ['required', 'string'],
+            'price' => ['required', 'numeric', 'min:0'],
         ]);
 
-        $product->update(array_filter($validate));
+        $product->update($validate);
 
         Inertia::flash('toast', [
             'type' => 'success',
