@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import CreateProductDialog from './CreateProductDialog.vue';
-import EditProductDialog from './EditProductDialog.vue';
-import DeleteProductDialog from './DeleteProductDialog.vue';
+import { PackageOpen } from 'lucide-vue-next';
+import EmptyState from '@/components/EmptyState.vue';
 import Heading from '@/components/Heading.vue';
 import TablePagination from '@/components/TablePagination.vue';
 import {
@@ -13,12 +12,13 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { PackageOpen } from 'lucide-vue-next';
-import type { Product, PaginatedResponse } from '@/types';
-import { index as productsIndex } from '@/routes/products';
-import { formatCurrency } from '@/lib/formatters';
-import EmptyState from '@/components/EmptyState.vue';
 import { usePermissions } from '@/composables/usePermissions';
+import { formatCurrency } from '@/lib/formatters';
+import { index as productsIndex } from '@/routes/products';
+import type { Product, PaginatedResponse } from '@/types';
+import CreateProductDialog from './CreateProductDialog.vue';
+import DeleteProductDialog from './DeleteProductDialog.vue';
+import EditProductDialog from './EditProductDialog.vue';
 
 defineOptions({
     layout: {
@@ -31,7 +31,7 @@ defineOptions({
     },
 });
 
-const props = defineProps<{
+defineProps<{
     products: PaginatedResponse<Product>;
 }>();
 
@@ -50,7 +50,9 @@ const { can, canAny } = usePermissions();
             <CreateProductDialog v-if="can('products.store')" />
         </div>
 
-        <div class="flex-1 rounded-xl border border-sidebar-border/70 dark:border-sidebar-border bg-card overflow-hidden flex flex-col">
+        <div
+            class="flex flex-1 flex-col overflow-hidden rounded-xl border border-sidebar-border/70 bg-card dark:border-sidebar-border"
+        >
             <EmptyState
                 v-if="products.data.length === 0"
                 :icon="PackageOpen"
@@ -60,23 +62,55 @@ const { can, canAny } = usePermissions();
                 <CreateProductDialog v-if="can('products.store')" />
             </EmptyState>
 
-            <div v-else class="flex flex-col flex-1 overflow-auto">
+            <div v-else class="flex flex-1 flex-col overflow-auto">
                 <Table>
                     <TableHeader>
                         <TableRow>
                             <TableHead>Nome</TableHead>
                             <TableHead>Preço</TableHead>
-                            <TableHead v-if="canAny(['products.update', 'products.destroy'])" class="w-[100px] text-right">Ações</TableHead>
+                            <TableHead
+                                v-if="
+                                    canAny([
+                                        'products.update',
+                                        'products.destroy',
+                                    ])
+                                "
+                                class="w-[100px] text-right"
+                                >Ações</TableHead
+                            >
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow v-for="product in products.data" :key="product.id">
-                            <TableCell class="font-medium">{{ product.name }}</TableCell>
-                            <TableCell>{{ formatCurrency(product.price) }}</TableCell>
-                            <TableCell v-if="canAny(['products.update', 'products.destroy'])" class="text-right">
-                                <div class="flex items-center justify-end gap-1">
-                                    <EditProductDialog v-if="can('products.update')" :product="product" />
-                                    <DeleteProductDialog v-if="can('products.destroy')" :product="product" />
+                        <TableRow
+                            v-for="product in products.data"
+                            :key="product.id"
+                        >
+                            <TableCell class="font-medium">{{
+                                product.name
+                            }}</TableCell>
+                            <TableCell>{{
+                                formatCurrency(product.price)
+                            }}</TableCell>
+                            <TableCell
+                                v-if="
+                                    canAny([
+                                        'products.update',
+                                        'products.destroy',
+                                    ])
+                                "
+                                class="text-right"
+                            >
+                                <div
+                                    class="flex items-center justify-end gap-1"
+                                >
+                                    <EditProductDialog
+                                        v-if="can('products.update')"
+                                        :product="product"
+                                    />
+                                    <DeleteProductDialog
+                                        v-if="can('products.destroy')"
+                                        :product="product"
+                                    />
                                 </div>
                             </TableCell>
                         </TableRow>

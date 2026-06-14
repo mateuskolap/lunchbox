@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { Form } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import ProductController from '@/actions/App/Http/Controllers/ProductController';
 import FormField from '@/components/FormField.vue';
-import { Spinner } from '@/components/ui/spinner';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -16,6 +15,7 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 
 const isOpen = ref(false);
 </script>
@@ -41,7 +41,11 @@ const isOpen = ref(false);
                 </DialogHeader>
 
                 <div class="grid gap-4">
-                    <FormField label="Nome" field-id="create-product-name" :error="errors.name">
+                    <FormField
+                        label="Nome"
+                        field-id="create-product-name"
+                        :error="errors.name"
+                    >
                         <Input
                             id="create-product-name"
                             name="name"
@@ -50,7 +54,11 @@ const isOpen = ref(false);
                         />
                     </FormField>
 
-                    <FormField label="Preço" field-id="create-product-price" :error="errors.price">
+                    <FormField
+                        label="Preço"
+                        field-id="create-product-price"
+                        :error="errors.price"
+                    >
                         <Input
                             id="create-product-price"
                             name="price"
@@ -67,13 +75,22 @@ const isOpen = ref(false);
                     <DialogClose as-child>
                         <Button
                             variant="secondary"
-                            @click="() => { clearErrors(); reset(); }"
+                            @click="
+                                () => {
+                                    clearErrors();
+                                    reset();
+                                }
+                            "
                         >
                             Cancelar
                         </Button>
                     </DialogClose>
 
-                    <Button type="submit" :disabled="processing" data-test="save-create-product-button">
+                    <Button
+                        type="submit"
+                        :disabled="processing"
+                        data-test="save-create-product-button"
+                    >
                         <Spinner v-if="processing" />
                         {{ processing ? 'Salvando...' : 'Salvar' }}
                     </Button>

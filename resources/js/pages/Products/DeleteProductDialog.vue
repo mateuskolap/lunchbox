@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import { Trash2 } from 'lucide-vue-next';
 import ProductController from '@/actions/App/Http/Controllers/ProductController';
 import ConfirmationDialog from '@/components/ConfirmationDialog.vue';
 import { Button } from '@/components/ui/button';
 import type { Product } from '@/types/product';
-import { Trash2 } from 'lucide-vue-next';
 
-const props = defineProps<{
+defineProps<{
     product: Product;
 }>();
 </script>
@@ -23,7 +23,7 @@ const props = defineProps<{
             <Button
                 variant="ghost"
                 size="icon"
-                class="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50"
+                class="text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/50"
                 title="Excluir"
                 data-test="confirm-delete-product-button"
             >

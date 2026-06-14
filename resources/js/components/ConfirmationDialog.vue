@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Form } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
 import {
     Dialog,
     DialogClose,
@@ -12,6 +11,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import { Spinner } from '@/components/ui/spinner';
 
 type Props = {
     title: string;
@@ -19,7 +19,13 @@ type Props = {
     confirmText?: string;
     confirmingText?: string;
     cancelText?: string;
-    variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+    variant?:
+        | 'default'
+        | 'destructive'
+        | 'outline'
+        | 'secondary'
+        | 'ghost'
+        | 'link';
     formAction: Record<string, unknown>;
     formOptions?: Record<string, unknown>;
 };
@@ -57,12 +63,21 @@ withDefaults(defineProps<Props>(), {
                     <DialogClose as-child>
                         <Button
                             variant="secondary"
-                            @click="() => { clearErrors(); reset(); }"
+                            @click="
+                                () => {
+                                    clearErrors();
+                                    reset();
+                                }
+                            "
                         >
                             {{ cancelText }}
                         </Button>
                     </DialogClose>
-                    <Button type="submit" :variant="variant" :disabled="processing">
+                    <Button
+                        type="submit"
+                        :variant="variant"
+                        :disabled="processing"
+                    >
                         <Spinner v-if="processing" />
                         {{ processing ? confirmingText : confirmText }}
                     </Button>

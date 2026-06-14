@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { Form } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import UserController from '@/actions/App/Http/Controllers/UserController';
 import FormField from '@/components/FormField.vue';
-import { Spinner } from '@/components/ui/spinner';
+import PasswordInput from '@/components/PasswordInput.vue';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -16,7 +16,7 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import PasswordInput from '@/components/PasswordInput.vue';
+import { Spinner } from '@/components/ui/spinner';
 
 const isOpen = ref(false);
 </script>
@@ -42,7 +42,11 @@ const isOpen = ref(false);
                 </DialogHeader>
 
                 <div class="grid gap-4">
-                    <FormField label="Nome" field-id="create-user-name" :error="errors.name">
+                    <FormField
+                        label="Nome"
+                        field-id="create-user-name"
+                        :error="errors.name"
+                    >
                         <Input
                             id="create-user-name"
                             name="name"
@@ -51,7 +55,11 @@ const isOpen = ref(false);
                         />
                     </FormField>
 
-                    <FormField label="E-mail" field-id="create-user-email" :error="errors.email">
+                    <FormField
+                        label="E-mail"
+                        field-id="create-user-email"
+                        :error="errors.email"
+                    >
                         <Input
                             id="create-user-email"
                             name="email"
@@ -61,18 +69,28 @@ const isOpen = ref(false);
                         />
                     </FormField>
 
-                    <FormField label="Senha" field-id="create-user-password" :error="errors.password">
+                    <FormField
+                        label="Senha"
+                        field-id="create-user-password"
+                        :error="errors.password"
+                    >
                         <PasswordInput
                             id="create-user-password"
                             name="password"
+                            placeholder="Digite uma senha forte"
                             required
                         />
                     </FormField>
 
-                    <FormField label="Confirmar Senha" field-id="create-user-password_confirmation" :error="errors.password_confirmation">
+                    <FormField
+                        label="Confirmar Senha"
+                        field-id="create-user-password_confirmation"
+                        :error="errors.password_confirmation"
+                    >
                         <PasswordInput
                             id="create-user-password_confirmation"
                             name="password_confirmation"
+                            placeholder="Confirme a senha digitada"
                             required
                         />
                     </FormField>
@@ -82,13 +100,22 @@ const isOpen = ref(false);
                     <DialogClose as-child>
                         <Button
                             variant="secondary"
-                            @click="() => { clearErrors(); reset(); }"
+                            @click="
+                                () => {
+                                    clearErrors();
+                                    reset();
+                                }
+                            "
                         >
                             Cancelar
                         </Button>
                     </DialogClose>
 
-                    <Button type="submit" :disabled="processing" data-test="save-create-user-button">
+                    <Button
+                        type="submit"
+                        :disabled="processing"
+                        data-test="save-create-user-button"
+                    >
                         <Spinner v-if="processing" />
                         {{ processing ? 'Salvando...' : 'Salvar' }}
                     </Button>

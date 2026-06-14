@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import type { PaginatedResponse } from '@/types';
 import {
     Pagination,
     PaginationContent,
     PaginationNext,
     PaginationPrevious,
 } from '@/components/ui/pagination';
+import type { PaginatedResponse } from '@/types';
 
 defineProps<{
     paginator: PaginatedResponse<unknown>;
@@ -16,10 +16,12 @@ defineProps<{
 <template>
     <div
         v-if="paginator.last_page > 1"
-        class="mt-auto border-t border-border p-4 flex items-center justify-between"
+        class="mt-auto flex items-center justify-between border-t border-border p-4"
     >
         <p class="text-sm text-muted-foreground">
-            Mostrando <span class="font-medium">{{ paginator.data.length }}</span> de <span class="font-medium">{{ paginator.total }}</span> resultados
+            Mostrando
+            <span class="font-medium">{{ paginator.data.length }}</span> de
+            <span class="font-medium">{{ paginator.total }}</span> resultados
         </p>
         <Pagination
             :total="paginator.total"
@@ -27,15 +29,21 @@ defineProps<{
             :sibling-count="1"
             show-edges
             :default-page="paginator.current_page"
-            class="w-auto mx-0 justify-end"
+            class="mx-0 w-auto justify-end"
         >
             <PaginationContent class="flex items-center gap-1">
-                <Link v-if="paginator.prev_page_url" :href="paginator.prev_page_url">
+                <Link
+                    v-if="paginator.prev_page_url"
+                    :href="paginator.prev_page_url"
+                >
                     <PaginationPrevious />
                 </Link>
                 <PaginationPrevious v-else disabled />
-                
-                <Link v-if="paginator.next_page_url" :href="paginator.next_page_url">
+
+                <Link
+                    v-if="paginator.next_page_url"
+                    :href="paginator.next_page_url"
+                >
                     <PaginationNext />
                 </Link>
                 <PaginationNext v-else disabled />

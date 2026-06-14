@@ -2,7 +2,7 @@
 import { Form } from '@inertiajs/vue3';
 import { Pencil } from 'lucide-vue-next';
 import { ref } from 'vue';
-import ProductController from '@/actions/App/Http/Controllers/ProductController';
+import CustomerController from '@/actions/App/Http/Controllers/CustomerController';
 import FormField from '@/components/FormField.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,10 +17,10 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
-import type { Product } from '@/types/product';
+import type { Customer } from '@/types/customer';
 
 defineProps<{
-    product: Product;
+    customer: Customer;
 }>();
 
 const isOpen = ref(false);
@@ -33,7 +33,7 @@ const isOpen = ref(false);
                 variant="ghost"
                 size="icon"
                 title="Editar"
-                data-test="edit-product-button"
+                data-test="edit-customer-button"
             >
                 <Pencil class="size-4" />
                 <span class="sr-only">Editar</span>
@@ -41,47 +41,46 @@ const isOpen = ref(false);
         </DialogTrigger>
         <DialogContent>
             <Form
-                v-bind="ProductController.update.form(product.id)"
+                v-bind="CustomerController.update.form(customer.id)"
                 @success="isOpen = false"
                 class="space-y-6"
                 v-slot="{ errors, processing, reset, clearErrors }"
             >
                 <DialogHeader class="space-y-3">
-                    <DialogTitle>Editar Produto</DialogTitle>
+                    <DialogTitle>Editar Cliente</DialogTitle>
                     <DialogDescription>
-                        Altere os dados do produto.
+                        Altere os dados do cliente.
                     </DialogDescription>
                 </DialogHeader>
 
                 <div class="grid gap-4">
                     <FormField
                         label="Nome"
-                        field-id="edit-product-name"
+                        field-id="edit-customer-name"
                         :error="errors.name"
                     >
                         <Input
-                            id="edit-product-name"
+                            id="edit-customer-name"
                             name="name"
-                            :default-value="product.name"
-                            placeholder="Nome do produto"
+                            :default-value="customer.name"
+                            placeholder="Nome do cliente"
                             required
                         />
                     </FormField>
 
                     <FormField
-                        label="Preço"
-                        field-id="edit-product-price"
-                        :error="errors.price"
+                        label="Telefone"
+                        field-id="edit-customer-phone"
+                        :error="errors.phone"
                     >
                         <Input
-                            id="edit-product-price"
-                            name="price"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            :default-value="product.price"
-                            placeholder="0.00"
+                            id="edit-customer-phone"
+                            name="phone"
+                            :default-value="customer.phone"
+                            placeholder="Ex: 11999999999"
                             required
+                            minlength="10"
+                            maxlength="11"
                         />
                     </FormField>
                 </div>
@@ -104,7 +103,7 @@ const isOpen = ref(false);
                     <Button
                         type="submit"
                         :disabled="processing"
-                        data-test="save-edit-product-button"
+                        data-test="save-edit-customer-button"
                     >
                         <Spinner v-if="processing" />
                         {{ processing ? 'Salvando...' : 'Salvar' }}

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
@@ -9,12 +10,11 @@ use Spatie\Activitylog\Support\LogOptions;
 
 class Customer extends Model
 {
+    use HasFactory, LogsActivity, SoftDeletes;
 
-    use SoftDeletes, LogsActivity;
-    
     protected $fillable = [
         'name',
-        'phone'
+        'phone',
     ];
 
     public function getActivitylogOptions(): LogOptions

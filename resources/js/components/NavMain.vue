@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import {
     SidebarGroup,
     SidebarGroupLabel,
@@ -8,6 +9,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
+import { usePermissions } from '@/composables/usePermissions';
 import type { NavItem } from '@/types';
 
 const props = defineProps<{
@@ -15,13 +17,10 @@ const props = defineProps<{
 }>();
 
 const { isCurrentUrl } = useCurrentUrl();
-import { usePermissions } from '@/composables/usePermissions';
-import { computed } from 'vue';
-
 const { can } = usePermissions();
 
 const visibleItems = computed(() =>
-    props.items.filter(item => !item.permission || can(item.permission))
+    props.items.filter((item) => !item.permission || can(item.permission)),
 );
 </script>
 
