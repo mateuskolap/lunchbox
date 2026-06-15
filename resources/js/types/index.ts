@@ -3,4 +3,5 @@ export * from './customer';
 export * from './navigation';
 export * from './pagination';
 export * from './product';
+export * from './order';
 export * from './ui';

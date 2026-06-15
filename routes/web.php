@@ -41,18 +41,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Orders routes
     Route::prefix('/pedidos')->name('orders.')->group(function () {
         Route::middleware('can:orders.index')->get('/', [OrderController::class, 'index'])->name('index');
+        Route::middleware('can:orders.store')->get('/criar', [OrderController::class, 'create'])->name('create');
         Route::middleware('can:orders.store')->post('/', [OrderController::class, 'store'])->name('store');
 
         Route::prefix('/{order}')->group(function () {
+            Route::middleware('can:orders.index')->get('/', [OrderController::class, 'show'])->name('show');
+            Route::middleware('can:orders.update')->get('/editar', [OrderController::class, 'edit'])->name('edit');
             Route::middleware('can:orders.update')->put('/', [OrderController::class, 'update'])->name('update');
-            Route::middleware('can:orders.update')->get('/editar', [OrderController::class, 'show'])->name('show');
             Route::middleware('can:orders.update')->patch('/concluir', [OrderController::class, 'conclude'])->name('conclude');
             Route::middleware('can:orders.update')->patch('/cancelar', [OrderController::class, 'cancel'])->name('cancel');
             Route::middleware('can:orders.update')->patch('/reabrir', [OrderController::class, 'reopen'])->name('reopen');
 
             Route::prefix('/itens')->group(function () {
                 Route::middleware('can:orders.update')->post('/', [OrderController::class, 'addItems'])->name('add-items');
-                Route::middleware('can:orders.update')->delete('/{orderItem}', [OrderController::class, 'removeItem'])->name('remove-item')->scopeBindings();
+                Route::middleware('can:orders.update')->delete('/{item}', [OrderController::class, 'removeItem'])->name('remove-item')->scopeBindings();
             });
         });
     });

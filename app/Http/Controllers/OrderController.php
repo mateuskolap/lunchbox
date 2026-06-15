@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\OrderStatusEnum;
+use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -29,16 +30,18 @@ class OrderController extends Controller
         return Inertia::render('Orders/Index', [
             'orders' => Order::with('customer')
                 ->latest()
-                ->when(!empty($validated['customer_id']), function ($query) use ($validated) {
+                ->when(! empty($validated['customer_id']), function ($query) use ($validated) {
                     $query->where('customer_id', $validated['customer_id']);
                 })
-                ->when(!empty($validated['status']), function ($query) use ($validated) {
+                ->when(! empty($validated['status']), function ($query) use ($validated) {
                     $query->where('status', $validated['status']);
                 })
-                ->when(!empty($validated['date']), function ($query) use ($validated) {
+                ->when(! empty($validated['date']), function ($query) use ($validated) {
                     $query->whereDate('date', $validated['date']);
                 })
                 ->paginate(25),
+            'customers' => Customer::orderBy('name')->get(),
+            'filters' => $request->only(['customer_id', 'status', 'date']),
         ]);
     }
 
@@ -46,6 +49,24 @@ class OrderController extends Controller
     {
         return Inertia::render('Orders/Show', [
             'order' => $order->load(['customer', 'items.product']),
+            'products' => Product::orderBy('name')->get(),
+        ]);
+    }
+
+    public function create(): Response
+    {
+        return Inertia::render('Orders/Create', [
+            'customers' => Customer::orderBy('name')->get(),
+            'products' => Product::orderBy('name')->get(),
+        ]);
+    }
+
+    public function edit(Order $order): Response
+    {
+        return Inertia::render('Orders/Edit', [
+            'order' => $order->load(['customer', 'items.product']),
+            'customers' => Customer::orderBy('name')->get(),
+            'products' => Product::orderBy('name')->get(),
         ]);
     }
 
@@ -86,7 +107,7 @@ class OrderController extends Controller
 
             return redirect()->route('orders.index');
         } catch (Throwable $e) {
-            Log::error('Erro ao criar pedido: ' . $e->getMessage(), [
+            Log::error('Erro ao criar pedido: '.$e->getMessage(), [
                 'exception' => $e,
                 'request_data' => $validated,
             ]);
@@ -149,7 +170,7 @@ class OrderController extends Controller
 
             return redirect()->route('orders.show', $order);
         } catch (Throwable $e) {
-            Log::error('Erro ao adicionar itens ao pedido: ' . $e->getMessage(), [
+            Log::error('Erro ao adicionar itens ao pedido: '.$e->getMessage(), [
                 'order_id' => $order->id,
                 'exception' => $e,
             ]);
@@ -163,7 +184,7 @@ class OrderController extends Controller
         }
     }
 
-    public function removeItem(Order $order, OrderItem $orderItem): RedirectResponse
+    public function removeItem(Order $order, OrderItem $item): RedirectResponse
     {
         if ($order->isClosed()) {
             Inertia::flash('toast', [
@@ -175,8 +196,8 @@ class OrderController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($order, $orderItem) {
-                $orderItem->delete();
+            DB::transaction(function () use ($order, $item) {
+                $item->delete();
                 $order->recalculateTotals();
             });
 
@@ -187,9 +208,9 @@ class OrderController extends Controller
 
             return redirect()->route('orders.show', $order);
         } catch (Throwable $e) {
-            Log::error('Erro ao remover item do pedido: ' . $e->getMessage(), [
+            Log::error('Erro ao remover item do pedido: '.$e->getMessage(), [
                 'order_id' => $order->id,
-                'order_item_id' => $orderItem->id,
+                'order_item_id' => $item->id,
                 'exception' => $e,
             ]);
 
@@ -228,7 +249,7 @@ class OrderController extends Controller
 
     public function reopen(Order $order): RedirectResponse
     {
-        if (!$order->isClosed()) {
+        if (! $order->isClosed()) {
             Inertia::flash('toast', [
                 'type' => 'error',
                 'message' => 'Apenas pedidos concluídos ou cancelados podem ser reabertos!',
