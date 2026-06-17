@@ -38,7 +38,7 @@ defineProps<{
             />
         </div>
 
-        <div class="flex-1 overflow-y-auto overflow-x-hidden py-2">
+        <div class="flex-1 overflow-x-hidden overflow-y-auto py-2">
             <OrderForm
                 :action="OrderController.store.form()"
                 :customers="customers"

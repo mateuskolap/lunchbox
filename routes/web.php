@@ -3,6 +3,7 @@
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
@@ -15,11 +16,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
 
     // User routes
-    Route::prefix('usuarios')->name('users.')->group(function () {
+    Route::prefix('/usuarios')->name('users.')->group(function () {
         Route::middleware('can:users.index')->get('/', [UserController::class, 'index'])->name('index');
         Route::middleware('can:users.store')->post('/', [UserController::class, 'store'])->name('store');
         Route::middleware('can:users.update')->put('/{user}', [UserController::class, 'update'])->name('update');
         Route::middleware('can:users.destroy')->delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('/papeis')->name('roles.')->group(function () {
+        Route::middleware('can:roles.index')->get('/', [RoleController::class, 'index'])->name('index');
+        Route::middleware('can:roles.store')->post('/', [RoleController::class, 'store'])->name('store');
+        Route::middleware('can:roles.update')->put('/{role}', [RoleController::class, 'update'])->name('update');
+        Route::middleware('can:roles.destroy')->delete('/{role}', [RoleController::class, 'destroy'])->name('destroy');
     });
 
     // Products routes

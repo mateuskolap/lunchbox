@@ -22,7 +22,7 @@ class OrderController extends Controller
     public function index(Request $request): Response
     {
         $validated = $request->validate([
-            'customer_id' => ['nullable', 'exists:customers,id'],
+            'customer_name' => ['nullable', 'string'],
             'status' => ['nullable', new Enum(OrderStatusEnum::class)],
             'date' => ['nullable', 'date'],
         ]);
@@ -30,18 +30,18 @@ class OrderController extends Controller
         return Inertia::render('Orders/Index', [
             'orders' => Order::with('customer')
                 ->latest()
-                ->when(! empty($validated['customer_id']), function ($query) use ($validated) {
-                    $query->where('customer_id', $validated['customer_id']);
+                ->when($validated['customer_name'] ?? null, function ($query) use ($validated) {
+                    $query->whereHas('customer', fn ($q) => $q->where('name', 'like', "%{$validated['customer_name']}%"));
                 })
-                ->when(! empty($validated['status']), function ($query) use ($validated) {
+                ->when($validated['status'] ?? null, function ($query) use ($validated) {
                     $query->where('status', $validated['status']);
                 })
-                ->when(! empty($validated['date']), function ($query) use ($validated) {
+                ->when($validated['date'] ?? null, function ($query) use ($validated) {
                     $query->whereDate('date', $validated['date']);
                 })
                 ->paginate(25),
-            'customers' => Customer::orderBy('name')->get(),
-            'filters' => $request->only(['customer_id', 'status', 'date']),
+            'order_statuses' => OrderStatusEnum::cases(),
+            'filters' => $request->only(['customer_name', 'status', 'date']),
         ]);
     }
 
@@ -232,7 +232,7 @@ class OrderController extends Controller
             'message' => 'Pedido concluído com sucesso!',
         ]);
 
-        return redirect()->route('orders.index');
+        return redirect()->route('orders.show', $order);
     }
 
     public function cancel(Order $order): RedirectResponse
@@ -244,7 +244,7 @@ class OrderController extends Controller
             'message' => 'Pedido cancelado com sucesso!',
         ]);
 
-        return redirect()->route('orders.index');
+        return redirect()->route('orders.show', $order);
     }
 
     public function reopen(Order $order): RedirectResponse
@@ -265,7 +265,7 @@ class OrderController extends Controller
             'message' => 'Pedido reaberto com sucesso!',
         ]);
 
-        return redirect()->route('orders.index');
+        return redirect()->route('orders.show', $order);
     }
 
     private function prepareOrderItems(array $items): Collection

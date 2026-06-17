@@ -1,13 +1,8 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
-import {
-    ShoppingCart,
-    Eye,
-    Plus,
-    X,
-    Filter,
-} from 'lucide-vue-next';
-import { ref, watch } from 'vue';
+import { ShoppingCart, Eye, Plus, X, Filter } from 'lucide-vue-next';
+import { ref, watch, computed } from 'vue';
+import { watchDebounced } from '@vueuse/core';
 import EmptyState from '@/components/EmptyState.vue';
 import Heading from '@/components/Heading.vue';
 import TablePagination from '@/components/TablePagination.vue';
@@ -25,7 +20,8 @@ import {
 import { usePermissions } from '@/composables/usePermissions';
 import { formatCurrency } from '@/lib/formatters';
 import { index as ordersIndex } from '@/routes/orders';
-import type { Customer, Order, PaginatedResponse } from '@/types';
+import type { Order, PaginatedResponse } from '@/types';
+import AppSelect from '@/components/AppSelect.vue';
 
 defineOptions({
     layout: {
@@ -40,9 +36,9 @@ defineOptions({
 
 const props = defineProps<{
     orders: PaginatedResponse<Order>;
-    customers: Customer[];
+    order_statuses: string[];
     filters: {
-        customer_id?: string;
+        customer_name?: string;
         status?: string;
         date?: string;
     };
@@ -50,35 +46,86 @@ const props = defineProps<{
 
 const { can, canAny } = usePermissions();
 
+// Translations map for statuses
+const statusTranslations: Record<string, string> = {
+    pending: 'Pendente',
+    concluded: 'Concluído',
+    canceled: 'Cancelado',
+};
+
+const translateStatus = (statusKey: string): string => {
+    return statusTranslations[statusKey] || statusKey;
+};
+
+const statusOptions = computed(() => {
+    return [
+        { value: 'all', label: 'Todos os status' },
+        ...props.order_statuses.map((st) => ({
+            value: st,
+            label: translateStatus(st),
+        })),
+    ];
+});
+
 // Filters states
-const customerId = ref(props.filters.customer_id || '');
-const status = ref(props.filters.status || '');
+const customerName = ref(props.filters.customer_name || '');
+const status = ref(props.filters.status || 'all');
 const dateValue = ref(props.filters.date || '');
 
-// Watcher for automatic query reload on filter change
-watch([customerId, status, dateValue], () => {
+let isClearing = false;
+
+const triggerSearch = () => {
     router.get(
         ordersIndex(),
         {
-            customer_id: customerId.value || undefined,
-            status: status.value || undefined,
+            customer_name: customerName.value || undefined,
+            status:
+                status.value && status.value !== 'all'
+                    ? status.value
+                    : undefined,
             date: dateValue.value || undefined,
         },
         {
             preserveState: true,
             replace: true,
-        }
+        },
     );
+};
+
+// Watch status change immediately (no lag for select dropdown)
+watch(status, () => {
+    triggerSearch();
 });
 
+// Watch input typing with a 500ms debounce
+watchDebounced(
+    [customerName, dateValue],
+    () => {
+        if (!isClearing) {
+            triggerSearch();
+        }
+    },
+    { debounce: 500 },
+);
+
 const clearFilters = () => {
-    customerId.value = '';
-    status.value = '';
+    isClearing = true;
+    customerName.value = '';
+    status.value = 'all';
     dateValue.value = '';
+
+    // Reset the clearing flag after the debounce duration to ignore the upcoming debounced watcher trigger
+    setTimeout(() => {
+        isClearing = false;
+    }, 600);
 };
 
 const hasActiveFilters = () => {
-    return !!(customerId.value || status.value || dateValue.value);
+    return !!(
+        customerName.value ||
+        (status.value && status.value !== 'all') ||
+        dateValue.value
+    );
 };
 
 const formatDate = (dateStr: string) => {
@@ -102,14 +149,7 @@ const getStatusBadgeVariant = (orderStatus: string) => {
 };
 
 const getStatusText = (orderStatus: string) => {
-    switch (orderStatus) {
-        case 'concluded':
-            return 'Concluído';
-        case 'canceled':
-            return 'Cancelado';
-        default:
-            return 'Pendente';
-    }
+    return translateStatus(orderStatus);
 };
 </script>
 
@@ -123,7 +163,11 @@ const getStatusText = (orderStatus: string) => {
                 title="Pedidos"
                 description="Gerencie os pedidos do sistema."
             />
-            <Button v-if="can('orders.store')" as-child data-test="create-order-button">
+            <Button
+                v-if="can('orders.store')"
+                as-child
+                data-test="create-order-button"
+            >
                 <Link href="/pedidos/criar">
                     <Plus class="mr-2 size-4" />
                     Novo Pedido
@@ -132,69 +176,71 @@ const getStatusText = (orderStatus: string) => {
         </div>
 
         <!-- Filter Bar -->
-        <div class="flex flex-wrap items-end gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
-            <div class="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground mr-2">
-                <Filter class="size-4" />
-                Filtros
+        <div
+            class="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border"
+        >
+            <div class="flex items-center justify-between">
+                <div
+                    class="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground"
+                >
+                    <Filter class="size-4" />
+                    Filtros
+                </div>
+                <!-- Clear Filters button -->
+                <Button
+                    v-if="hasActiveFilters()"
+                    type="button"
+                    variant="ghost"
+                    class="h-8 px-2 text-xs text-muted-foreground hover:text-foreground"
+                    @click="clearFilters"
+                >
+                    <X class="mr-1 size-3.5" />
+                    Limpar
+                </Button>
             </div>
 
-            <!-- Customer Filter -->
-            <div class="w-full sm:w-[220px]">
-                <label class="mb-1 block text-xs font-medium text-muted-foreground">Cliente</label>
-                <select
-                    v-model="customerId"
-                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
-                >
-                    <option value="">Todos os clientes</option>
-                    <option
-                        v-for="customer in customers"
-                        :key="customer.id"
-                        :value="customer.id"
+            <div class="flex flex-wrap items-end gap-3">
+                <!-- Customer Filter -->
+                <div class="w-full sm:w-[220px]">
+                    <label
+                        class="mb-1 block text-xs font-medium text-muted-foreground"
+                        >Cliente</label
                     >
-                        {{ customer.name }}
-                    </option>
-                </select>
-            </div>
+                    <Input
+                        v-model="customerName"
+                        placeholder="Nome do cliente"
+                        class="h-9"
+                    />
+                </div>
 
-            <!-- Status Filter -->
-            <div class="w-full sm:w-[160px]">
-                <label class="mb-1 block text-xs font-medium text-muted-foreground">Status</label>
-                <select
-                    v-model="status"
-                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
-                >
-                    <option value="">Todos os status</option>
-                    <option value="pending">Pendente</option>
-                    <option value="concluded">Concluído</option>
-                    <option value="canceled">Cancelado</option>
-                </select>
-            </div>
+                <!-- Status Filter -->
+                <div class="w-full sm:w-[160px]">
+                    <label
+                        class="mb-1 block text-xs font-medium text-muted-foreground"
+                        >Status</label
+                    >
+                    <AppSelect
+                        v-model="status"
+                        :options="statusOptions"
+                        placeholder="Todos os status"
+                    />
+                </div>
 
-            <!-- Date Filter -->
-            <div class="w-full sm:w-[160px]">
-                <label class="mb-1 block text-xs font-medium text-muted-foreground">Data</label>
-                <Input
-                    type="date"
-                    v-model="dateValue"
-                    class="h-9"
-                />
+                <!-- Date Filter -->
+                <div class="w-full sm:w-[160px]">
+                    <label
+                        class="mb-1 block text-xs font-medium text-muted-foreground"
+                        >Data</label
+                    >
+                    <Input type="date" v-model="dateValue" class="h-9" />
+                </div>
             </div>
-
-            <!-- Clear Filters button -->
-            <Button
-                v-if="hasActiveFilters()"
-                type="button"
-                variant="ghost"
-                class="h-9 text-muted-foreground hover:text-foreground"
-                @click="clearFilters"
-            >
-                <X class="mr-1 size-4" />
-                Limpar
-            </Button>
         </div>
 
         <!-- Orders Table container -->
-        <div class="flex flex-1 flex-col overflow-hidden rounded-xl border border-sidebar-border/70 bg-card dark:border-sidebar-border">
+        <div
+            class="flex flex-1 flex-col overflow-hidden rounded-xl border border-sidebar-border/70 bg-card dark:border-sidebar-border"
+        >
             <EmptyState
                 v-if="orders.data.length === 0"
                 :icon="ShoppingCart"
@@ -216,29 +262,39 @@ const getStatusText = (orderStatus: string) => {
                             <TableHead class="w-[80px]">Pedido</TableHead>
                             <TableHead>Cliente</TableHead>
                             <TableHead>Data</TableHead>
-                            <TableHead class="text-right">Valor Total</TableHead>
-                            <TableHead class="text-center w-[120px]">Status</TableHead>
-                            <TableHead
-                                class="w-[80px] text-right"
+                            <TableHead class="text-right"
+                                >Valor Total</TableHead
+                            >
+                            <TableHead class="w-[120px] text-center"
+                                >Status</TableHead
+                            >
+                            <TableHead class="w-[80px] text-right"
                                 >Ações</TableHead
                             >
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow
-                            v-for="order in orders.data"
-                            :key="order.id"
-                        >
-                            <TableCell class="font-bold">#{{ order.id }}</TableCell>
+                        <TableRow v-for="order in orders.data" :key="order.id">
+                            <TableCell class="font-bold"
+                                >#{{ order.id }}</TableCell
+                            >
                             <TableCell class="font-medium">
-                                {{ order.customer?.name || 'Cliente desconhecido' }}
+                                {{
+                                    order.customer?.name ||
+                                    'Cliente desconhecido'
+                                }}
                             </TableCell>
                             <TableCell>{{ formatDate(order.date) }}</TableCell>
                             <TableCell class="text-right font-medium">
                                 {{ formatCurrency(order.total_amount) }}
                             </TableCell>
                             <TableCell class="text-center">
-                                <Badge :variant="getStatusBadgeVariant(order.status)" class="capitalize">
+                                <Badge
+                                    :variant="
+                                        getStatusBadgeVariant(order.status)
+                                    "
+                                    class="capitalize"
+                                >
                                     {{ getStatusText(order.status) }}
                                 </Badge>
                             </TableCell>
@@ -252,7 +308,9 @@ const getStatusText = (orderStatus: string) => {
                                         as-child
                                     >
                                         <Link :href="`/pedidos/${order.id}`">
-                                            <Eye class="size-4 text-muted-foreground" />
+                                            <Eye
+                                                class="size-4 text-muted-foreground"
+                                            />
                                             <span class="sr-only">Ver</span>
                                         </Link>
                                     </Button>
