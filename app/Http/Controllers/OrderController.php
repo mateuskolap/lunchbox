@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Enums\OrderStatusEnum;
 use App\Models\Customer;
 use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
