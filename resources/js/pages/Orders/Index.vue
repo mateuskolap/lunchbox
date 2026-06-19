@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 import { watchDebounced } from '@vueuse/core';
+import { trans } from 'laravel-vue-i18n';
 import { ShoppingCart, Eye, Plus, X, Filter } from 'lucide-vue-next';
 import { ref, watch, computed } from 'vue';
 import AppSelect from '@/components/AppSelect.vue';
@@ -46,15 +47,8 @@ const props = defineProps<{
 
 const { can, canAny } = usePermissions();
 
-// Translations map for statuses
-const statusTranslations: Record<string, string> = {
-    pending: 'Pendente',
-    concluded: 'Concluído',
-    canceled: 'Cancelado',
-};
-
 const translateStatus = (statusKey: string): string => {
-    return statusTranslations[statusKey] || statusKey;
+    return trans(statusKey);
 };
 
 const statusOptions = computed(() => {

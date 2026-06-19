@@ -1,3 +1,6 @@
 {
+    "pending": "Pending",
+    "concluded": "Concluded",
+    "canceled": "Canceled",
     "Welcome!": "Welcome!"
 }

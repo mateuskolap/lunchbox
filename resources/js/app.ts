@@ -13,8 +13,6 @@ createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
     layout: (name) => {
         switch (true) {
-            case name === 'Welcome':
-                return null;
             case name.startsWith('auth/'):
                 return AuthLayout;
             case name.startsWith('settings/'):
@@ -30,7 +28,34 @@ createInertiaApp({
                 resolve: async (lang: string) => {
                     const langs = import.meta.glob('../../lang/*.json');
 
-                    return await langs[`../../lang/${lang}.json`]();
+                    // Try exact match
+                    if (langs[`../../lang/${lang}.json`]) {
+                        return await langs[`../../lang/${lang}.json`]();
+                    }
+
+                    // Try normalizations
+                    const cleanLang = lang.replace('-', '_');
+                    if (langs[`../../lang/${cleanLang}.json`]) {
+                        return await langs[`../../lang/${cleanLang}.json`]();
+                    }
+
+                    const cleanLangHyphen = lang.replace('_', '-');
+                    if (langs[`../../lang/${cleanLangHyphen}.json`]) {
+                        return await langs[`../../lang/${cleanLangHyphen}.json`]();
+                    }
+
+                    // Try base language
+                    const baseLang = lang.split(/[-_]/)[0];
+                    if (langs[`../../lang/${baseLang}.json`]) {
+                        return await langs[`../../lang/${baseLang}.json`]();
+                    }
+
+                    // Fallback to English
+                    if (langs['../../lang/en.json']) {
+                        return await langs['../../lang/en.json']();
+                    }
+
+                    return {};
                 },
             })
             .mount(el as Element);

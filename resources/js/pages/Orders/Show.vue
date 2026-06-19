@@ -1,31 +1,23 @@
 <script setup lang="ts">
-import { Form, Head, Link } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import {
+    ArrowLeft,
+    Calendar,
+    CheckCircle2,
+    FileText,
+    Pencil,
+    RotateCcw,
     ShoppingCart,
     User,
-    Calendar,
-    FileText,
-    CheckCircle2,
     XCircle,
-    RotateCcw,
-    ArrowLeft,
-    Pencil,
-    ChevronRight,
 } from 'lucide-vue-next';
-import { ref, computed, onMounted } from 'vue';
-
-const isMounted = ref(false);
-onMounted(() => {
-    isMounted.value = true;
-});
+import { onMounted, ref } from 'vue';
+import { trans } from 'laravel-vue-i18n';
 import OrderController from '@/actions/App/Http/Controllers/OrderController';
-import AppSelect from '@/components/AppSelect.vue';
 import ConfirmationDialog from '@/components/ConfirmationDialog.vue';
-import FormField from '@/components/FormField.vue';
 import Heading from '@/components/Heading.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
     Table,
     TableBody,
@@ -38,7 +30,12 @@ import { formatCurrency, formatPhone } from '@/lib/formatters';
 import { index as ordersIndex } from '@/routes/orders';
 import type { Order, Product } from '@/types';
 
-const props = defineProps<{
+const isMounted = ref(false);
+onMounted(() => {
+    isMounted.value = true;
+});
+
+defineProps<{
     order: Order;
     products: Product[];
     list_url?: string;
@@ -88,14 +85,7 @@ const getStatusBadgeVariant = (status: string) => {
 };
 
 const getStatusText = (status: string) => {
-    switch (status) {
-        case 'concluded':
-            return 'Concluído';
-        case 'canceled':
-            return 'Cancelado';
-        default:
-            return 'Pendente';
-    }
+    return trans(status);
 };
 </script>
 

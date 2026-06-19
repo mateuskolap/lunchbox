@@ -167,7 +167,7 @@ class OrderController extends Controller
                 foreach ($orderItems as $item) {
                     $order->items()->updateOrCreate(
                         [
-                            'product_id' => $item['product_id']
+                            'product_id' => $item['product_id'],
                         ],
                         [
                             'unit_price' => $item['unit_price'],

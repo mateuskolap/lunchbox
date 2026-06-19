@@ -10,6 +10,7 @@ import {
     UtensilsCrossed,
 } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
+import { trans } from 'laravel-vue-i18n';
 import EmptyState from '@/components/EmptyState.vue';
 import Heading from '@/components/Heading.vue';
 import { Badge } from '@/components/ui/badge';
@@ -87,14 +88,7 @@ const getStatusBadgeVariant = (status: string) => {
 };
 
 const getStatusText = (status: string) => {
-    switch (status) {
-        case 'concluded':
-            return 'Concluído';
-        case 'canceled':
-            return 'Cancelado';
-        default:
-            return 'Pendente';
-    }
+    return trans(status);
 };
 
 const formatTime = (dateStr: string) => {
