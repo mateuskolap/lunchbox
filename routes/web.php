@@ -19,8 +19,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('/usuarios')->name('users.')->group(function () {
         Route::middleware('can:users.index')->get('/', [UserController::class, 'index'])->name('index');
         Route::middleware('can:users.store')->post('/', [UserController::class, 'store'])->name('store');
-        Route::middleware('can:users.update')->put('/{user}', [UserController::class, 'update'])->name('update');
-        Route::middleware('can:users.destroy')->delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
+
+        Route::prefix('/{user}')->group(function () {
+            Route::middleware('can:users.update')->put('/', [UserController::class, 'update'])->name('update');
+            Route::middleware('can:users.destroy')->delete('/', [UserController::class, 'destroy'])->name('destroy');
+
+            Route::prefix('/papeis')->name('roles.')->group(function () {
+                Route::middleware('can:roles.add')->post('/', [UserController::class, 'addRoles'])->name('add-roles');
+                Route::middleware('can:roles.remove')->delete('/{role}', [UserController::class, 'removeRole'])->name('remove-role');
+            });
+        });
     });
 
     Route::prefix('/papeis')->name('roles.')->group(function () {

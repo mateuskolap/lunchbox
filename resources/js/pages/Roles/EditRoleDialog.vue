@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Form } from '@inertiajs/vue3';
 import { Pencil } from 'lucide-vue-next';
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, computed } from 'vue';
 import RoleController from '@/actions/App/Http/Controllers/RoleController';
 import FormField from '@/components/FormField.vue';
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,17 @@ const props = defineProps<{
 
 const isOpen = ref(false);
 const selectedPermissionIds = ref<number[]>([]);
+const searchQuery = ref('');
+
+const filteredPermissions = computed(() => {
+    if (!searchQuery.value) {
+        return props.permissions;
+    }
+    const query = searchQuery.value.toLowerCase();
+    return props.permissions.filter((perm) =>
+        perm.name.toLowerCase().includes(query),
+    );
+});
 
 const initializePermissions = () => {
     if (props.role && props.role.permissions) {
@@ -51,52 +62,24 @@ watch(
 watch(isOpen, (newVal) => {
     if (newVal) {
         initializePermissions();
-    }
-});
-
-const togglePermission = (id: number) => {
-    const index = selectedPermissionIds.value.indexOf(id);
-    if (index > -1) {
-        selectedPermissionIds.value.splice(index, 1);
     } else {
-        selectedPermissionIds.value.push(id);
+        searchQuery.value = '';
     }
-};
-
-const groupedPermissions = computed(() => {
-    const groups: Record<string, Permission[]> = {};
-    props.permissions.forEach((perm) => {
-        const parts = perm.name.split('.');
-        const groupName = parts[0] || 'Outros';
-        if (!groups[groupName]) {
-            groups[groupName] = [];
-        }
-        groups[groupName].push(perm);
-    });
-    return groups;
 });
 
-const getGroupLabel = (group: string) => {
-    const labels: Record<string, string> = {
-        users: 'Usuários',
-        roles: 'Papéis',
-        products: 'Produtos',
-        customers: 'Clientes',
-        orders: 'Pedidos',
-    };
-    return labels[group] || group.charAt(0).toUpperCase() + group.slice(1);
-};
-
-const getPermissionLabel = (name: string) => {
-    const parts = name.split('.');
-    const action = parts[1] || name;
-    const labels: Record<string, string> = {
-        index: 'Visualizar',
-        store: 'Criar',
-        update: 'Editar',
-        destroy: 'Excluir',
-    };
-    return labels[action] || action.charAt(0).toUpperCase() + action.slice(1);
+const handleCheckboxChange = (
+    id: number,
+    checked: boolean | 'indeterminate',
+) => {
+    if (checked === true) {
+        if (!selectedPermissionIds.value.includes(id)) {
+            selectedPermissionIds.value.push(id);
+        }
+    } else {
+        selectedPermissionIds.value = selectedPermissionIds.value.filter(
+            (item) => item !== id,
+        );
+    }
 };
 </script>
 
@@ -155,47 +138,43 @@ const getPermissionLabel = (name: string) => {
                     </FormField>
 
                     <div class="space-y-3">
-                        <label class="text-sm font-semibold text-foreground"
-                            >Permissões de Acesso</label
-                        >
+                        <div class="flex items-center justify-between gap-4">
+                            <label class="text-sm font-semibold text-foreground"
+                                >Permissões de Acesso</label
+                            >
+                            <Input
+                                v-model="searchQuery"
+                                placeholder="Pesquisar permissão..."
+                                class="h-8 max-w-[240px] bg-sidebar text-xs"
+                            />
+                        </div>
                         <div
-                            class="grid max-h-[300px] gap-4 overflow-y-auto rounded-lg border border-sidebar-border bg-card p-4 sm:grid-cols-2"
+                            class="grid max-h-[300px] gap-3 overflow-y-auto rounded-lg border border-sidebar-border bg-card p-4 sm:grid-cols-2"
                         >
                             <div
-                                v-for="(perms, group) in groupedPermissions"
-                                :key="group"
-                                class="space-y-2 rounded-lg border border-sidebar-border/50 bg-muted/20 p-3"
+                                v-for="perm in filteredPermissions"
+                                :key="perm.id"
+                                class="flex items-center space-x-2 rounded-md border border-sidebar-border/30 bg-muted/10 p-2 hover:bg-muted/30"
                             >
-                                <h4
-                                    class="text-xs font-bold tracking-wider text-muted-foreground uppercase"
+                                <Checkbox
+                                    :id="`edit-perm-${perm.id}`"
+                                    :model-value="
+                                        selectedPermissionIds.includes(perm.id)
+                                    "
+                                    @update:model-value="
+                                        (checked: boolean | 'indeterminate') =>
+                                            handleCheckboxChange(
+                                                perm.id,
+                                                checked,
+                                            )
+                                    "
+                                />
+                                <label
+                                    :for="`edit-perm-${perm.id}`"
+                                    class="cursor-pointer text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                 >
-                                    {{ getGroupLabel(group) }}
-                                </h4>
-                                <div class="grid gap-2">
-                                    <div
-                                        v-for="perm in perms"
-                                        :key="perm.id"
-                                        class="flex items-center space-x-2"
-                                    >
-                                        <Checkbox
-                                            :id="`edit-perm-${perm.id}`"
-                                            :checked="
-                                                selectedPermissionIds.includes(
-                                                    perm.id,
-                                                )
-                                            "
-                                            @update:checked="
-                                                () => togglePermission(perm.id)
-                                            "
-                                        />
-                                        <label
-                                            :for="`edit-perm-${perm.id}`"
-                                            class="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                        >
-                                            {{ getPermissionLabel(perm.name) }}
-                                        </label>
-                                    </div>
-                                </div>
+                                    {{ perm.name }}
+                                </label>
                             </div>
                         </div>
                         <div

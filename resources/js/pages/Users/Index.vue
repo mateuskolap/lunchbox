@@ -17,9 +17,11 @@ import { usePermissions } from '@/composables/usePermissions';
 import { index as usersIndex } from '@/routes/users';
 import type { PaginatedResponse } from '@/types';
 import type { User } from '@/types/auth';
+import type { Role } from '@/types/role';
 import CreateUserDialog from './CreateUserDialog.vue';
 import DeleteUserDialog from './DeleteUserDialog.vue';
 import EditUserDialog from './EditUserDialog.vue';
+import UserRolesDialog from './UserRolesDialog.vue';
 
 defineOptions({
     layout: {
@@ -34,6 +36,7 @@ defineOptions({
 
 defineProps<{
     users: PaginatedResponse<User>;
+    roles: Role[];
 }>();
 
 const page = usePage();
@@ -72,8 +75,14 @@ const { can, canAny } = usePermissions();
                             <TableHead>Nome</TableHead>
                             <TableHead>E-mail</TableHead>
                             <TableHead
-                                v-if="canAny(['users.update', 'users.destroy'])"
-                                class="w-[100px] text-right"
+                                v-if="
+                                    canAny([
+                                        'users.update',
+                                        'users.destroy',
+                                        'roles.add',
+                                    ])
+                                "
+                                class="w-[120px] text-right"
                                 >Ações</TableHead
                             >
                         </TableRow>
@@ -85,12 +94,23 @@ const { can, canAny } = usePermissions();
                             }}</TableCell>
                             <TableCell>{{ user.email }}</TableCell>
                             <TableCell
-                                v-if="canAny(['users.update', 'users.destroy'])"
+                                v-if="
+                                    canAny([
+                                        'users.update',
+                                        'users.destroy',
+                                        'roles.add',
+                                    ])
+                                "
                                 class="text-right"
                             >
                                 <div
                                     class="flex items-center justify-end gap-1"
                                 >
+                                    <UserRolesDialog
+                                        v-if="can('roles.add')"
+                                        :user="user"
+                                        :roles="roles"
+                                    />
                                     <EditUserDialog
                                         v-if="can('users.update')"
                                         :user="user"

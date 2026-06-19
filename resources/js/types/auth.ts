@@ -1,3 +1,5 @@
+import type { Role } from './role';
+
 export type User = {
     id: number;
     name: string;
@@ -8,7 +10,7 @@ export type User = {
     updated_at: string;
     two_factor_enabled?: boolean;
     permissions?: string[];
-    roles?: string[];
+    roles?: (string | Role)[];
 };
 export type Auth = {
     user: User;

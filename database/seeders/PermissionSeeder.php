@@ -24,6 +24,8 @@ class PermissionSeeder extends Seeder
             'roles.store',
             'roles.update',
             'roles.destroy',
+            'roles.add',
+            'roles.remove',
             'products.index',
             'products.store',
             'products.update',

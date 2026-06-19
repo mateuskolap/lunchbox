@@ -8,13 +8,15 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
     public function index(): Response
     {
         return Inertia::render('Users/Index', [
-            'users' => User::paginate(20),
+            'users' => User::with('roles')->paginate(20),
+            'roles' => Role::all(),
         ]);
     }
 
@@ -70,6 +72,36 @@ class UserController extends Controller
         Inertia::flash('toast', [
             'type' => 'success',
             'message' => 'Usuário excluído com sucesso!',
+        ]);
+
+        return redirect()->route('users.index');
+    }
+
+    public function addRoles(Request $request, User $user): RedirectResponse
+    {
+        $validated = $request->validate([
+            'role_ids' => ['required', 'array'],
+            'role_ids.*' => ['required', 'exists:roles,id'],
+        ]);
+
+        $roles = Role::whereIn('id', $validated['role_ids'])->get();
+        $user->syncRoles($roles);
+
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => 'Funções do usuário atualizadas com sucesso!',
+        ]);
+
+        return redirect()->route('users.index');
+    }
+
+    public function removeRole(User $user, Role $role): RedirectResponse
+    {
+        $user->removeRole($role);
+
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => 'Função removida do usuário com sucesso!',
         ]);
 
         return redirect()->route('users.index');

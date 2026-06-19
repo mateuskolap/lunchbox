@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Form } from '@inertiajs/vue3';
-import { computed, ref, watch } from 'vue';
-import RoleController from '@/actions/App/Http/Controllers/RoleController';
-import FormField from '@/components/FormField.vue';
+import { Shield } from 'lucide-vue-next';
+import { ref, watch, onMounted, computed } from 'vue';
+import UserController from '@/actions/App/Http/Controllers/UserController';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -17,28 +17,63 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
-import type { Permission } from '@/types/role';
+import type { Role } from '@/types/role';
+import type { User } from '@/types/auth';
 
 const props = defineProps<{
-    permissions: Permission[];
+    user: User;
+    roles: Role[];
 }>();
 
 const isOpen = ref(false);
-const selectedPermissionIds = ref<number[]>([]);
+const selectedRoleIds = ref<number[]>([]);
 const searchQuery = ref('');
 
-const filteredPermissions = computed(() => {
+const filteredRoles = computed(() => {
     if (!searchQuery.value) {
-        return props.permissions;
+        return props.roles;
     }
     const query = searchQuery.value.toLowerCase();
-    return props.permissions.filter((perm) =>
-        perm.name.toLowerCase().includes(query),
+    return props.roles.filter((role) =>
+        role.name.toLowerCase().includes(query),
     );
 });
 
+const initializeRoles = () => {
+    if (props.user && props.user.roles) {
+        selectedRoleIds.value = props.user.roles
+            .map((r) => {
+                if (typeof r === 'object' && r !== null) {
+                    return r.id;
+                }
+                if (typeof r === 'string') {
+                    const found = props.roles.find((role) => role.name === r);
+                    return found ? found.id : null;
+                }
+                return null;
+            })
+            .filter((id): id is number => id !== null);
+    } else {
+        selectedRoleIds.value = [];
+    }
+};
+
+onMounted(() => {
+    initializeRoles();
+});
+
+watch(
+    () => props.user,
+    () => {
+        initializeRoles();
+    },
+    { deep: true },
+);
+
 watch(isOpen, (newVal) => {
-    if (!newVal) {
+    if (newVal) {
+        initializeRoles();
+    } else {
         searchQuery.value = '';
     }
 });
@@ -48,11 +83,11 @@ const handleCheckboxChange = (
     checked: boolean | 'indeterminate',
 ) => {
     if (checked === true) {
-        if (!selectedPermissionIds.value.includes(id)) {
-            selectedPermissionIds.value.push(id);
+        if (!selectedRoleIds.value.includes(id)) {
+            selectedRoleIds.value.push(id);
         }
     } else {
-        selectedPermissionIds.value = selectedPermissionIds.value.filter(
+        selectedRoleIds.value = selectedRoleIds.value.filter(
             (item) => item !== id,
         );
     }
@@ -62,63 +97,50 @@ const handleCheckboxChange = (
 <template>
     <Dialog v-model:open="isOpen">
         <DialogTrigger as-child>
-            <Button data-test="create-role-button">Novo Papel</Button>
+            <Button
+                variant="ghost"
+                size="icon"
+                title="Vincular Papéis"
+                data-test="user-roles-button"
+            >
+                <Shield class="size-4" />
+                <span class="sr-only">Vincular Papéis</span>
+            </Button>
         </DialogTrigger>
         <DialogContent class="max-w-2xl">
             <Form
-                v-bind="RoleController.store.form()"
-                reset-on-success
-                @success="
-                    () => {
-                        isOpen = false;
-                        selectedPermissionIds = [];
-                    }
-                "
+                v-bind="UserController.addRoles.form(user.id)"
+                @success="isOpen = false"
                 class="space-y-6"
                 v-slot="{ errors, processing, reset, clearErrors }"
             >
-                <!-- hidden inputs to send permission_ids array -->
-                <template
-                    v-for="(id, index) in selectedPermissionIds"
-                    :key="id"
-                >
+                <!-- hidden inputs to send role_ids array -->
+                <template v-for="(id, index) in selectedRoleIds" :key="id">
                     <input
                         type="hidden"
-                        :name="`permission_ids[${index}]`"
+                        :name="`role_ids[${index}]`"
                         :value="id"
                     />
                 </template>
 
                 <DialogHeader class="space-y-3">
-                    <DialogTitle>Novo Papel</DialogTitle>
+                    <DialogTitle>Vincular Papéis</DialogTitle>
                     <DialogDescription>
-                        Preencha os dados do novo papel do sistema e selecione
-                        suas permissões.
+                        Selecione os papéis de acesso que deseja atribuir ao
+                        usuário <strong>{{ user.name }}</strong
+                        >.
                     </DialogDescription>
                 </DialogHeader>
 
                 <div class="grid gap-6">
-                    <FormField
-                        label="Nome"
-                        field-id="create-role-name"
-                        :error="errors.name"
-                    >
-                        <Input
-                            id="create-role-name"
-                            name="name"
-                            placeholder="Nome do papel (ex: admin, gerente)"
-                            required
-                        />
-                    </FormField>
-
                     <div class="space-y-3">
                         <div class="flex items-center justify-between gap-4">
                             <label class="text-sm font-semibold text-foreground"
-                                >Permissões de Acesso</label
+                                >Papéis Disponíveis</label
                             >
                             <Input
                                 v-model="searchQuery"
-                                placeholder="Pesquisar permissão..."
+                                placeholder="Pesquisar papel..."
                                 class="h-8 max-w-[240px] bg-sidebar text-xs"
                             />
                         </div>
@@ -126,36 +148,36 @@ const handleCheckboxChange = (
                             class="grid max-h-[300px] gap-3 overflow-y-auto rounded-lg border border-sidebar-border bg-card p-4 sm:grid-cols-2"
                         >
                             <div
-                                v-for="perm in filteredPermissions"
-                                :key="perm.id"
+                                v-for="role in filteredRoles"
+                                :key="role.id"
                                 class="flex items-center space-x-2 rounded-md border border-sidebar-border/30 bg-muted/10 p-2 hover:bg-muted/30"
                             >
                                 <Checkbox
-                                    :id="`create-perm-${perm.id}`"
+                                    :id="`user-role-${role.id}`"
                                     :model-value="
-                                        selectedPermissionIds.includes(perm.id)
+                                        selectedRoleIds.includes(role.id)
                                     "
                                     @update:model-value="
                                         (checked: boolean | 'indeterminate') =>
                                             handleCheckboxChange(
-                                                perm.id,
+                                                role.id,
                                                 checked,
                                             )
                                     "
                                 />
                                 <label
-                                    :for="`create-perm-${perm.id}`"
+                                    :for="`user-role-${role.id}`"
                                     class="cursor-pointer text-sm leading-none font-medium select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                 >
-                                    {{ perm.name }}
+                                    {{ role.name }}
                                 </label>
                             </div>
                         </div>
                         <div
-                            v-if="errors.permission_ids"
+                            v-if="errors.role_ids"
                             class="text-sm font-medium text-destructive"
                         >
-                            {{ errors.permission_ids }}
+                            {{ errors.role_ids }}
                         </div>
                     </div>
                 </div>
@@ -168,7 +190,7 @@ const handleCheckboxChange = (
                                 () => {
                                     clearErrors();
                                     reset();
-                                    selectedPermissionIds = [];
+                                    initializeRoles();
                                 }
                             "
                         >
@@ -179,7 +201,7 @@ const handleCheckboxChange = (
                     <Button
                         type="submit"
                         :disabled="processing"
-                        data-test="save-create-role-button"
+                        data-test="save-user-roles-button"
                     >
                         <Spinner v-if="processing" />
                         {{ processing ? 'Salvando...' : 'Salvar' }}
