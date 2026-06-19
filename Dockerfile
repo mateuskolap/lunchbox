@@ -1,0 +1,45 @@
+FROM php:8.4-fpm
+
+WORKDIR /var/www/html
+
+RUN apt-get update && apt-get install -y \
+    libzip-dev libpq-dev unzip curl supervisor nginx \
+    && docker-php-ext-install zip pdo pdo_mysql pdo_pgsql
+
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g npm@latest
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+COPY . /var/www/html
+
+RUN rm -f /etc/nginx/conf.d/default.conf /etc/nginx/sites-enabled/default
+
+COPY ./.docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY ./.docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY ./.docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+RUN mkdir -p /var/lib/nginx && chown -R www-data:www-data /var/lib/nginx
+
+RUN composer install --no-dev --optimize-autoloader
+RUN npm install
+
+RUN DB_CONNECTION=sqlite \
+    DB_DATABASE=:memory: \
+    CACHE_STORE=file \
+    SESSION_DRIVER=file \
+    QUEUE_CONNECTION=sync \
+    php artisan wayfinder:generate --with-form
+
+RUN npm run build
+
+RUN echo "listen = 9000" >> /usr/local/etc/php-fpm.d/zz-docker.conf \
+    && echo "clear_env = no" >> /usr/local/etc/php-fpm.d/zz-docker.conf
+
+RUN chown -R www-data:www-data /var/www/html
+
+EXPOSE 80
+
+CMD ["/usr/local/bin/entrypoint.sh"]

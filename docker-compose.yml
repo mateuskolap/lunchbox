@@ -1,0 +1,41 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: laravel-app
+    env_file:
+      - .env
+    environment:
+      APP_URL: http://localhost:8080
+    volumes:
+      - .:/var/www/html
+      - web-build:/var/www/html/public/build
+    ports:
+      - "8080:80"
+    depends_on:
+      pgsql:
+        condition: service_healthy
+
+  pgsql:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-root}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_DB: ${DB_DATABASE:-mydb}
+    volumes:
+      - db:/var/lib/postgresql/data
+    ports:
+      - "${FORWARD_DB_PORT:-5438}:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USERNAME:-root} -d ${DB_DATABASE:-mydb}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  db:
+    driver: local
+  web-build:
+    driver: local

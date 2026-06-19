@@ -1,0 +1,10 @@
+node_modules
+vendor
+.git
+.idea
+.cursor
+.claude
+.gemini
+public/build
+public/hot
+*.log
