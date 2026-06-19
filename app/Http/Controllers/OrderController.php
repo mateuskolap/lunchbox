@@ -6,6 +6,7 @@ use App\Enums\OrderStatusEnum;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -23,7 +24,8 @@ class OrderController extends Controller
         $validated = $request->validate([
             'customer_name' => ['nullable', 'string'],
             'status' => ['nullable', new Enum(OrderStatusEnum::class)],
-            'date' => ['nullable', 'date'],
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date'],
         ]);
 
         session(['orders_list_url' => route('orders.index')]);
@@ -37,12 +39,15 @@ class OrderController extends Controller
                 ->when($validated['status'] ?? null, function ($query) use ($validated) {
                     $query->where('status', $validated['status']);
                 })
-                ->when($validated['date'] ?? null, function ($query) use ($validated) {
-                    $query->whereDate('date', $validated['date']);
+                ->when($validated['start_date'] ?? null, function ($query, $startDate) {
+                    $query->where('date', '>=', Carbon::parse($startDate)->startOfDay());
+                })
+                ->when($validated['end_date'] ?? null, function ($query, $endDate) {
+                    $query->where('date', '<=', Carbon::parse($endDate)->endOfDay());
                 })
                 ->paginate(25),
             'order_statuses' => OrderStatusEnum::cases(),
-            'filters' => $request->only(['customer_name', 'status', 'date']),
+            'filters' => $request->only(['customer_name', 'status', 'start_date', 'end_date']),
         ]);
     }
 

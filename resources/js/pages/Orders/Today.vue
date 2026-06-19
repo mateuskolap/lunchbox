@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head, Link, usePoll } from '@inertiajs/vue3';
+import { trans } from 'laravel-vue-i18n';
 import {
     ChevronRight,
     Clock,
@@ -10,7 +11,6 @@ import {
     UtensilsCrossed,
 } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
-import { trans } from 'laravel-vue-i18n';
 import EmptyState from '@/components/EmptyState.vue';
 import Heading from '@/components/Heading.vue';
 import { Badge } from '@/components/ui/badge';

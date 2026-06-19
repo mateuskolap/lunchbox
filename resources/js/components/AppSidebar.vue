@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import {
-    BookOpen,
-    FolderGit2,
+    Contact,
     LayoutGrid,
     Package,
-    Users,
-    Contact,
-    ShoppingCart,
     Shield,
+    ShoppingCart,
+    Users,
 } from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
@@ -25,7 +23,7 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { index as customersIndex } from '@/routes/customers';
-import { index as ordersIndex } from '@/routes/orders';
+import orders, { index as ordersIndex } from '@/routes/orders';
 import { index as productsIndex } from '@/routes/products';
 import { index as rolesIndex } from '@/routes/roles';
 import { index as usersIndex } from '@/routes/users';
@@ -34,7 +32,7 @@ import type { NavItem } from '@/types';
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: dashboard(),
+        href: orders.today(),
         icon: LayoutGrid,
     },
     {

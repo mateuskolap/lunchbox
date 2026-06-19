@@ -41,7 +41,8 @@ const props = defineProps<{
     filters: {
         customer_name?: string;
         status?: string;
-        date?: string;
+        start_date?: string;
+        end_date?: string;
     };
 }>();
 
@@ -64,7 +65,8 @@ const statusOptions = computed(() => {
 // Filters states
 const customerName = ref(props.filters.customer_name || '');
 const status = ref(props.filters.status || 'all');
-const dateValue = ref(props.filters.date || '');
+const startDate = ref(props.filters.start_date || '');
+const endDate = ref(props.filters.end_date || '');
 
 let isClearing = false;
 
@@ -77,7 +79,8 @@ const triggerSearch = () => {
                 status.value && status.value !== 'all'
                     ? status.value
                     : undefined,
-            date: dateValue.value || undefined,
+            start_date: startDate.value || undefined,
+            end_date: endDate.value || undefined,
         },
         {
             preserveState: true,
@@ -93,7 +96,7 @@ watch(status, () => {
 
 // Watch input typing with a 500ms debounce
 watchDebounced(
-    [customerName, dateValue],
+    [customerName, startDate, endDate],
     () => {
         if (!isClearing) {
             triggerSearch();
@@ -106,7 +109,8 @@ const clearFilters = () => {
     isClearing = true;
     customerName.value = '';
     status.value = 'all';
-    dateValue.value = '';
+    startDate.value = '';
+    endDate.value = '';
 
     // Reset the clearing flag after the debounce duration to ignore the upcoming debounced watcher trigger
     setTimeout(() => {
@@ -118,7 +122,8 @@ const hasActiveFilters = () => {
     return !!(
         customerName.value ||
         (status.value && status.value !== 'all') ||
-        dateValue.value
+        startDate.value ||
+        endDate.value
     );
 };
 
@@ -228,13 +233,22 @@ const getStatusText = (orderStatus: string) => {
                     />
                 </div>
 
-                <!-- Date Filter -->
+                <!-- Start Date Filter -->
                 <div class="w-full sm:w-[160px]">
                     <label
                         class="mb-1 block text-xs font-medium text-muted-foreground"
-                        >Data</label
+                        >Data Inicial</label
                     >
-                    <Input type="date" v-model="dateValue" class="h-9" />
+                    <Input type="date" v-model="startDate" class="h-9" />
+                </div>
+
+                <!-- End Date Filter -->
+                <div class="w-full sm:w-[160px]">
+                    <label
+                        class="mb-1 block text-xs font-medium text-muted-foreground"
+                        >Data Final</label
+                    >
+                    <Input type="date" v-model="endDate" class="h-9" />
                 </div>
             </div>
         </div>
