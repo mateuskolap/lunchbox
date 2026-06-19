@@ -16,8 +16,10 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const isOpen = ref(false);
+const isLunchbox = ref(false);
 </script>
 
 <template>
@@ -29,10 +31,11 @@ const isOpen = ref(false);
             <Form
                 v-bind="ProductController.store.form()"
                 reset-on-success
-                @success="isOpen = false"
+                @success="() => { isOpen = false; isLunchbox = false; }"
                 class="space-y-6"
                 v-slot="{ errors, processing, reset, clearErrors }"
             >
+                <input type="hidden" name="is_lunchbox" :value="isLunchbox ? '1' : '0'" />
                 <DialogHeader class="space-y-3">
                     <DialogTitle>Novo Produto</DialogTitle>
                     <DialogDescription>
@@ -69,6 +72,20 @@ const isOpen = ref(false);
                             required
                         />
                     </FormField>
+
+                    <div class="flex items-center space-x-2 py-1">
+                        <Checkbox
+                            id="create-product-is-lunchbox"
+                            :model-value="isLunchbox"
+                            @update:model-value="isLunchbox = $event"
+                        />
+                        <label
+                            for="create-product-is-lunchbox"
+                            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                        >
+                            Marmita
+                        </label>
+                    </div>
                 </div>
 
                 <DialogFooter class="gap-2">
@@ -79,6 +96,7 @@ const isOpen = ref(false);
                                 () => {
                                     clearErrors();
                                     reset();
+                                    isLunchbox = false;
                                 }
                             "
                         >

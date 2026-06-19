@@ -22,6 +22,7 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
+            'is_lunchbox' => ['boolean'],
         ]);
 
         Product::create($validated);
@@ -39,6 +40,7 @@ class ProductController extends Controller
         $validate = $request->validate([
             'name' => ['required', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
+            'is_lunchbox' => ['boolean'],
         ]);
 
         $product->update($validate);

@@ -13,7 +13,13 @@ Route::inertia('/', 'Welcome', [
 ])->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+    Route::get('dashboard', function () {
+        if (auth()->user()->can('orders.index')) {
+            return redirect()->route('orders.today');
+        }
+
+        return Inertia\Inertia::render('Dashboard');
+    })->name('dashboard');
 
     // User routes
     Route::prefix('/usuarios')->name('users.')->group(function () {
@@ -57,6 +63,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Orders routes
     Route::prefix('/pedidos')->name('orders.')->group(function () {
         Route::middleware('can:orders.index')->get('/', [OrderController::class, 'index'])->name('index');
+        Route::middleware('can:orders.index')->get('/hoje', [OrderController::class, 'todayIndex'])->name('today');
         Route::middleware('can:orders.store')->get('/criar', [OrderController::class, 'create'])->name('create');
         Route::middleware('can:orders.store')->post('/', [OrderController::class, 'store'])->name('store');
 

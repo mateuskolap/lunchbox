@@ -9,15 +9,17 @@ use Spatie\Activitylog\Support\LogOptions;
 
 class Product extends Model
 {
-    use SoftDeletes, LogsActivity;
+    use LogsActivity, SoftDeletes;
 
     protected $fillable = [
         'name',
-        'price'
+        'price',
+        'is_lunchbox',
     ];
 
     protected $casts = [
-        'price' => 'decimal:2'
+        'price' => 'decimal:2',
+        'is_lunchbox' => 'boolean',
     ];
 
     public function getActivitylogOptions(): LogOptions

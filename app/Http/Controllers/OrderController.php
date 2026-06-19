@@ -27,11 +27,13 @@ class OrderController extends Controller
             'date' => ['nullable', 'date'],
         ]);
 
+        session(['orders_list_url' => route('orders.index')]);
+
         return Inertia::render('Orders/Index', [
             'orders' => Order::with('customer')
                 ->latest()
                 ->when($validated['customer_name'] ?? null, function ($query) use ($validated) {
-                    $query->whereHas('customer', fn ($q) => $q->where('name', 'like', "%{$validated['customer_name']}%"));
+                    $query->whereHas('customer', fn($q) => $q->where('name', 'like', "%{$validated['customer_name']}%"));
                 })
                 ->when($validated['status'] ?? null, function ($query) use ($validated) {
                     $query->where('status', $validated['status']);
@@ -45,11 +47,25 @@ class OrderController extends Controller
         ]);
     }
 
+    public function todayIndex(): Response
+    {
+        session(['orders_list_url' => route('orders.today')]);
+
+        return Inertia::render('Orders/Today', [
+            'orders' => Order::with('customer')
+                ->whereBetween('date', [now()->startOfDay(), now()->endOfDay()])
+                ->with(['items', 'items.product'])
+                ->latest()
+                ->get(),
+        ]);
+    }
+
     public function show(Order $order): Response
     {
         return Inertia::render('Orders/Show', [
             'order' => $order->load(['customer', 'items.product']),
             'products' => Product::orderBy('name')->get(),
+            'list_url' => session('orders_list_url', route('orders.index')),
         ]);
     }
 
@@ -58,6 +74,7 @@ class OrderController extends Controller
         return Inertia::render('Orders/Create', [
             'customers' => Customer::orderBy('name')->get(),
             'products' => Product::orderBy('name')->get(),
+            'list_url' => session('orders_list_url', route('orders.index')),
         ]);
     }
 
@@ -67,6 +84,7 @@ class OrderController extends Controller
             'order' => $order->load(['customer', 'items.product']),
             'customers' => Customer::orderBy('name')->get(),
             'products' => Product::orderBy('name')->get(),
+            'list_url' => session('orders_list_url', route('orders.index')),
         ]);
     }
 
@@ -105,9 +123,9 @@ class OrderController extends Controller
                 'message' => 'Pedido criado com sucesso!',
             ]);
 
-            return redirect()->route('orders.index');
+            return redirect(session('orders_list_url', route('orders.index')));
         } catch (Throwable $e) {
-            Log::error('Erro ao criar pedido: '.$e->getMessage(), [
+            Log::error('Erro ao criar pedido: ' . $e->getMessage(), [
                 'exception' => $e,
                 'request_data' => $validated,
             ]);
@@ -170,7 +188,7 @@ class OrderController extends Controller
 
             return redirect()->route('orders.show', $order);
         } catch (Throwable $e) {
-            Log::error('Erro ao adicionar itens ao pedido: '.$e->getMessage(), [
+            Log::error('Erro ao adicionar itens ao pedido: ' . $e->getMessage(), [
                 'order_id' => $order->id,
                 'exception' => $e,
             ]);
@@ -208,7 +226,7 @@ class OrderController extends Controller
 
             return redirect()->route('orders.show', $order);
         } catch (Throwable $e) {
-            Log::error('Erro ao remover item do pedido: '.$e->getMessage(), [
+            Log::error('Erro ao remover item do pedido: ' . $e->getMessage(), [
                 'order_id' => $order->id,
                 'order_item_id' => $item->id,
                 'exception' => $e,
@@ -232,7 +250,7 @@ class OrderController extends Controller
             'message' => 'Pedido concluído com sucesso!',
         ]);
 
-        return redirect()->route('orders.show', $order);
+        return redirect(session('orders_list_url', route('orders.index')));
     }
 
     public function cancel(Order $order): RedirectResponse
@@ -244,18 +262,18 @@ class OrderController extends Controller
             'message' => 'Pedido cancelado com sucesso!',
         ]);
 
-        return redirect()->route('orders.show', $order);
+        return redirect(session('orders_list_url', route('orders.index')));
     }
 
     public function reopen(Order $order): RedirectResponse
     {
-        if (! $order->isClosed()) {
+        if (!$order->isClosed()) {
             Inertia::flash('toast', [
                 'type' => 'error',
                 'message' => 'Apenas pedidos concluídos ou cancelados podem ser reabertos!',
             ]);
 
-            return redirect()->route('orders.index');
+            return redirect(session('orders_list_url', route('orders.index')));
         }
 
         $order->update(['status' => OrderStatusEnum::PENDING]);

@@ -12,7 +12,12 @@ import {
     Pencil,
     ChevronRight,
 } from 'lucide-vue-next';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+
+const isMounted = ref(false);
+onMounted(() => {
+    isMounted.value = true;
+});
 import OrderController from '@/actions/App/Http/Controllers/OrderController';
 import ConfirmationDialog from '@/components/ConfirmationDialog.vue';
 import FormField from '@/components/FormField.vue';
@@ -36,6 +41,7 @@ import type { Order, Product } from '@/types';
 const props = defineProps<{
     order: Order;
     products: Product[];
+    list_url?: string;
 }>();
 
 defineOptions({
@@ -100,7 +106,7 @@ const getStatusText = (status: string) => {
                     as-child
                     class="mt-1 shrink-0 sm:mt-0"
                 >
-                    <Link :href="ordersIndex()">
+                    <Link :href="list_url || ordersIndex()">
                         <ArrowLeft class="size-4" />
                         <span class="sr-only">Voltar</span>
                     </Link>
@@ -124,7 +130,7 @@ const getStatusText = (status: string) => {
                     </div>
                     <p class="text-xs text-muted-foreground sm:text-sm">
                         Criado em
-                        {{ new Date(order.created_at).toLocaleString('pt-BR') }}
+                        {{ isMounted ? new Date(order.created_at).toLocaleString('pt-BR') : '' }}
                     </p>
                 </div>
             </div>

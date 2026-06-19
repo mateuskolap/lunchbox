@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Form } from '@inertiajs/vue3';
 import { Pencil } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import ProductController from '@/actions/App/Http/Controllers/ProductController';
 import FormField from '@/components/FormField.vue';
 import { Button } from '@/components/ui/button';
@@ -17,13 +17,20 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
-import type { Product } from '@/types/product';
+import { Checkbox } from '@/components/ui/checkbox';
 
-defineProps<{
+const props = defineProps<{
     product: Product;
 }>();
 
 const isOpen = ref(false);
+const isLunchbox = ref(props.product.is_lunchbox ?? false);
+
+watch(isOpen, (newVal) => {
+    if (newVal) {
+        isLunchbox.value = props.product.is_lunchbox ?? false;
+    }
+});
 </script>
 
 <template>
@@ -46,6 +53,7 @@ const isOpen = ref(false);
                 class="space-y-6"
                 v-slot="{ errors, processing, reset, clearErrors }"
             >
+                <input type="hidden" name="is_lunchbox" :value="isLunchbox ? '1' : '0'" />
                 <DialogHeader class="space-y-3">
                     <DialogTitle>Editar Produto</DialogTitle>
                     <DialogDescription>
@@ -84,6 +92,20 @@ const isOpen = ref(false);
                             required
                         />
                     </FormField>
+
+                    <div class="flex items-center space-x-2 py-1">
+                        <Checkbox
+                            id="edit-product-is-lunchbox"
+                            :model-value="isLunchbox"
+                            @update:model-value="isLunchbox = $event"
+                        />
+                        <label
+                            for="edit-product-is-lunchbox"
+                            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                        >
+                            Marmita
+                        </label>
+                    </div>
                 </div>
 
                 <DialogFooter class="gap-2">
