@@ -235,7 +235,7 @@ const removeItem = (productId: number) => {
                                 rows="4"
                                 :default-value="order?.observation || ''"
                                 placeholder="Insira observações sobre o pedido..."
-                                class="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30"
+                                class="flex min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30"
                             ></textarea>
                         </FormField>
                     </div>
@@ -308,13 +308,13 @@ const removeItem = (productId: number) => {
                                     <TableHead class="text-right"
                                         >Unitário</TableHead
                                     >
-                                    <TableHead class="w-[100px] text-center"
+                                    <TableHead class="w-25 text-center"
                                         >Qtd</TableHead
                                     >
                                     <TableHead class="text-right"
                                         >Subtotal</TableHead
                                     >
-                                    <TableHead class="w-[60px]"></TableHead>
+                                    <TableHead class="w-15"></TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -379,8 +379,8 @@ const removeItem = (productId: number) => {
                                         (acc, item) => acc + item.quantity,
                                         0,
                                     )
-                                }}</strong></span
-                            >
+                                }}</strong>
+                            </span>
                         </div>
                         <div class="text-lg font-bold text-foreground">
                             Valor Total:
