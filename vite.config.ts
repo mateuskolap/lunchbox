@@ -1,4 +1,5 @@
 import inertia from '@inertiajs/vite';
+import i18n from 'laravel-vue-i18n/vite';
 import { wayfinder } from '@laravel/vite-plugin-wayfinder';
 import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
@@ -11,6 +12,7 @@ export default defineConfig({
             input: ['resources/css/app.css', 'resources/js/app.ts'],
             refresh: true,
         }),
+        i18n(),
         inertia(),
         tailwindcss(),
         vue({

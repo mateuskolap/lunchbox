@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
+import { watchDebounced } from '@vueuse/core';
 import { ShoppingCart, Eye, Plus, X, Filter } from 'lucide-vue-next';
 import { ref, watch, computed } from 'vue';
-import { watchDebounced } from '@vueuse/core';
+import AppSelect from '@/components/AppSelect.vue';
 import EmptyState from '@/components/EmptyState.vue';
 import Heading from '@/components/Heading.vue';
 import TablePagination from '@/components/TablePagination.vue';
@@ -21,7 +22,6 @@ import { usePermissions } from '@/composables/usePermissions';
 import { formatCurrency } from '@/lib/formatters';
 import { index as ordersIndex } from '@/routes/orders';
 import type { Order, PaginatedResponse } from '@/types';
-import AppSelect from '@/components/AppSelect.vue';
 
 defineOptions({
     layout: {
@@ -129,11 +129,19 @@ const hasActiveFilters = () => {
 };
 
 const formatDate = (dateStr: string) => {
-    if (!dateStr) return '';
+    if (!dateStr) {
+        return '';
+    }
+
     const datePart = dateStr.split('T')[0];
     const parts = datePart.split('-');
-    if (parts.length !== 3) return dateStr;
+
+    if (parts.length !== 3) {
+        return dateStr;
+    }
+
     const [year, month, day] = parts;
+
     return `${day}/${month}/${year}`;
 };
 

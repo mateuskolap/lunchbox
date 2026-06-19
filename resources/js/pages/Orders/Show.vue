@@ -19,13 +19,13 @@ onMounted(() => {
     isMounted.value = true;
 });
 import OrderController from '@/actions/App/Http/Controllers/OrderController';
+import AppSelect from '@/components/AppSelect.vue';
 import ConfirmationDialog from '@/components/ConfirmationDialog.vue';
 import FormField from '@/components/FormField.vue';
 import Heading from '@/components/Heading.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import AppSelect from '@/components/AppSelect.vue';
 import {
     Table,
     TableBody,
@@ -60,11 +60,19 @@ defineOptions({
 });
 
 const formatDate = (dateStr: string) => {
-    if (!dateStr) return '';
+    if (!dateStr) {
+        return '';
+    }
+
     const datePart = dateStr.split('T')[0];
     const parts = datePart.split('-');
-    if (parts.length !== 3) return dateStr;
+
+    if (parts.length !== 3) {
+        return dateStr;
+    }
+
     const [year, month, day] = parts;
+
     return `${day}/${month}/${year}`;
 };
 
@@ -130,7 +138,13 @@ const getStatusText = (status: string) => {
                     </div>
                     <p class="text-xs text-muted-foreground sm:text-sm">
                         Criado em
-                        {{ isMounted ? new Date(order.created_at).toLocaleString('pt-BR') : '' }}
+                        {{
+                            isMounted
+                                ? new Date(order.created_at).toLocaleString(
+                                      'pt-BR',
+                                  )
+                                : ''
+                        }}
                     </p>
                 </div>
             </div>

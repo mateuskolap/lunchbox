@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
+import { ArrowLeft } from 'lucide-vue-next';
 import OrderController from '@/actions/App/Http/Controllers/OrderController';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-vue-next';
 import { index as ordersIndex } from '@/routes/orders';
 import type { Customer, Product } from '@/types';
 import OrderForm from './OrderForm.vue';

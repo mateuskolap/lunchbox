@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue';
+import { Input } from '@/components/ui/input';
 import {
     Select,
     SelectContent,
@@ -7,7 +8,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
 
 type Option = {
     value: string;
@@ -42,7 +42,9 @@ const filteredOptions = computed(() => {
     if (!props.searchable || !searchQuery.value) {
         return props.options;
     }
+
     const search = searchQuery.value.toLowerCase();
+
     return props.options.filter((opt) =>
         opt.label.toLowerCase().includes(search),
     );
@@ -56,6 +58,7 @@ const onOpenChange = (open: boolean) => {
             const input =
                 searchInputRef.value?.$el?.querySelector('input') ||
                 searchInputRef.value?.$el;
+
             if (input) {
                 input.focus();
             }

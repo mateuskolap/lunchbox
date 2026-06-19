@@ -5,6 +5,7 @@ import { ref, watch } from 'vue';
 import ProductController from '@/actions/App/Http/Controllers/ProductController';
 import FormField from '@/components/FormField.vue';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
     Dialog,
     DialogClose,
@@ -17,7 +18,6 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
-import { Checkbox } from '@/components/ui/checkbox';
 
 const props = defineProps<{
     product: Product;
@@ -53,7 +53,11 @@ watch(isOpen, (newVal) => {
                 class="space-y-6"
                 v-slot="{ errors, processing, reset, clearErrors }"
             >
-                <input type="hidden" name="is_lunchbox" :value="isLunchbox ? '1' : '0'" />
+                <input
+                    type="hidden"
+                    name="is_lunchbox"
+                    :value="isLunchbox ? '1' : '0'"
+                />
                 <DialogHeader class="space-y-3">
                     <DialogTitle>Editar Produto</DialogTitle>
                     <DialogDescription>
@@ -101,7 +105,7 @@ watch(isOpen, (newVal) => {
                         />
                         <label
                             for="edit-product-is-lunchbox"
-                            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                            class="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
                             Marmita
                         </label>

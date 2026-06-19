@@ -1,4 +1,6 @@
 import { createInertiaApp } from '@inertiajs/vue3';
+import { i18nVue } from 'laravel-vue-i18n';
+import { createApp, h } from 'vue';
 import { initializeTheme } from '@/composables/useAppearance';
 import AppLayout from '@/layouts/AppLayout.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
@@ -20,6 +22,18 @@ createInertiaApp({
             default:
                 return AppLayout;
         }
+    },
+    setup({ el, App, props, plugin }) {
+        createApp({ render: () => h(App, props) })
+            .use(plugin)
+            .use(i18nVue, {
+                resolve: async (lang: string) => {
+                    const langs = import.meta.glob('../../lang/*.json');
+
+                    return await langs[`../../lang/${lang}.json`]();
+                },
+            })
+            .mount(el as Element);
     },
     progress: {
         color: '#4B5563',

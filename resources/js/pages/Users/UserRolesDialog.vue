@@ -17,8 +17,8 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
-import type { Role } from '@/types/role';
 import type { User } from '@/types/auth';
+import type { Role } from '@/types/role';
 
 const props = defineProps<{
     user: User;
@@ -33,7 +33,9 @@ const filteredRoles = computed(() => {
     if (!searchQuery.value) {
         return props.roles;
     }
+
     const query = searchQuery.value.toLowerCase();
+
     return props.roles.filter((role) =>
         role.name.toLowerCase().includes(query),
     );
@@ -46,10 +48,13 @@ const initializeRoles = () => {
                 if (typeof r === 'object' && r !== null) {
                     return r.id;
                 }
+
                 if (typeof r === 'string') {
                     const found = props.roles.find((role) => role.name === r);
+
                     return found ? found.id : null;
                 }
+
                 return null;
             })
             .filter((id): id is number => id !== null);

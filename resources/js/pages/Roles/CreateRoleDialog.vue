@@ -31,7 +31,9 @@ const filteredPermissions = computed(() => {
     if (!searchQuery.value) {
         return props.permissions;
     }
+
     const query = searchQuery.value.toLowerCase();
+
     return props.permissions.filter((perm) =>
         perm.name.toLowerCase().includes(query),
     );

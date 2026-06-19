@@ -4,6 +4,7 @@ import { ref } from 'vue';
 import ProductController from '@/actions/App/Http/Controllers/ProductController';
 import FormField from '@/components/FormField.vue';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
     Dialog,
     DialogClose,
@@ -16,7 +17,6 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
-import { Checkbox } from '@/components/ui/checkbox';
 
 const isOpen = ref(false);
 const isLunchbox = ref(false);
@@ -31,11 +31,20 @@ const isLunchbox = ref(false);
             <Form
                 v-bind="ProductController.store.form()"
                 reset-on-success
-                @success="() => { isOpen = false; isLunchbox = false; }"
+                @success="
+                    () => {
+                        isOpen = false;
+                        isLunchbox = false;
+                    }
+                "
                 class="space-y-6"
                 v-slot="{ errors, processing, reset, clearErrors }"
             >
-                <input type="hidden" name="is_lunchbox" :value="isLunchbox ? '1' : '0'" />
+                <input
+                    type="hidden"
+                    name="is_lunchbox"
+                    :value="isLunchbox ? '1' : '0'"
+                />
                 <DialogHeader class="space-y-3">
                     <DialogTitle>Novo Produto</DialogTitle>
                     <DialogDescription>
@@ -81,7 +90,7 @@ const isLunchbox = ref(false);
                         />
                         <label
                             for="create-product-is-lunchbox"
-                            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                            class="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
                             Marmita
                         </label>
