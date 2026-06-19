@@ -1,20 +1,19 @@
 <script setup lang="ts">
-import { Form, Link } from '@inertiajs/vue3';
-import { index as ordersIndex } from '@/routes/orders';
+import { Form } from '@inertiajs/vue3';
 import {
-    Plus,
-    Trash2,
     Calendar,
     FileText,
-    User,
+    Plus,
     ShoppingBag,
+    Trash2,
+    User,
 } from 'lucide-vue-next';
-import { ref, computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
+import AppSelect from '@/components/AppSelect.vue';
 import FormField from '@/components/FormField.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
-import AppSelect from '@/components/AppSelect.vue';
 import {
     Table,
     TableBody,
@@ -24,7 +23,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { formatCurrency } from '@/lib/formatters';
-import type { Customer, Product, Order } from '@/types';
+import type { Customer, Order, Product } from '@/types';
 
 type SelectedItem = {
     product_id: number;
@@ -75,6 +74,7 @@ onMounted(() => {
                 quantity: Number(item.quantity),
             }));
         }
+
         // Load date
         if (props.order.date) {
             dateValue.value = new Date(props.order.date)
@@ -103,6 +103,7 @@ const addItem = () => {
 
     const prodId = Number(currentProductId.value);
     const product = props.products.find((p) => p.id === prodId);
+
     if (!product) {
         return;
     }
@@ -400,11 +401,8 @@ const removeItem = (productId: number) => {
             {{ errors.order_items }}
         </div>
 
-        <!-- Submit & Cancel Buttons -->
+        <!-- Submit -->
         <div class="mt-6 flex items-center justify-end gap-3">
-            <Button type="button" variant="ghost" as-child>
-                <Link :href="ordersIndex()">Cancelar</Link>
-            </Button>
             <Button
                 type="submit"
                 :disabled="processing || selectedItems.length === 0"
