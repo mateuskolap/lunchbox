@@ -9,7 +9,10 @@ export function formatCurrency(
     }).format(Number(value));
 }
 
-export function formatPhone(phone: string): string {
+export function formatPhone(phone: string | null | undefined): string {
+    if (!phone) {
+        return '-';
+    }
     const cleaned = phone.replace(/\D/g, '');
 
     if (cleaned.length === 11) {

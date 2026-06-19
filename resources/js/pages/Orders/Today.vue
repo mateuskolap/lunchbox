@@ -1,25 +1,25 @@
 <script setup lang="ts">
 import { Head, Link, usePoll } from '@inertiajs/vue3';
 import {
-    Plus,
-    User,
-    Clock,
-    ShoppingCart,
-    UtensilsCrossed,
     ChevronRight,
+    Clock,
     FileText,
+    Plus,
+    ShoppingCart,
+    User,
+    UtensilsCrossed,
 } from 'lucide-vue-next';
-import { computed, ref, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
+import EmptyState from '@/components/EmptyState.vue';
 import Heading from '@/components/Heading.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import EmptyState from '@/components/EmptyState.vue';
 import { formatCurrency } from '@/lib/formatters';
 import {
-    today as ordersToday,
     create as ordersCreate,
+    show as orderShow,
+    today as ordersToday,
 } from '@/routes/orders';
-import { show as orderShow } from '@/routes/orders';
 import type { Order } from '@/types';
 
 defineOptions({
@@ -98,12 +98,30 @@ const getStatusText = (status: string) => {
 };
 
 const formatTime = (dateStr: string) => {
-    if (!isMounted.value || !dateStr) return '';
+    if (!isMounted.value || !dateStr) {
+        return '';
+    }
+
     const date = new Date(dateStr);
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
+
     return `${hours}:${minutes}`;
 };
+
+const pendingOrders = computed(() => {
+    return props.orders.filter(
+        (order) => order.status !== 'concluded' && order.status !== 'canceled'
+    );
+});
+
+const otherOrders = computed(() => {
+    return props.orders.filter(
+        (order) => order.status === 'concluded' || order.status === 'canceled'
+    );
+});
+
+const showOtherOrders = ref(false);
 </script>
 
 <template>
@@ -159,96 +177,211 @@ const formatTime = (dateStr: string) => {
 
         <!-- Orders List (Cards) -->
         <div v-else class="flex flex-1 flex-col gap-3 overflow-y-auto pb-20">
-            <Link
-                v-for="order in orders"
-                :key="order.id"
-                :href="orderShow.url(order.id)"
-                class="group block rounded-xl border border-sidebar-border/70 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md active:scale-[0.99] dark:border-sidebar-border dark:hover:border-primary/40"
-            >
-                <!-- Card Header -->
-                <div class="mb-3 flex items-start justify-between gap-2">
-                    <div class="flex items-center gap-2 min-w-0">
-                        <div
-                            class="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted"
-                        >
-                            <User class="size-4 text-muted-foreground" />
-                        </div>
-                        <div class="min-w-0">
-                            <p
-                                class="truncate text-sm font-semibold text-foreground"
-                            >
-                                {{ order.customer?.name ?? 'Sem cliente' }}
-                            </p>
-                            <p
-                                class="flex items-center gap-1 text-xs text-muted-foreground"
-                            >
-                                <Clock class="size-3" />
-                                {{ formatTime(order.created_at) }}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="flex shrink-0 items-center gap-2">
-                        <Badge
-                            :variant="getStatusBadgeVariant(order.status)"
-                            class="text-[10px] capitalize"
-                        >
-                            {{ getStatusText(order.status) }}
-                        </Badge>
-                        <ChevronRight
-                            class="size-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
-                        />
-                    </div>
-                </div>
-
-                <!-- Items -->
-                <div
-                    v-if="order.items && order.items.length > 0"
-                    class="mb-3 space-y-1 rounded-lg bg-muted/30 px-3 py-2"
+            <!-- Pending Orders -->
+            <template v-if="pendingOrders.length > 0">
+                <Link
+                    v-for="order in pendingOrders"
+                    :key="order.id"
+                    :href="orderShow.url(order.id)"
+                    class="group block rounded-xl border border-sidebar-border/70 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md active:scale-[0.99] dark:border-sidebar-border dark:hover:border-primary/40"
                 >
+                    <!-- Card Header -->
+                    <div class="mb-3 flex items-start justify-between gap-2">
+                        <div class="flex min-w-0 items-center gap-2">
+                            <div
+                                class="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted"
+                            >
+                                <User class="size-4 text-muted-foreground" />
+                            </div>
+                            <div class="min-w-0">
+                                <p
+                                    class="truncate text-sm font-semibold text-foreground"
+                                >
+                                    {{ order.customer?.name ?? 'Sem cliente' }}
+                                </p>
+                                <p
+                                    class="flex items-center gap-1 text-xs text-muted-foreground"
+                                >
+                                    <Clock class="size-3" />
+                                    {{ formatTime(order.created_at) }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex shrink-0 items-center gap-2">
+                            <Badge
+                                :variant="getStatusBadgeVariant(order.status)"
+                                class="text-[10px] capitalize"
+                            >
+                                {{ getStatusText(order.status) }}
+                            </Badge>
+                        </div>
+                    </div>
+
+                    <!-- Items -->
                     <div
-                        v-for="item in order.items"
-                        :key="item.id"
-                        class="flex items-center justify-between text-sm"
+                        v-if="order.items && order.items.length > 0"
+                        class="mb-3 space-y-1 rounded-lg bg-muted/30 px-3 py-2"
                     >
-                        <span class="text-muted-foreground">
-                            <span class="font-medium text-foreground">{{
-                                item.quantity
-                            }}x</span>
-                            {{ item.product?.name ?? `#${item.product_id}` }}
-                        </span>
+                        <div
+                            v-for="item in order.items"
+                            :key="item.id"
+                            class="flex items-center justify-between text-sm"
+                        >
+                            <span class="text-muted-foreground">
+                                <span class="font-medium text-foreground"
+                                    >{{ item.quantity }}x</span
+                                >
+                                {{ item.product?.name ?? `#${item.product_id}` }}
+                            </span>
+                            <span class="text-xs text-muted-foreground">
+                                {{ formatCurrency(item.total_amount) }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Observation -->
+                    <div
+                        v-if="order.observation"
+                        class="mb-3 flex items-start gap-1.5 rounded-lg border border-amber-200/50 bg-amber-50/50 px-3 py-2 dark:border-amber-900/30 dark:bg-amber-950/20"
+                    >
+                        <FileText
+                            class="mt-0.5 size-3 shrink-0 text-amber-600 dark:text-amber-400"
+                        />
+                        <p
+                            class="line-clamp-2 text-xs text-amber-700 dark:text-amber-300"
+                        >
+                            {{ order.observation }}
+                        </p>
+                    </div>
+
+                    <!-- Card Footer -->
+                    <div
+                        class="flex items-center justify-between border-t border-sidebar-border/50 pt-2"
+                    >
                         <span class="text-xs text-muted-foreground">
-                            {{ formatCurrency(item.total_amount) }}
+                            Pedido #{{ order.id }}
+                        </span>
+                        <span class="text-sm font-bold text-foreground">
+                            {{ formatCurrency(order.total_amount) }}
                         </span>
                     </div>
-                </div>
+                </Link>
+            </template>
+            <div
+                v-else
+                class="flex flex-col items-center justify-center rounded-xl border border-dashed border-sidebar-border/70 bg-muted/20 py-8 text-center"
+            >
+                <Clock class="size-8 text-muted-foreground/60 mb-2" />
+                <p class="text-sm font-medium text-muted-foreground">Nenhum pedido pendente para hoje.</p>
+            </div>
 
-                <!-- Observation -->
-                <div
-                    v-if="order.observation"
-                    class="mb-3 flex items-start gap-1.5 rounded-lg border border-amber-200/50 bg-amber-50/50 px-3 py-2 dark:border-amber-900/30 dark:bg-amber-950/20"
+            <!-- Other Orders Dropdown (Completed & Canceled) -->
+            <div v-if="otherOrders.length > 0" class="mt-4 border-t border-sidebar-border/70 pt-4">
+                <button
+                    type="button"
+                    @click="showOtherOrders = !showOtherOrders"
+                    class="flex w-full items-center justify-between rounded-lg border border-sidebar-border/70 bg-card px-4 py-3 text-sm font-semibold transition-all hover:bg-muted/50 text-foreground active:scale-[0.99]"
                 >
-                    <FileText
-                        class="mt-0.5 size-3 shrink-0 text-amber-600 dark:text-amber-400"
+                    <span class="flex items-center gap-2">
+                        <span>Outros pedidos ({{ otherOrders.length }})</span>
+                        <span class="text-xs font-normal text-muted-foreground">(Concluídos e Cancelados)</span>
+                    </span>
+                    <ChevronRight
+                        class="size-4 text-muted-foreground transition-transform duration-200"
+                        :class="{ 'rotate-90': showOtherOrders }"
                     />
-                    <p
-                        class="text-xs text-amber-700 dark:text-amber-300 line-clamp-2"
-                    >
-                        {{ order.observation }}
-                    </p>
-                </div>
+                </button>
 
-                <!-- Card Footer -->
-                <div
-                    class="flex items-center justify-between border-t border-sidebar-border/50 pt-2"
-                >
-                    <span class="text-xs text-muted-foreground">
-                        Pedido #{{ order.id }}
-                    </span>
-                    <span class="text-sm font-bold text-foreground">
-                        {{ formatCurrency(order.total_amount) }}
-                    </span>
+                <div v-show="showOtherOrders" class="mt-3 space-y-3">
+                    <Link
+                        v-for="order in otherOrders"
+                        :key="order.id"
+                        :href="orderShow.url(order.id)"
+                        class="group block rounded-xl border border-sidebar-border/70 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md active:scale-[0.99] dark:border-sidebar-border dark:hover:border-primary/40"
+                    >
+                        <!-- Card Header -->
+                        <div class="mb-3 flex items-start justify-between gap-2">
+                            <div class="flex min-w-0 items-center gap-2">
+                                <div
+                                    class="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted"
+                                >
+                                    <User class="size-4 text-muted-foreground" />
+                                </div>
+                                <div class="min-w-0">
+                                    <p
+                                        class="truncate text-sm font-semibold text-foreground"
+                                    >
+                                        {{ order.customer?.name ?? 'Sem cliente' }}
+                                    </p>
+                                    <p
+                                        class="flex items-center gap-1 text-xs text-muted-foreground"
+                                    >
+                                        <Clock class="size-3" />
+                                        {{ formatTime(order.created_at) }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex shrink-0 items-center gap-2">
+                                <Badge
+                                    :variant="getStatusBadgeVariant(order.status)"
+                                    class="text-[10px] capitalize"
+                                >
+                                    {{ getStatusText(order.status) }}
+                                </Badge>
+                            </div>
+                        </div>
+
+                        <!-- Items -->
+                        <div
+                            v-if="order.items && order.items.length > 0"
+                            class="mb-3 space-y-1 rounded-lg bg-muted/30 px-3 py-2"
+                        >
+                            <div
+                                v-for="item in order.items"
+                                :key="item.id"
+                                class="flex items-center justify-between text-sm"
+                            >
+                                <span class="text-muted-foreground">
+                                    <span class="font-medium text-foreground"
+                                        >{{ item.quantity }}x</span
+                                    >
+                                    {{ item.product?.name ?? `#${item.product_id}` }}
+                                </span>
+                                <span class="text-xs text-muted-foreground">
+                                    {{ formatCurrency(item.total_amount) }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Observation -->
+                        <div
+                            v-if="order.observation"
+                            class="mb-3 flex items-start gap-1.5 rounded-lg border border-amber-200/50 bg-amber-50/50 px-3 py-2 dark:border-amber-900/30 dark:bg-amber-950/20"
+                        >
+                            <FileText
+                                class="mt-0.5 size-3 shrink-0 text-amber-600 dark:text-amber-400"
+                            />
+                            <p
+                                class="line-clamp-2 text-xs text-amber-700 dark:text-amber-300"
+                            >
+                                {{ order.observation }}
+                            </p>
+                        </div>
+
+                        <!-- Card Footer -->
+                        <div
+                            class="flex items-center justify-between border-t border-sidebar-border/50 pt-2"
+                        >
+                            <span class="text-xs text-muted-foreground">
+                                Pedido #{{ order.id }}
+                            </span>
+                            <span class="text-sm font-bold text-foreground">
+                                {{ formatCurrency(order.total_amount) }}
+                            </span>
+                        </div>
+                    </Link>
                 </div>
-            </Link>
+            </div>
         </div>
 
         <!-- FAB - New Order -->

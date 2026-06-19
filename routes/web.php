@@ -75,10 +75,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::middleware('can:orders.update')->patch('/cancelar', [OrderController::class, 'cancel'])->name('cancel');
             Route::middleware('can:orders.update')->patch('/reabrir', [OrderController::class, 'reopen'])->name('reopen');
 
-            Route::prefix('/itens')->group(function () {
-                Route::middleware('can:orders.update')->post('/', [OrderController::class, 'addItems'])->name('add-items');
-                Route::middleware('can:orders.update')->delete('/{item}', [OrderController::class, 'removeItem'])->name('remove-item')->scopeBindings();
-            });
         });
     });
 });

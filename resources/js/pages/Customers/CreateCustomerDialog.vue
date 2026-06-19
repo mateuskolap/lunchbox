@@ -63,9 +63,6 @@ const isOpen = ref(false);
                             id="create-customer-phone"
                             name="phone"
                             placeholder="Ex: 11999999999"
-                            required
-                            minlength="10"
-                            maxlength="11"
                         />
                     </FormField>
                 </div>

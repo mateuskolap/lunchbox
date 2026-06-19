@@ -21,10 +21,10 @@ class CustomerController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string'],
-            'phone' => ['required', 'string', 'min:10', 'max:11'],
+            'phone' => ['nullable', 'string', 'min:10', 'max:11'],
         ]);
 
-        Customer::create($validated);
+        Customer::create(array_filter($validated));
 
         Inertia::flash('toast', [
             'type' => 'success',
@@ -38,10 +38,10 @@ class CustomerController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string'],
-            'phone' => ['required', 'string', 'min:10', 'max:11'],
+            'phone' => ['nullable', 'string', 'min:10', 'max:11'],
         ]);
 
-        $customer->update($validated);
+        $customer->update(array_filter($validated));
 
         Inertia::flash('toast', [
             'type' => 'success',

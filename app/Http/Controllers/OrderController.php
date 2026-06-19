@@ -145,30 +145,6 @@ class OrderController extends Controller
             'total_amount' => ['required', 'numeric'],
             'date' => ['required', 'date'],
             'observation' => ['nullable', 'string'],
-        ]);
-
-        $order->update($validated);
-
-        Inertia::flash('toast', [
-            'type' => 'success',
-            'message' => 'Pedido atualizado com sucesso!',
-        ]);
-
-        return redirect()->route('orders.show', $order);
-    }
-
-    public function addItems(Request $request, Order $order): RedirectResponse
-    {
-        if ($order->isClosed()) {
-            Inertia::flash('toast', [
-                'type' => 'error',
-                'message' => 'Não é possível editar os itens de um pedido encerrado!',
-            ]);
-
-            return redirect()->route('orders.show', $order);
-        }
-
-        $validated = $request->validate([
             'order_items' => ['required', 'array'],
             'order_items.*.product_id' => ['required', 'exists:products,id'],
             'order_items.*.quantity' => ['required', 'integer', 'min:1'],
@@ -176,8 +152,32 @@ class OrderController extends Controller
 
         try {
             DB::transaction(function () use ($validated, $order) {
+                $order->update([
+                    'date' => $validated['date'],
+                    'observation' => $validated['observation'] ?? null,
+                ]);
+
+                $productIds = collect($validated['order_items'])
+                    ->pluck('product_id')
+                    ->all();
+
+                $order->items()->whereNotIn('product_id', $productIds)->delete();
+
                 $orderItems = $this->prepareOrderItems($validated['order_items']);
-                $order->items()->createMany($orderItems->all());
+
+                foreach ($orderItems as $item) {
+                    $order->items()->updateOrCreate(
+                        [
+                            'product_id' => $item['product_id']
+                        ],
+                        [
+                            'unit_price' => $item['unit_price'],
+                            'quantity' => $item['quantity'],
+                            'total_amount' => $item['total_amount'],
+                        ]
+                    );
+                }
+
                 $order->recalculateTotals();
             });
 
@@ -188,53 +188,15 @@ class OrderController extends Controller
 
             return redirect()->route('orders.show', $order);
         } catch (Throwable $e) {
-            Log::error('Erro ao adicionar itens ao pedido: ' . $e->getMessage(), [
+            Log::error('Erro ao atualizar pedido: ' . $e->getMessage(), [
                 'order_id' => $order->id,
                 'exception' => $e,
+                'request_data' => $validated,
             ]);
 
             Inertia::flash('toast', [
                 'type' => 'error',
-                'message' => 'Ocorreu um erro ao adicionar itens ao pedido.',
-            ]);
-
-            return back();
-        }
-    }
-
-    public function removeItem(Order $order, OrderItem $item): RedirectResponse
-    {
-        if ($order->isClosed()) {
-            Inertia::flash('toast', [
-                'type' => 'error',
-                'message' => 'Não é possível editar os itens de um pedido encerrado!',
-            ]);
-
-            return redirect()->route('orders.show', $order);
-        }
-
-        try {
-            DB::transaction(function () use ($order, $item) {
-                $item->delete();
-                $order->recalculateTotals();
-            });
-
-            Inertia::flash('toast', [
-                'type' => 'success',
-                'message' => 'Pedido atualizado com sucesso!',
-            ]);
-
-            return redirect()->route('orders.show', $order);
-        } catch (Throwable $e) {
-            Log::error('Erro ao remover item do pedido: ' . $e->getMessage(), [
-                'order_id' => $order->id,
-                'order_item_id' => $item->id,
-                'exception' => $e,
-            ]);
-
-            Inertia::flash('toast', [
-                'type' => 'error',
-                'message' => 'Ocorreu um erro ao remover o item do pedido.',
+                'message' => 'Ocorreu um erro ao atualizar o pedido.',
             ]);
 
             return back();
