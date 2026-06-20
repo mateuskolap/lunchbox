@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('total_items_amount', 10)->default(0);
             $table->string('status');
             $table->date('date');
+            $table->text('observation')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
