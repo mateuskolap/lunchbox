@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
+import { trans } from 'laravel-vue-i18n';
 import {
     ArrowLeft,
     Calendar,
@@ -12,7 +13,6 @@ import {
     XCircle,
 } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
-import { trans } from 'laravel-vue-i18n';
 import OrderController from '@/actions/App/Http/Controllers/OrderController';
 import ConfirmationDialog from '@/components/ConfirmationDialog.vue';
 import Heading from '@/components/Heading.vue';
@@ -257,16 +257,6 @@ const getStatusText = (status: string) => {
                             >
                             <span class="font-medium text-foreground">{{
                                 formatDate(order.date)
-                            }}</span>
-                        </div>
-                        <div
-                            class="flex flex-wrap items-baseline justify-between gap-1 border-t border-sidebar-border/50 pt-2 text-sm"
-                        >
-                            <span class="text-muted-foreground"
-                                >Valor dos Itens:</span
-                            >
-                            <span class="font-medium text-foreground">{{
-                                formatCurrency(order.total_items_amount || 0)
                             }}</span>
                         </div>
                         <div

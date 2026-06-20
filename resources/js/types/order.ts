@@ -1,4 +1,5 @@
 import type { Customer } from './customer';
+import type { OrderPayment } from './order-payment';
 import type { Product } from './product';
 
 export type OrderStatus = 'pending' | 'concluded' | 'canceled';
@@ -20,7 +21,7 @@ export type Order = {
     id: number;
     customer_id: number;
     total_amount: string | number;
-    total_items_amount?: string | number;
+    paid_amount: string | number;
     status: OrderStatus;
     observation?: string | null;
     date: string;
@@ -29,4 +30,5 @@ export type Order = {
     deleted_at?: string | null;
     customer?: Customer;
     items?: OrderItem[];
+    payments?: OrderPayment[];
 };

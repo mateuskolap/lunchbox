@@ -154,7 +154,6 @@ const removeItem = (productId: number) => {
                 :value="item.quantity"
             />
         </template>
-        <input type="hidden" name="total_amount" :value="totalAmount" />
 
         <div class="grid gap-6 md:grid-cols-12">
             <!-- Left Side: Basic Info -->
@@ -292,7 +291,6 @@ const removeItem = (productId: number) => {
                                 :disabled="!currentProductId"
                             >
                                 <Plus class="mr-1 size-4" />
-                                Adicionar
                             </Button>
                         </div>
                     </div>

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\OrderStatusEnum;
+use App\Enums\PaymentStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -17,7 +18,7 @@ class Order extends Model
     protected $fillable = [
         'customer_id',
         'total_amount',
-        'total_items_amount',
+        'paid_amount',
         'status',
         'observation',
         'date',
@@ -25,7 +26,7 @@ class Order extends Model
 
     protected $casts = [
         'total_amount' => 'decimal:2',
-        'total_items_amount' => 'decimal:2',
+        'paid_amount' => 'decimal:2',
         'status' => OrderStatusEnum::class,
         'date' => 'date',
     ];
@@ -64,7 +65,6 @@ class Order extends Model
 
         $this->update([
             'total_amount' => $total,
-            'total_items_amount' => $total,
         ]);
     }
 }

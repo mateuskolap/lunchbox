@@ -10,16 +10,13 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
+        Schema::create('wallet_transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('customer_id')->constrained();
-            $table->decimal('total_amount', 10)->default(0);
-            $table->decimal('paid_amount', 10)->default(0);
-            $table->string('status');
-            $table->date('date');
-            $table->text('observation')->nullable();
+            $table->decimal('amount', 10);
+            $table->string('description');
+            $table->morphs('transactionable');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -28,6 +25,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders');
+        Schema::dropIfExists('wallet_transactions');
     }
 };

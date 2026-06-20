@@ -32,7 +32,6 @@ class OrderController extends Controller
 
         return Inertia::render('Orders/Index', [
             'orders' => Order::with('customer')
-                ->latest()
                 ->when($validated['customer_name'] ?? null, function ($query) use ($validated) {
                     $query->whereHas('customer', fn($q) => $q->where('name', 'like', "%{$validated['customer_name']}%"));
                 })
@@ -45,6 +44,7 @@ class OrderController extends Controller
                 ->when($validated['end_date'] ?? null, function ($query, $endDate) {
                     $query->where('date', '<=', Carbon::parse($endDate)->endOfDay());
                 })
+                ->latest()
                 ->paginate(25),
             'order_statuses' => OrderStatusEnum::cases(),
             'filters' => $request->only(['customer_name', 'status', 'start_date', 'end_date']),
@@ -99,7 +99,6 @@ class OrderController extends Controller
     {
         $validated = $request->validate([
             'customer_id' => ['required', 'exists:customers,id'],
-            'total_amount' => ['required', 'numeric'],
             'observation' => ['nullable', 'string'],
             'date' => ['nullable', 'date'],
             'order_items' => ['required', 'array'],
@@ -111,7 +110,6 @@ class OrderController extends Controller
             DB::transaction(function () use ($validated) {
                 $order = Order::create([
                     'customer_id' => $validated['customer_id'],
-                    'total_amount' => $validated['total_amount'],
                     'status' => OrderStatusEnum::PENDING,
                     'observation' => $validated['observation'] ?? null,
                     'date' => $validated['date'] ?? now(),
@@ -146,7 +144,6 @@ class OrderController extends Controller
     public function update(Request $request, Order $order): RedirectResponse
     {
         $validated = $request->validate([
-            'total_amount' => ['required', 'numeric'],
             'date' => ['required', 'date'],
             'observation' => ['nullable', 'string'],
             'order_items' => ['required', 'array'],

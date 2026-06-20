@@ -33,8 +33,6 @@ RUN DB_CONNECTION=sqlite \
     QUEUE_CONNECTION=sync \
     php artisan wayfinder:generate --with-form
 
-RUN npm run build
-
 RUN echo "listen = 9000" >> /usr/local/etc/php-fpm.d/zz-docker.conf \
     && echo "clear_env = no" >> /usr/local/etc/php-fpm.d/zz-docker.conf
 
