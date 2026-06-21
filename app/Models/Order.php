@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\OrderStatusEnum;
+use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,7 +14,9 @@ use Spatie\Activitylog\Support\LogOptions;
 
 class Order extends Model
 {
-    use LogsActivity, SoftDeletes;
+    use CascadeSoftDeletes, LogsActivity, SoftDeletes;
+
+    protected array $cascadeDeletes = ['items'];
 
     protected $fillable = [
         'customer_id',
@@ -33,7 +36,7 @@ class Order extends Model
 
     public function customer(): BelongsTo
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Customer::class)->withTrashed();
     }
 
     public function items(): HasMany
@@ -53,7 +56,7 @@ class Order extends Model
 
     public function recalculateTotals(): void
     {
-        $total = (float) $this->items()->sum('total_amount');
+        $total = (float)$this->items()->sum('total_amount');
 
         $this->update([
             'total_amount' => $total,
@@ -86,7 +89,7 @@ class Order extends Model
      */
     public function reopen(): void
     {
-        if (! $this->isClosed()) {
+        if (!$this->isClosed()) {
             throw new LogicException('Apenas pedidos concluídos ou cancelados podem ser reabertos.');
         }
 

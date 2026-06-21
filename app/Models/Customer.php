@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -10,7 +11,9 @@ use Spatie\Activitylog\Support\LogOptions;
 
 class Customer extends Model
 {
-    use LogsActivity, SoftDeletes;
+    use CascadeSoftDeletes, LogsActivity, SoftDeletes;
+
+    protected array $cascadeDeletes = ['orders', 'payments'];
 
     protected $fillable = [
         'name',

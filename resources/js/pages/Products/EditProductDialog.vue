@@ -109,7 +109,7 @@ watch(isOpen, (newVal) => {
                             for="edit-product-is-lunchbox"
                             class="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
-                            Marmita
+                            Mostrar resumo na tela de pedidos do dia
                         </label>
                     </div>
                 </div>
