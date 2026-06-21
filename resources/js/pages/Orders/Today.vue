@@ -48,7 +48,7 @@ const lunchboxSummary = computed<LunchboxSummaryItem[]>(() => {
         }
 
         for (const item of order.items ?? []) {
-            if (item.product?.is_lunchbox) {
+            if (item.product?.show_in_prep_summary) {
                 const name = item.product.name;
                 const qty = Number(item.quantity) || 0;
                 countMap.set(name, (countMap.get(name) ?? 0) + qty);

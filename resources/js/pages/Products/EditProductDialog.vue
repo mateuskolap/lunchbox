@@ -26,11 +26,11 @@ const props = defineProps<{
 }>();
 
 const isOpen = ref(false);
-const isLunchbox = ref(props.product.is_lunchbox ?? false);
+const isLunchbox = ref(props.product.show_in_prep_summary ?? false);
 
 watch(isOpen, (newVal) => {
     if (newVal) {
-        isLunchbox.value = props.product.is_lunchbox ?? false;
+        isLunchbox.value = props.product.show_in_prep_summary ?? false;
     }
 });
 </script>
@@ -57,7 +57,7 @@ watch(isOpen, (newVal) => {
             >
                 <input
                     type="hidden"
-                    name="is_lunchbox"
+                    name="show_in_prep_summary"
                     :value="isLunchbox ? '1' : '0'"
                 />
                 <DialogHeader class="space-y-3">

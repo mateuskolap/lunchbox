@@ -42,7 +42,7 @@ const isLunchbox = ref(false);
             >
                 <input
                     type="hidden"
-                    name="is_lunchbox"
+                    name="show_in_prep_summary"
                     :value="isLunchbox ? '1' : '0'"
                 />
                 <DialogHeader class="space-y-3">

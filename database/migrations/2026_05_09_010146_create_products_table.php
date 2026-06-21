@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->decimal('price', 10);
-            $table->boolean('is_lunchbox')->default(false);
+            $table->boolean('show_in_prep_summary')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });

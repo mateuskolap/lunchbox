@@ -14,12 +14,12 @@ class Product extends Model
     protected $fillable = [
         'name',
         'price',
-        'is_lunchbox',
+        'show_in_prep_summary',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
-        'is_lunchbox' => 'boolean',
+        'show_in_prep_summary' => 'boolean',
     ];
 
     public function getActivitylogOptions(): LogOptions
