@@ -19,6 +19,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 
+import type { Product } from '@/types';
+
 const props = defineProps<{
     product: Product;
 }>();
@@ -101,7 +103,7 @@ watch(isOpen, (newVal) => {
                         <Checkbox
                             id="edit-product-is-lunchbox"
                             :model-value="isLunchbox"
-                            @update:model-value="isLunchbox = $event"
+                            @update:model-value="isLunchbox = !!$event"
                         />
                         <label
                             for="edit-product-is-lunchbox"

@@ -86,7 +86,7 @@ const isLunchbox = ref(false);
                         <Checkbox
                             id="create-product-is-lunchbox"
                             :model-value="isLunchbox"
-                            @update:model-value="isLunchbox = $event"
+                            @update:model-value="isLunchbox = !!$event"
                         />
                         <label
                             for="create-product-is-lunchbox"

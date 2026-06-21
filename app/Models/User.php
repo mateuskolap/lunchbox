@@ -18,14 +18,14 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'password'
+        'password',
     ];
 
     protected $hidden = [
         'password',
         'two_factor_secret',
         'two_factor_recovery_codes',
-        'remember_token'
+        'remember_token',
     ];
 
     protected $casts = [
