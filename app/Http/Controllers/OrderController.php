@@ -13,7 +13,6 @@ use App\Models\Product;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Enum;
 use Inertia\Inertia;
@@ -79,7 +78,6 @@ class OrderController extends Controller
     {
         return Inertia::render('Orders/Show', [
             'order' => $order->load(['customer', 'items.product']),
-            'products' => Product::orderBy('name')->get(),
             'list_url' => session('orders_list_url', route('orders.index')),
         ]);
     }

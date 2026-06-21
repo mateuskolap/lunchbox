@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import { ArrowLeft } from 'lucide-vue-next';
+import OrderForm from './OrderForm.vue';
 import OrderController from '@/actions/App/Http/Controllers/OrderController';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { index as ordersIndex } from '@/routes/orders';
 import type { Customer, Product, Order } from '@/types';
-import OrderForm from './OrderForm.vue';
 
-const props = defineProps<{
+defineProps<{
     order: Order;
     customers: Customer[];
     products: Product[];
