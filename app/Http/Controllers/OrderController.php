@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Orders\CreateOrderWithItemsAction;
+use App\Actions\Orders\UpdateOrderWithItemsAction;
+use App\Data\Orders\CreateOrderWithItemsData;
+use App\Data\Orders\UpdateOrderWithItemsData;
 use App\Enums\OrderStatusEnum;
 use App\Models\Customer;
 use App\Models\Order;
@@ -9,16 +13,23 @@ use App\Models\Product;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Enum;
 use Inertia\Inertia;
 use Inertia\Response;
+use LogicException;
 use Throwable;
 
 class OrderController extends Controller
 {
+    public function __construct(
+        private readonly CreateOrderWithItemsAction $createOrderWithItems,
+        private readonly UpdateOrderWithItemsAction $updateOrderWithItems,
+    )
+    {
+    }
+
     public function index(Request $request): Response
     {
         $validated = $request->validate([
@@ -107,18 +118,7 @@ class OrderController extends Controller
         ]);
 
         try {
-            DB::transaction(function () use ($validated) {
-                $order = Order::create([
-                    'customer_id' => $validated['customer_id'],
-                    'status' => OrderStatusEnum::PENDING,
-                    'observation' => $validated['observation'] ?? null,
-                    'date' => $validated['date'] ?? now(),
-                ]);
-
-                $orderItems = $this->prepareOrderItems($validated['order_items']);
-                $order->items()->createMany($orderItems->all());
-                $order->recalculateTotals();
-            });
+            $this->createOrderWithItems->execute(CreateOrderWithItemsData::from($validated));
 
             Inertia::flash('toast', [
                 'type' => 'success',
@@ -152,35 +152,7 @@ class OrderController extends Controller
         ]);
 
         try {
-            DB::transaction(function () use ($validated, $order) {
-                $order->update([
-                    'date' => $validated['date'],
-                    'observation' => $validated['observation'] ?? null,
-                ]);
-
-                $productIds = collect($validated['order_items'])
-                    ->pluck('product_id')
-                    ->all();
-
-                $order->items()->whereNotIn('product_id', $productIds)->delete();
-
-                $orderItems = $this->prepareOrderItems($validated['order_items']);
-
-                foreach ($orderItems as $item) {
-                    $order->items()->updateOrCreate(
-                        [
-                            'product_id' => $item['product_id'],
-                        ],
-                        [
-                            'unit_price' => $item['unit_price'],
-                            'quantity' => $item['quantity'],
-                            'total_amount' => $item['total_amount'],
-                        ]
-                    );
-                }
-
-                $order->recalculateTotals();
-            });
+            $this->updateOrderWithItems->execute($order, UpdateOrderWithItemsData::from($validated));
 
             Inertia::flash('toast', [
                 'type' => 'success',
@@ -206,7 +178,16 @@ class OrderController extends Controller
 
     public function conclude(Order $order): RedirectResponse
     {
-        $order->update(['status' => OrderStatusEnum::CONCLUDED]);
+        try {
+            $order->conclude();
+        } catch (LogicException $e) {
+            Inertia::flash('toast', [
+                'type' => 'error',
+                'message' => $e->getMessage(),
+            ]);
+
+            return redirect(session('orders_list_url', route('orders.index')));
+        }
 
         Inertia::flash('toast', [
             'type' => 'success',
@@ -218,7 +199,7 @@ class OrderController extends Controller
 
     public function cancel(Order $order): RedirectResponse
     {
-        $order->update(['status' => OrderStatusEnum::CANCELED]);
+        $order->cancel();
 
         Inertia::flash('toast', [
             'type' => 'success',
@@ -230,16 +211,16 @@ class OrderController extends Controller
 
     public function reopen(Order $order): RedirectResponse
     {
-        if (!$order->isClosed()) {
+        try {
+            $order->reopen();
+        } catch (LogicException $e) {
             Inertia::flash('toast', [
                 'type' => 'error',
-                'message' => 'Apenas pedidos concluídos ou cancelados podem ser reabertos!',
+                'message' => $e->getMessage(),
             ]);
 
             return redirect(session('orders_list_url', route('orders.index')));
         }
-
-        $order->update(['status' => OrderStatusEnum::PENDING]);
 
         Inertia::flash('toast', [
             'type' => 'success',
@@ -247,24 +228,5 @@ class OrderController extends Controller
         ]);
 
         return redirect()->route('orders.show', $order);
-    }
-
-    private function prepareOrderItems(array $items): Collection
-    {
-        $products = Product::whereIn('id', collect($items)->pluck('product_id'))
-            ->get()
-            ->keyBy('id');
-
-        return collect($items)->map(function ($item) use ($products) {
-            $product = $products->get($item['product_id']);
-            $price = $product ? $product->price : 0.00;
-
-            return [
-                'product_id' => $item['product_id'],
-                'unit_price' => $price,
-                'quantity' => $item['quantity'],
-                'total_amount' => $price * $item['quantity'],
-            ];
-        });
     }
 }
