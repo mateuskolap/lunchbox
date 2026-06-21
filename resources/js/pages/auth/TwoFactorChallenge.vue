@@ -15,18 +15,18 @@ import type { TwoFactorConfigContent } from '@/types';
 const authConfigContent = computed<TwoFactorConfigContent>(() => {
     if (showRecoveryInput.value) {
         return {
-            title: 'Recovery code',
+            title: 'Código de recuperação',
             description:
-                'Please confirm access to your account by entering one of your emergency recovery codes.',
-            buttonText: 'login using an authentication code',
+                'Por favor, confirme o acesso à sua conta inserindo um de seus códigos de recuperação de emergência.',
+            buttonText: 'entrar usando um código de autenticação',
         };
     }
 
     return {
-        title: 'Authentication code',
+        title: 'Código de autenticação',
         description:
-            'Enter the authentication code provided by your authenticator application.',
-        buttonText: 'login using a recovery code',
+            'Insira o código de autenticação fornecido pelo seu aplicativo de autenticação.',
+        buttonText: 'entrar usando um código de recuperação',
     };
 });
 
@@ -49,7 +49,7 @@ const code = ref<string>('');
 </script>
 
 <template>
-    <Head title="Two-factor authentication" />
+    <Head title="Autenticação de dois fatores" />
 
     <div class="space-y-6">
         <template v-if="!showRecoveryInput">
@@ -84,10 +84,10 @@ const code = ref<string>('');
                     <InputError :message="errors.code" />
                 </div>
                 <Button type="submit" class="w-full" :disabled="processing"
-                    >Continue</Button
+                    >Continuar</Button
                 >
                 <div class="text-center text-sm text-muted-foreground">
-                    <span>or you can </span>
+                    <span>ou você pode </span>
                     <button
                         type="button"
                         class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
@@ -109,17 +109,17 @@ const code = ref<string>('');
                 <Input
                     name="recovery_code"
                     type="text"
-                    placeholder="Enter recovery code"
+                    placeholder="Insira o código de recuperação"
                     :autofocus="showRecoveryInput"
                     required
                 />
                 <InputError :message="errors.recovery_code" />
                 <Button type="submit" class="w-full" :disabled="processing"
-                    >Continue</Button
+                    >Continuar</Button
                 >
 
                 <div class="text-center text-sm text-muted-foreground">
-                    <span>or you can </span>
+                    <span>ou você pode </span>
                     <button
                         type="button"
                         class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"

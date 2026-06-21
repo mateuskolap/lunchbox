@@ -2,11 +2,11 @@
 import { Link } from '@inertiajs/vue3';
 import { ChevronRight, Clock, Plus, ShoppingCart } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-import TodayOrderCard from './TodayOrderCard.vue';
 import EmptyState from '@/components/EmptyState.vue';
 import { Button } from '@/components/ui/button';
 import { create as ordersCreate } from '@/routes/orders';
 import type { Order } from '@/types';
+import TodayOrderCard from './TodayOrderCard.vue';
 
 const props = defineProps<{
     orders: Order[];

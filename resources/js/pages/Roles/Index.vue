@@ -4,8 +4,8 @@ import Heading from '@/components/Heading.vue';
 import { usePermissions } from '@/composables/usePermissions';
 import { index as rolesIndex } from '@/routes/roles';
 import type { Role, Permission, PaginatedResponse } from '@/types';
-import CreateRoleDialog from './CreateRoleDialog.vue';
 import RoleTable from './components/RoleTable.vue';
+import CreateRoleDialog from './CreateRoleDialog.vue';
 
 defineOptions({
     layout: {

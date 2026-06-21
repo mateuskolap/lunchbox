@@ -73,4 +73,3 @@ export function getOrderStatusBadgeVariant(
             return 'secondary';
     }
 }
-

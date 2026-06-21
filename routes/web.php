@@ -6,13 +6,12 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-use Laravel\Fortify\Features;
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
 })->name('home');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'throttle:120,1'])->group(function () {
     Route::get('dashboard', function () {
         if (auth()->user()->can('orders.index')) {
             return redirect()->route('orders.today');

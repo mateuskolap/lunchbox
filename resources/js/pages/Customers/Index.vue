@@ -4,8 +4,8 @@ import Heading from '@/components/Heading.vue';
 import { usePermissions } from '@/composables/usePermissions';
 import { index as customersIndex } from '@/routes/customers';
 import type { Customer, PaginatedResponse } from '@/types';
-import CreateCustomerDialog from './CreateCustomerDialog.vue';
 import CustomerTable from './components/CustomerTable.vue';
+import CreateCustomerDialog from './CreateCustomerDialog.vue';
 
 defineOptions({
     layout: {

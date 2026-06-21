@@ -63,9 +63,7 @@ const { can, canAny } = usePermissions();
                         <TableCell class="font-medium">{{
                             customer.name
                         }}</TableCell>
-                        <TableCell>{{
-                            formatPhone(customer.phone)
-                        }}</TableCell>
+                        <TableCell>{{ formatPhone(customer.phone) }}</TableCell>
                         <TableCell
                             v-if="
                                 canAny([

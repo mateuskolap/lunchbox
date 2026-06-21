@@ -2,10 +2,10 @@
 import { Link } from '@inertiajs/vue3';
 import {
     Contact,
-    LayoutGrid,
     Package,
     Shield,
     ShoppingCart,
+    ShoppingBag,
     Users,
 } from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
@@ -31,9 +31,9 @@ import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Pedidos do Dia',
         href: orders.today(),
-        icon: LayoutGrid,
+        icon: ShoppingBag,
     },
     {
         title: 'Pedidos',

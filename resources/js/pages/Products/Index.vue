@@ -4,8 +4,8 @@ import Heading from '@/components/Heading.vue';
 import { usePermissions } from '@/composables/usePermissions';
 import { index as productsIndex } from '@/routes/products';
 import type { Product, PaginatedResponse } from '@/types';
-import CreateProductDialog from './CreateProductDialog.vue';
 import ProductTable from './components/ProductTable.vue';
+import CreateProductDialog from './CreateProductDialog.vue';
 
 defineOptions({
     layout: {

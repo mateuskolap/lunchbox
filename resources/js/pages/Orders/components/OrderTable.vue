@@ -15,7 +15,11 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { usePermissions } from '@/composables/usePermissions';
-import { formatCurrency, formatDate, getOrderStatusBadgeVariant } from '@/lib/formatters';
+import {
+    formatCurrency,
+    formatDate,
+    getOrderStatusBadgeVariant,
+} from '@/lib/formatters';
 import { create as ordersCreate, show as orderShow } from '@/routes/orders';
 import type { Order, PaginatedResponse } from '@/types';
 
@@ -70,7 +74,9 @@ const { can } = usePermissions();
                         </TableCell>
                         <TableCell class="text-center">
                             <Badge
-                                :variant="getOrderStatusBadgeVariant(order.status)"
+                                :variant="
+                                    getOrderStatusBadgeVariant(order.status)
+                                "
                                 class="capitalize"
                             >
                                 {{ trans(order.status) }}

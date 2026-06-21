@@ -2,11 +2,11 @@
 import { Head, Link, usePoll } from '@inertiajs/vue3';
 import { Plus } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
-import TodayOrdersList from './components/TodayOrdersList.vue';
-import TodaySummary from './components/TodaySummary.vue';
 import Heading from '@/components/Heading.vue';
 import { create as ordersCreate, today as ordersToday } from '@/routes/orders';
 import type { Order } from '@/types';
+import TodayOrdersList from './components/TodayOrdersList.vue';
+import TodaySummary from './components/TodaySummary.vue';
 
 defineOptions({
     layout: {

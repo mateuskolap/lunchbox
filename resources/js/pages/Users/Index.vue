@@ -6,8 +6,8 @@ import { index as usersIndex } from '@/routes/users';
 import type { PaginatedResponse } from '@/types';
 import type { User } from '@/types/auth';
 import type { Role } from '@/types/role';
-import CreateUserDialog from './CreateUserDialog.vue';
 import UserTable from './components/UserTable.vue';
+import CreateUserDialog from './CreateUserDialog.vue';
 
 defineOptions({
     layout: {
