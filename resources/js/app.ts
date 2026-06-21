@@ -22,7 +22,7 @@ createInertiaApp({
         }
     },
     setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(App, props) })
+        const app = createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(i18nVue, {
                 resolve: async (lang: string) => {
@@ -34,16 +34,21 @@ createInertiaApp({
 
                     return {};
                 },
-            })
-            .mount(el as Element);
+            });
+
+        if (el) {
+            app.mount(el);
+        }
+
+        return app;
     },
     progress: {
         color: '#4B5563',
     },
 });
 
-// This will set light / dark mode on page load...
-initializeTheme();
+if (typeof window !== 'undefined') {
+    initializeTheme();
 
-// This will listen for flash toast data from the server...
-initializeFlashToast();
+    initializeFlashToast();
+}
