@@ -13,7 +13,7 @@ class ProductController extends Controller
     public function index(): Response
     {
         return Inertia::render('Products/Index', [
-            'products' => Product::paginate(20),
+            'products' => Product::paginate(25),
         ]);
     }
 

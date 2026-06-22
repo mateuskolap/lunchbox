@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Enums\OrderStatusEnum;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -47,6 +49,12 @@ class Order extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(OrderPayment::class);
+    }
+
+    #[Scope]
+    protected function unpaid(Builder $query): void
+    {
+        $query->where('paid_amount', '<', 'total_amount');
     }
 
     public function isClosed(): bool

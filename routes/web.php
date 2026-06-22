@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
@@ -57,6 +58,10 @@ Route::middleware(['auth', 'verified', 'throttle:120,1'])->group(function () {
         Route::middleware('can:customers.store')->post('/', [CustomerController::class, 'store'])->name('store');
         Route::middleware('can:customers.update')->put('/{customer}', [CustomerController::class, 'update'])->name('update');
         Route::middleware('can:customers.destroy')->delete('/{customer}', [CustomerController::class, 'destroy'])->name('destroy');
+
+        Route::prefix('/{customer}/pagamentos')->name('payments.')->group(function () {
+            Route::middleware('can:payments.index')->get('/', [PaymentController::class, 'customerIndex'])->name('customer-index');
+        });
     });
 
     // Orders routes

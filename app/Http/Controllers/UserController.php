@@ -15,7 +15,7 @@ class UserController extends Controller
     public function index(): Response
     {
         return Inertia::render('Users/Index', [
-            'users' => User::with('roles')->paginate(20),
+            'users' => User::with('roles')->paginate(25),
             'roles' => Role::all(),
         ]);
     }
@@ -42,7 +42,7 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string'],
-            'email' => ['required', 'email', 'unique:users,email,'.$user->id],
+            'email' => ['required', 'email', 'unique:users,email,' . $user->id],
             'password' => ['nullable', 'string', Password::default(), 'confirmed'],
         ]);
 

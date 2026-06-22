@@ -14,7 +14,7 @@ class RoleController extends Controller
     public function index(): Response
     {
         return Inertia::render('Roles/Index', [
-            'roles' => Role::with('permissions')->paginate(20),
+            'roles' => Role::with('permissions')->paginate(25),
             'permissions' => Permission::all(),
         ]);
     }
@@ -44,7 +44,7 @@ class RoleController extends Controller
     public function update(Request $request, Role $role): RedirectResponse
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'unique:roles,name,'.$role->id],
+            'name' => ['required', 'string', 'unique:roles,name,' . $role->id],
             'permission_ids' => ['nullable', 'array'],
             'permission_ids.*' => ['exists:permissions,id'],
         ]);
