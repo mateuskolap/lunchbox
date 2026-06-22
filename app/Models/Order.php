@@ -54,7 +54,8 @@ class Order extends Model
     #[Scope]
     protected function unpaid(Builder $query): void
     {
-        $query->where('paid_amount', '<', 'total_amount');
+        $query->whereColumn('paid_amount', '<', 'total_amount')
+            ->where('status', '!=', OrderStatusEnum::CANCELED);
     }
 
     public function isClosed(): bool

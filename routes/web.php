@@ -61,6 +61,11 @@ Route::middleware(['auth', 'verified', 'throttle:120,1'])->group(function () {
 
         Route::prefix('/{customer}/pagamentos')->name('payments.')->group(function () {
             Route::middleware('can:payments.index')->get('/', [PaymentController::class, 'customerIndex'])->name('customer-index');
+            Route::middleware('can:payments.store')->post('/', [PaymentController::class, 'store'])->name('store');
+
+            Route::prefix('/{payment}')->group(function () {
+                Route::middleware('can:payments.index')->get('/', [PaymentController::class, 'show'])->name('show');
+            });
         });
     });
 

@@ -15,8 +15,8 @@ return new class extends Migration {
             $table->foreignId('customer_id')->constrained();
             $table->decimal('total_amount', 10)->default(0);
             $table->decimal('paid_amount', 10)->default(0);
-            $table->string('status');
-            $table->date('date');
+            $table->string('status')->index();
+            $table->date('date')->index();
             $table->text('observation')->nullable();
             $table->timestamps();
             $table->softDeletes();
