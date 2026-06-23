@@ -12,7 +12,7 @@ use Throwable;
 readonly class CreatePaymentAction
 {
     public function __construct(
-        private SettleOrdersForCustomerByPaymentAction $settleOrdersByPayment,
+        private SettleOrdersFromWalletAction $settleOrdersFromWallet,
     )
     {
     }
@@ -30,7 +30,14 @@ readonly class CreatePaymentAction
                 'paid_at' => $data->paid_at,
             ]);
 
-            $this->settleOrdersByPayment->execute($customer, $payment);
+            $customer->transactions()->create([
+                'amount' => $payment->value,
+                'description' => "Crédito do pagamento #{$payment->id}",
+                'transactionable_id' => $payment->id,
+                'transactionable_type' => Payment::class,
+            ]);
+
+            $this->settleOrdersFromWallet->execute($customer);
 
             return $payment;
         });

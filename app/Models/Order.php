@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Actions\Payments\SettleOrdersFromWalletAction;
 use App\Enums\OrderStatusEnum;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use LogicException;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
@@ -46,9 +48,9 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
-    public function payments(): HasMany
+    public function transactions(): MorphMany
     {
-        return $this->hasMany(OrderPayment::class);
+        return $this->morphMany(WalletTransaction::class, 'transactionable');
     }
 
     #[Scope]

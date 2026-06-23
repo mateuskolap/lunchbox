@@ -2,6 +2,7 @@
 
 namespace App\Actions\Orders;
 
+use App\Actions\Payments\SettleOrdersFromWalletAction;
 use App\Data\Orders\OrderItemData;
 use App\Data\Orders\UpdateOrderWithItemsData;
 use App\Models\Order;
@@ -11,7 +12,8 @@ use Throwable;
 readonly class UpdateOrderWithItemsAction
 {
     public function __construct(
-        private PrepareOrderItemsAction $prepareOrderItems,
+        private PrepareOrderItemsAction      $prepareOrderItems,
+        private SettleOrdersFromWalletAction $settleOrdersFromWallet,
     )
     {
     }
@@ -49,7 +51,34 @@ readonly class UpdateOrderWithItemsAction
 
             $order->recalculateTotals();
 
+            $this->handlePaymentReconciliation($order);
+
             return $order;
         });
+    }
+
+    /**
+     * @throws Throwable
+     */
+    private function handlePaymentReconciliation(Order $order): void
+    {
+        $oldPaidAmount = $order->paid_amount;
+
+        $total = $order->total_amount;
+
+        if ($oldPaidAmount > $total) {
+            $surplus = $oldPaidAmount - $total;
+
+            $order->customer->transactions()->create([
+                'amount' => $surplus,
+                'description' => "Ajuste de valor por redução no pedido #{$order->id}",
+                'transactionable_id' => $order->id,
+                'transactionable_type' => Order::class,
+            ]);
+        }
+
+        if ($total > $oldPaidAmount && $order->customer->wallet_balance > 0) {
+            $this->settleOrdersFromWallet->execute($order->customer);
+        }
     }
 }

@@ -18,9 +18,7 @@ class PaymentController extends Controller
 {
     public function __construct(
         private readonly CreatePaymentAction $createPayment,
-    )
-    {
-    }
+    ) {}
 
     public function customerIndex(Customer $customer): Response
     {
@@ -33,7 +31,6 @@ class PaymentController extends Controller
     public function show(Payment $payment): Response
     {
         return Inertia::render('Payments/Show', [
-            'orderPayments' => $payment->orders()->paginate(25),
             'payment' => $payment,
             'customer' => $payment->customer,
         ]);
@@ -57,7 +54,7 @@ class PaymentController extends Controller
 
             return redirect()->route('customers.payments.customer-index', $customer);
         } catch (Throwable $e) {
-            Log::error('Erro ao registrar pagamento: ' . $e->getMessage(), [
+            Log::error('Erro ao registrar pagamento: '.$e->getMessage(), [
                 'customer_id' => $customer->id,
                 'exception' => $e,
                 'request_data' => $validated,

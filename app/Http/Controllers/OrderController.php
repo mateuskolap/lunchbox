@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Orders\CancelOrderAction;
 use App\Actions\Orders\CreateOrderWithItemsAction;
+use App\Actions\Orders\ReopenOrderAction;
 use App\Actions\Orders\UpdateOrderWithItemsAction;
 use App\Data\Orders\CreateOrderWithItemsData;
 use App\Data\Orders\UpdateOrderWithItemsData;
@@ -25,6 +27,8 @@ class OrderController extends Controller
     public function __construct(
         private readonly CreateOrderWithItemsAction $createOrderWithItems,
         private readonly UpdateOrderWithItemsAction $updateOrderWithItems,
+        private readonly CancelOrderAction          $cancelOrder,
+        private readonly ReopenOrderAction          $reopenOrder,
     )
     {
     }
@@ -197,7 +201,25 @@ class OrderController extends Controller
 
     public function cancel(Order $order): RedirectResponse
     {
-        $order->cancel();
+        if ($order->status === OrderStatusEnum::CANCELED) {
+            return redirect(session('orders_list_url', route('orders.index')));
+        }
+
+        try {
+            $this->cancelOrder->execute($order);
+        } catch (Throwable $e) {
+            Log::error('Erro ao cancelar pedido: ' . $e->getMessage(), [
+                'order_id' => $order->id,
+                'exception' => $e,
+            ]);
+
+            Inertia::flash('toast', [
+                'type' => 'error',
+                'message' => 'Ocorreu um erro ao cancelar o pedido.',
+            ]);
+
+            return back();
+        }
 
         Inertia::flash('toast', [
             'type' => 'success',
@@ -210,11 +232,23 @@ class OrderController extends Controller
     public function reopen(Order $order): RedirectResponse
     {
         try {
-            $order->reopen();
+            $this->reopenOrder->execute($order);
         } catch (LogicException $e) {
             Inertia::flash('toast', [
                 'type' => 'error',
                 'message' => $e->getMessage(),
+            ]);
+
+            return redirect(session('orders_list_url', route('orders.index')));
+        } catch (Throwable $e) {
+            Log::error('Erro ao reabrir pedido: ' . $e->getMessage(), [
+                'order_id' => $order->id,
+                'exception' => $e,
+            ]);
+
+            Inertia::flash('toast', [
+                'type' => 'error',
+                'message' => 'Ocorreu um erro ao reabrir o pedido.',
             ]);
 
             return redirect(session('orders_list_url', route('orders.index')));

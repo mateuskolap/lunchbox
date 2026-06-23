@@ -1,5 +1,4 @@
 import type { Customer } from './customer';
-import type { OrderPayment } from './order-payment';
 
 export type PaymentMethod =
     | 'cash'
@@ -21,5 +20,4 @@ export type Payment = {
     updated_at: string;
     deleted_at?: string | null;
     customer?: Customer;
-    orders?: OrderPayment[];
 };

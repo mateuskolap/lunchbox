@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('phone')->nullable();
+            $table->decimal('wallet_balance', 10)->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

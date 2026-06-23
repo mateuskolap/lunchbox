@@ -18,6 +18,11 @@ class Customer extends Model
     protected $fillable = [
         'name',
         'phone',
+        'wallet_balance',
+    ];
+
+    protected $casts = [
+        'wallet_balance' => 'decimal:2',
     ];
 
     public function orders(): HasMany
@@ -30,7 +35,7 @@ class Customer extends Model
         return $this->hasMany(Payment::class);
     }
 
-    public function walletTransactions(): HasMany
+    public function transactions(): HasMany
     {
         return $this->hasMany(WalletTransaction::class);
     }
