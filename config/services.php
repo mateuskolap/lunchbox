@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'evolution' => [
+        'api_key' => env('EVOLUTION_API_KEY'),
+        'url' => env('EVOLUTION_URL'),
+        'port' => env('EVOLUTION_PORT'),
+    ],
 ];
