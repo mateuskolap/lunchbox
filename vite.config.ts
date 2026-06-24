@@ -25,6 +25,7 @@ export default defineConfig({
         }),
         wayfinder({
             formVariants: true,
+            command: process.env.VITE_WAYFINDER_COMMAND || 'php artisan wayfinder:generate',
         }),
     ],
     server: {
