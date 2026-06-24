@@ -1,6 +1,6 @@
 import type { Customer } from './customer';
 
-export type WalletTransaction = {
+export type Transaction = {
     id: number;
     customer_id: number;
     amount: string | number;

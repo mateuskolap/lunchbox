@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Actions\Payments\SettleOrdersFromWalletAction;
 use App\Enums\OrderStatusEnum;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -50,7 +49,7 @@ class Order extends Model
 
     public function transactions(): MorphMany
     {
-        return $this->morphMany(WalletTransaction::class, 'transactionable');
+        return $this->morphMany(Transaction::class, 'transactionable');
     }
 
     #[Scope]

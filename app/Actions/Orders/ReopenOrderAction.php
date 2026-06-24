@@ -22,7 +22,7 @@ readonly class ReopenOrderAction
         DB::transaction(function () use ($order) {
             $order->reopen();
 
-            $this->settleOrdersFromWallet->execute($order->customer);
+//            $this->settleOrdersFromWallet->execute($order->customer);
         });
     }
 }

@@ -37,7 +37,7 @@ class Customer extends Model
 
     public function transactions(): HasMany
     {
-        return $this->hasMany(WalletTransaction::class);
+        return $this->hasMany(Transaction::class);
     }
 
     public function getActivitylogOptions(): LogOptions

@@ -37,7 +37,7 @@ readonly class CancelOrderAction
                     'transactionable_type' => Order::class,
                 ]);
 
-                $this->settleOrdersFromWallet->execute($order->customer);
+//                $this->settleOrdersFromWallet->execute($order->customer);
             }
         });
     }

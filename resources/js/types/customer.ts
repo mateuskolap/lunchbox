@@ -1,6 +1,6 @@
 import type { Order } from './order';
 import type { Payment } from './payment';
-import type { WalletTransaction } from './wallet-transaction';
+import type { Transaction } from './transaction';
 
 export type Customer = {
     id: number;
@@ -11,5 +11,5 @@ export type Customer = {
     deleted_at?: string | null;
     orders?: Order[];
     payments?: Payment[];
-    transactions?: WalletTransaction[];
+    transactions?: Transaction[];
 };

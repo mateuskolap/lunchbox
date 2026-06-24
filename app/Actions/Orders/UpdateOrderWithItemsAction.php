@@ -51,7 +51,7 @@ readonly class UpdateOrderWithItemsAction
 
             $order->recalculateTotals();
 
-            $this->handlePaymentReconciliation($order);
+//            $this->handlePaymentReconciliation($order);
 
             return $order;
         });

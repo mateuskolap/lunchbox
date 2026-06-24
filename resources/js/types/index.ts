@@ -7,4 +7,4 @@ export * from './order';
 export * from './ui';
 export * from './role';
 export * from './payment';
-export * from './wallet-transaction';
+export * from './transaction';

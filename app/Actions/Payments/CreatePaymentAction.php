@@ -37,7 +37,7 @@ readonly class CreatePaymentAction
                 'transactionable_type' => Payment::class,
             ]);
 
-            $this->settleOrdersFromWallet->execute($customer);
+//            $this->settleOrdersFromWallet->execute($customer);
 
             return $payment;
         });

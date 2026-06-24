@@ -37,7 +37,7 @@ readonly class CreateOrderWithItemsAction
             $orderItems = $this->prepareOrderItems->execute($data->order_items);
             $order->items()->createMany($orderItems->toArray());
             $order->recalculateTotals();
-            $this->settleOrdersFromWallet->execute($customer);
+//            $this->settleOrdersFromWallet->execute($customer);
 
             return $order;
         });
