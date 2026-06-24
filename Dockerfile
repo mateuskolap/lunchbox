@@ -85,8 +85,8 @@ RUN apk add --no-cache \
     && apk del .build-deps
 
 # Copy Nginx config
-RUN rm -f /etc/nginx/conf.d/default.conf /etc/nginx/sites-enabled/default
-COPY ./.docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+RUN rm -f /etc/nginx/http.d/default.conf
+COPY ./.docker/nginx/default.conf /etc/nginx/http.d/default.conf
 
 # Copy production Supervisor config
 COPY ./.docker/supervisord.prod.conf /etc/supervisor/conf.d/supervisord.conf
