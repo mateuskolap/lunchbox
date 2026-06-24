@@ -87,7 +87,6 @@ RUN apk add --no-cache \
 # Copy Nginx config
 RUN rm -f /etc/nginx/http.d/default.conf
 COPY ./.docker/nginx/default.conf /etc/nginx/http.d/default.conf
-RUN sed -i 's/user nginx;/user www-data;/g' /etc/nginx/nginx.conf
 
 # Copy production Supervisor config
 COPY ./.docker/supervisord.prod.conf /etc/supervisor/conf.d/supervisord.conf
