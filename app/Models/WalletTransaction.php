@@ -26,6 +26,6 @@ class WalletTransaction extends Model
 
     public function transactionable(): MorphTo
     {
-        return $this->morphTo();
+        return $this->morphTo()->withTrashed();
     }
 }
