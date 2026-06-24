@@ -157,7 +157,7 @@ const removeItem = (productId: number) => {
 
         <div class="grid gap-6 md:grid-cols-12">
             <!-- Left Side: Basic Info -->
-            <div class="order-2 space-y-6 md:order-1 md:col-span-4">
+            <div class="order-2 space-y-6 md:order-1 md:col-span-4 min-w-0">
                 <div
                     class="rounded-xl border border-sidebar-border/70 bg-card p-5 dark:border-sidebar-border"
                 >
@@ -242,7 +242,7 @@ const removeItem = (productId: number) => {
             </div>
 
             <!-- Right Side: Items Selection -->
-            <div class="order-1 space-y-6 md:order-2 md:col-span-8">
+            <div class="order-1 space-y-6 md:order-2 md:col-span-8 min-w-0">
                 <div
                     class="rounded-xl border border-sidebar-border/70 bg-card p-5 dark:border-sidebar-border"
                 >
@@ -282,7 +282,7 @@ const removeItem = (productId: number) => {
                                 class="h-9"
                             />
                         </div>
-                        <div class="sm:col-span-2">
+                        <div class="sm:col-span-2 btn-container">
                             <Button
                                 type="button"
                                 variant="outline"
@@ -290,7 +290,8 @@ const removeItem = (productId: number) => {
                                 @click="addItem"
                                 :disabled="!currentProductId"
                             >
-                                <Plus class="mr-1 size-4" />
+                                <Plus class="size-4" />
+                                <span class="btn-text">Adicionar</span>
                             </Button>
                         </div>
                     </div>
@@ -373,11 +374,12 @@ const removeItem = (productId: number) => {
                             <span
                                 >Total de Itens:
                                 <strong class="text-foreground">{{
-                                    selectedItems.reduce(
-                                        (acc, item) => acc + item.quantity,
-                                        0,
-                                    )
-                                }}</strong>
+                                        selectedItems.reduce(
+                                            (acc: any, item: { quantity: any }) =>
+                                                acc + item.quantity,
+                                            0
+                                        )
+                                    }}</strong>
                             </span>
                         </div>
                         <div class="text-lg font-bold text-foreground">
@@ -412,3 +414,17 @@ const removeItem = (productId: number) => {
         </div>
     </Form>
 </template>
+
+<style scoped>
+.btn-container {
+    container-type: inline-size;
+}
+.btn-text {
+    display: none;
+}
+@container (min-width: 120px) {
+    .btn-text {
+        display: inline;
+    }
+}
+</style>
