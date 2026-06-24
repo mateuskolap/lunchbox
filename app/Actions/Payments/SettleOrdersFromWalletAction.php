@@ -32,7 +32,7 @@ class SettleOrdersFromWalletAction
 
             $remainingBalance = $walletBalance;
 
-            $unpaidOrders->each(function ($order) use ($customer, $remainingBalance) {
+            $unpaidOrders->each(function ($order) use ($customer, &$remainingBalance) {
                 if ($remainingBalance <= 0) {
                     return;
                 }
