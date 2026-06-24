@@ -7,7 +7,7 @@ use Http;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 
-class WhatsAppService implements IWhatsAppService
+class EvolutionWhatsAppServiceInterface implements WhatsAppServiceInterface
 {
     /**
      * @throws RequestException
@@ -18,7 +18,6 @@ class WhatsAppService implements IWhatsAppService
         Http::evolution()->post('/send/text', [
             'number' => $data->phone_number,
             'text' => $data->content,
-        ])
-        ->throw();
+        ])->throw();
     }
 }

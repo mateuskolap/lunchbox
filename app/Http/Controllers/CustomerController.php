@@ -53,6 +53,13 @@ class CustomerController extends Controller
 
     public function destroy(Customer $customer): RedirectResponse
     {
+        if ($customer->orders()->exists()) {
+            Inertia::flash('toast', [
+                'type' => 'error',
+                'message' => 'Você não pode excluir um cliente que já realizou pedidos!',
+            ]);
+        }
+
         $customer->delete();
 
         Inertia::flash('toast', [

@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Services\IWhatsAppService;
-use App\Services\WhatsAppService;
+use App\Services\WhatsAppServiceInterface;
+use App\Services\EvolutionWhatsAppServiceInterface;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +19,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $di = [
-            IWhatsAppService::class => WhatsAppService::class,
+            WhatsAppServiceInterface::class => EvolutionWhatsAppServiceInterface::class,
         ];
 
         foreach ($di as $abstract => $concrete) {
