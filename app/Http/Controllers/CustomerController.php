@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\OrderStatusEnum;
 use App\Models\Customer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -53,6 +54,13 @@ class CustomerController extends Controller
 
     public function destroy(Customer $customer): RedirectResponse
     {
+        if ($customer->orders()->whereNot('status', OrderStatusEnum::CANCELED)->exists()) {
+            Inertia::flash('toast', [
+                'type' => 'error',
+                'message' => 'Você não pode excluir um cliente que possua pedidos!',
+            ]);
+        }
+
         $customer->delete();
 
         Inertia::flash('toast', [
