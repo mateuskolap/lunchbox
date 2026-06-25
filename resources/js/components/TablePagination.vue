@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import type { PaginatedResponse } from '@/types';
 
 defineProps<{
@@ -20,48 +21,39 @@ defineProps<{
             <span class="font-medium">{{ paginator.total }}</span> resultados
         </p>
         <div class="flex items-center gap-1">
-            <Button
+            <Link
                 v-if="paginator.prev_page_url"
-                variant="ghost"
-                class="gap-1 px-2.5 sm:pr-2.5"
-                as-child
-            >
-                <Link :href="paginator.prev_page_url">
-                    <ChevronLeft />
-                    <span class="hidden sm:block">Anterior</span>
-                </Link>
-            </Button>
-            <Button
-                v-else
-                variant="ghost"
-                class="gap-1 px-2.5 sm:pr-2.5"
-                disabled
+                :href="paginator.prev_page_url"
+                :class="cn(buttonVariants({ variant: 'ghost' }), 'gap-1 px-2.5 sm:pr-2.5')"
             >
                 <ChevronLeft />
                 <span class="hidden sm:block">Anterior</span>
-            </Button>
-
-            <Button
-                v-if="paginator.next_page_url"
-                variant="ghost"
-                class="gap-1 px-2.5 sm:pr-2.5"
-                as-child
-            >
-                <Link :href="paginator.next_page_url">
-                    <span class="hidden sm:block">Próximo</span>
-                    <ChevronRight />
-                </Link>
-            </Button>
-            <Button
+            </Link>
+            <div
                 v-else
-                variant="ghost"
-                class="gap-1 px-2.5 sm:pr-2.5"
-                disabled
+                :class="cn(buttonVariants({ variant: 'ghost' }), 'gap-1 px-2.5 sm:pr-2.5 opacity-50 pointer-events-none')"
+            >
+                <ChevronLeft />
+                <span class="hidden sm:block">Anterior</span>
+            </div>
+
+            <Link
+                v-if="paginator.next_page_url"
+                :href="paginator.next_page_url"
+                :class="cn(buttonVariants({ variant: 'ghost' }), 'gap-1 px-2.5 sm:pr-2.5')"
             >
                 <span class="hidden sm:block">Próximo</span>
                 <ChevronRight />
-            </Button>
+            </Link>
+            <div
+                v-else
+                :class="cn(buttonVariants({ variant: 'ghost' }), 'gap-1 px-2.5 sm:pr-2.5 opacity-50 pointer-events-none')"
+            >
+                <span class="hidden sm:block">Próximo</span>
+                <ChevronRight />
+            </div>
         </div>
     </div>
 </template>
+
 
