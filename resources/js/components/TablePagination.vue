@@ -36,6 +36,8 @@ defineProps<{
                 <Link
                     v-if="paginator.prev_page_url"
                     :href="paginator.prev_page_url"
+                    preserve-scroll
+                    preserve-state
                 >
                     <PaginationPrevious>
                         <ChevronLeft />
@@ -50,6 +52,8 @@ defineProps<{
                 <Link
                     v-if="paginator.next_page_url"
                     :href="paginator.next_page_url"
+                    preserve-scroll
+                    preserve-state
                 >
                     <PaginationNext>
                         <span class="hidden sm:block">Próximo</span>
