@@ -11,10 +11,17 @@ use Inertia\Response;
 
 class CustomerController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $validated = $request->validate([
+            'name' => ['nullable', 'string'],
+        ]);
+
         return Inertia::render('Customers/Index', [
-            'customers' => Customer::paginate(25),
+            'customers' => Customer::query()
+                ->when($validated['name'] ?? null, fn($q) => $q->where('name', 'like', "%{$validated['name']}%"))
+                ->paginate(25),
+            'filters' => $request->only(['name']),
         ]);
     }
 
