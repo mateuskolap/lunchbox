@@ -2,6 +2,7 @@
 
 namespace App\Actions\Payments;
 
+use App\Actions\Orders\CreateOrderTransactionAction;
 use App\Models\Customer;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
@@ -9,6 +10,12 @@ use Throwable;
 
 class SettleOrdersFromWalletAction
 {
+    public function __construct(
+        private CreateOrderTransactionAction $createOrderTransaction,
+    )
+    {
+    }
+
     /**
      * @param Customer $customer
      * @return void
@@ -18,9 +25,9 @@ class SettleOrdersFromWalletAction
     {
         DB::transaction(function () use ($customer) {
             $customer->refresh();
-            $walletBalance = $customer->wallet_balance;
+            $customerBalance = $customer->balance;
 
-            if ($walletBalance <= 0) {
+            if ($customerBalance <= 0) {
                 return;
             }
 
@@ -30,24 +37,21 @@ class SettleOrdersFromWalletAction
                 ->orderBy('id')
                 ->get();
 
-            $remainingBalance = $walletBalance;
+            $remainingBalance = $customerBalance;
 
             $unpaidOrders->each(function ($order) use ($customer, &$remainingBalance) {
                 if ($remainingBalance <= 0) {
-                    return;
+                    return false;
                 }
 
                 $pendingAmount = $order->total_amount - $order->paid_amount;
                 $allocatedAmount = min($remainingBalance, $pendingAmount);
 
-                $customer->transactions()->create([
-                    'amount' => -$allocatedAmount,
-                    'description' => "Baixa no pedido #{$order->id}",
-                    'transactionable_id' => $order->id,
-                    'transactionable_type' => Order::class,
-                ]);
+                $this->createOrderTransaction->execute($order, -$allocatedAmount, "Baixa no pedido #{$order->id}", $customer);
 
                 $remainingBalance -= $allocatedAmount;
+
+                return true;
             });
         });
     }

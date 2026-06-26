@@ -14,6 +14,7 @@ readonly class UpdateOrderWithItemsAction
     public function __construct(
         private PrepareOrderItemsAction      $prepareOrderItems,
         private SettleOrdersFromWalletAction $settleOrdersFromWallet,
+        private CreateOrderTransactionAction $createOrderTransaction,
     )
     {
     }
@@ -24,6 +25,8 @@ readonly class UpdateOrderWithItemsAction
     public function execute(Order $order, UpdateOrderWithItemsData $data): Order
     {
         return DB::transaction(function () use ($order, $data) {
+            $previousTotal = $order->total_amount;
+
             $order->update([
                 'date' => $data->date,
                 'observation' => $data->observation,
@@ -51,7 +54,7 @@ readonly class UpdateOrderWithItemsAction
 
             $order->recalculateTotals();
 
-//            $this->handlePaymentReconciliation($order);
+            $this->handlePaymentReconciliation($order, $previousTotal);
 
             return $order;
         });
@@ -60,25 +63,19 @@ readonly class UpdateOrderWithItemsAction
     /**
      * @throws Throwable
      */
-    private function handlePaymentReconciliation(Order $order): void
+    private function handlePaymentReconciliation(Order $order, float|string $previousTotal): void
     {
-        $oldPaidAmount = $order->paid_amount;
+        $newTotal = (float)$order->total_amount;
+        $previousTotal = (float)$previousTotal;
 
-        $total = $order->total_amount;
-
-        if ($oldPaidAmount > $total) {
-            $surplus = $oldPaidAmount - $total;
-
-            $order->customer->transactions()->create([
-                'amount' => $surplus,
-                'description' => "Ajuste de valor por redução no pedido #{$order->id}",
-                'transactionable_id' => $order->id,
-                'transactionable_type' => Order::class,
-            ]);
+        if ($newTotal > $previousTotal) {
+            $difference = $newTotal - $previousTotal;
+            $this->createOrderTransaction->execute($order, -$difference, "Ajuste de valor por aumento no pedido #{$order->id}");
+        } elseif ($newTotal < $previousTotal) {
+            $difference = $previousTotal - $newTotal;
+            $this->createOrderTransaction->execute($order, $difference, "Ajuste de valor por redução no pedido #{$order->id}");
         }
 
-        if ($total > $oldPaidAmount && $order->customer->wallet_balance > 0) {
-            $this->settleOrdersFromWallet->execute($order->customer);
-        }
+        $this->settleOrdersFromWallet->execute($order->customer);
     }
 }

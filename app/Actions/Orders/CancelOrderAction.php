@@ -12,7 +12,9 @@ readonly class CancelOrderAction
 {
     public function __construct(
         private SettleOrdersFromWalletAction $settleOrdersFromWallet,
-    ) {
+        private CreateOrderTransactionAction $createOrderTransaction,
+    )
+    {
     }
 
     /**
@@ -30,14 +32,8 @@ readonly class CancelOrderAction
             $order->cancel();
 
             if ($paidAmount > 0) {
-                $order->customer->transactions()->create([
-                    'amount' => $paidAmount,
-                    'description' => "Estorno por cancelamento do pedido #{$order->id}",
-                    'transactionable_id' => $order->id,
-                    'transactionable_type' => Order::class,
-                ]);
-
-//                $this->settleOrdersFromWallet->execute($order->customer);
+                $this->createOrderTransaction->execute($order, $paidAmount, "Estorno por cancelamento do pedido #{$order->id}");
+                $this->settleOrdersFromWallet->execute($order->customer);
             }
         });
     }
