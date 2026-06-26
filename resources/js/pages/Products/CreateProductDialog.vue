@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
+import { Plus } from 'lucide-vue-next';
 
 const isOpen = ref(false);
 const isLunchbox = ref(false);
@@ -25,7 +26,10 @@ const isLunchbox = ref(false);
 <template>
     <Dialog v-model:open="isOpen">
         <DialogTrigger as-child>
-            <Button data-test="create-product-button">Novo Produto</Button>
+            <Button data-test="create-product-button">
+                <Plus class="mr-2 size-4" />
+                Novo Produto
+            </Button>
         </DialogTrigger>
         <DialogContent>
             <Form

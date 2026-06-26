@@ -18,11 +18,11 @@ class Customer extends Model
     protected $fillable = [
         'name',
         'phone',
-        'wallet_balance',
+        'balance',
     ];
 
     protected $casts = [
-        'wallet_balance' => 'decimal:2',
+        'balance' => 'decimal:2',
     ];
 
     public function orders(): HasMany

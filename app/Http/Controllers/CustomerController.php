@@ -20,6 +20,7 @@ class CustomerController extends Controller
         return Inertia::render('Customers/Index', [
             'customers' => Customer::query()
                 ->when($validated['name'] ?? null, fn($q) => $q->where('name', 'like', "%{$validated['name']}%"))
+                ->orderBy('name')
                 ->paginate(25),
             'filters' => $request->only(['name']),
         ]);

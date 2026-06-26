@@ -18,6 +18,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import type { Permission } from '@/types/role';
+import { Plus } from 'lucide-vue-next';
 
 const props = defineProps<{
     permissions: Permission[];
@@ -64,7 +65,10 @@ const handleCheckboxChange = (
 <template>
     <Dialog v-model:open="isOpen">
         <DialogTrigger as-child>
-            <Button data-test="create-role-button">Novo Papel</Button>
+            <Button data-test="create-role-button">
+                <Plus class="mr-2 size-4" />
+                Novo Papel
+            </Button>
         </DialogTrigger>
         <DialogContent class="max-w-2xl">
             <Form

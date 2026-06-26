@@ -37,6 +37,18 @@ readonly class CreateOrderWithItemsAction
             $orderItems = $this->prepareOrderItems->execute($data->order_items);
             $order->items()->createMany($orderItems->toArray());
             $order->recalculateTotals();
+
+            $customer->update([
+                'balance' => $customer->balance - $order->total_amount,
+            ]);
+
+            $order->transactions()->create([
+                'customer_id' => $customer->id,
+                'amount' => -$order->total_amount,
+                'description' => "Valor referente ao pedido #{$order->id}",
+                'customer_balance' => $customer->balance,
+            ]);
+
 //            $this->settleOrdersFromWallet->execute($customer);
 
             return $order;

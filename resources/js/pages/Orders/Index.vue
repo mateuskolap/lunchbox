@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import { Plus } from 'lucide-vue-next';
+import OrderFilters from './components/OrderFilters.vue';
+import OrderTable from './components/OrderTable.vue';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { useFilters } from '@/composables/useFilters';
 import { usePermissions } from '@/composables/usePermissions';
 import { create as ordersCreate, index as ordersIndex } from '@/routes/orders';
 import type { Order, PaginatedResponse } from '@/types';
-import OrderFilters from './components/OrderFilters.vue';
-import OrderTable from './components/OrderTable.vue';
 
 interface OrderFiltersState {
     customer_name: string;
