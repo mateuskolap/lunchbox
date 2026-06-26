@@ -8,10 +8,13 @@ use App\Actions\Orders\ReopenOrderAction;
 use App\Actions\Orders\UpdateOrderWithItemsAction;
 use App\Data\Orders\CreateOrderWithItemsData;
 use App\Data\Orders\UpdateOrderWithItemsData;
+use App\Data\WhatsApp\SendTextMessageData;
 use App\Enums\OrderStatusEnum;
+use App\Jobs\SendWhatsAppTextMessageJob;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
+use App\Services\WhatsAppService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -29,6 +32,7 @@ class OrderController extends Controller
         private readonly UpdateOrderWithItemsAction $updateOrderWithItems,
         private readonly CancelOrderAction          $cancelOrder,
         private readonly ReopenOrderAction          $reopenOrder,
+        private readonly WhatsAppService            $whatsAppService
     )
     {
     }
