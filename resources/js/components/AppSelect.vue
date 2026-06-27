@@ -82,10 +82,12 @@ const onOpenChange = (open: boolean) => {
             <!-- Search input inside Select content dropdown -->
             <div
                 v-if="searchable"
-                class="border-b border-sidebar-border p-2"
+                class="sticky top-0 z-10 bg-popover border-b border-sidebar-border p-2 touch-none"
                 @keydown.stop
                 @pointerdown.stop
                 @mousedown.stop
+                @touchstart.stop
+                @touchend.stop
             >
                 <Input
                     v-model="searchQuery"

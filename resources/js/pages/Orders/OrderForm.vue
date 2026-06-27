@@ -77,13 +77,15 @@ onMounted(() => {
 
         // Load date
         if (props.order.date) {
-            dateValue.value = new Date(props.order.date)
-                .toISOString()
-                .split('T')[0];
+            dateValue.value = props.order.date.split('T')[0];
         }
     } else {
-        // Create mode: Default date to today
-        dateValue.value = new Date().toISOString().split('T')[0];
+        // Create mode: Default date to today in local time
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        dateValue.value = `${year}-${month}-${day}`;
     }
 });
 
