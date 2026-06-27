@@ -92,7 +92,7 @@ const onOpenChange = (open: boolean) => {
                 <Input
                     v-model="searchQuery"
                     :placeholder="searchPlaceholder"
-                    class="h-8 text-xs focus:border-input focus:ring-0 focus-visible:border-input focus-visible:ring-0"
+                    class="h-8 text-base md:text-xs focus:border-input focus:ring-0 focus-visible:border-input focus-visible:ring-0"
                     ref="searchInputRef"
                 />
             </div>
