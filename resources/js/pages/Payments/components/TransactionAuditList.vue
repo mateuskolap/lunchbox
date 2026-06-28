@@ -3,9 +3,12 @@ import {
     ArrowDownCircle,
     ArrowUpCircle,
     Receipt,
+    Eye,
 } from 'lucide-vue-next';
 import EmptyState from '@/components/EmptyState.vue';
 import TablePagination from '@/components/TablePagination.vue';
+import { Link } from '@inertiajs/vue3';
+import { show as orderShow } from '@/routes/orders';
 import {
     formatCurrency,
     formatDateTime,
@@ -16,11 +19,22 @@ defineProps<{
     transactions: PaginatedResponse<Transaction>;
 }>();
 
+function isZeroTransaction(transaction: Transaction) {
+    return Number(transaction.amount) === 0;
+}
+
 function isDebitTransaction(transaction: Transaction) {
     return Number(transaction.amount) < 0;
 }
 
+function isOrderTransaction(transaction: Transaction) {
+    return transaction.transactionable_type === 'App\\Models\\Order';
+}
+
 function getTransactionIcon(transaction: Transaction) {
+    if (isZeroTransaction(transaction)) {
+        return Receipt;
+    }
     return isDebitTransaction(transaction) ? ArrowDownCircle : ArrowUpCircle;
 }
 </script>
@@ -53,27 +67,41 @@ function getTransactionIcon(transaction: Transaction) {
                     <div
                         class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full"
                         :class="
-                            isDebitTransaction(transaction)
-                                ? 'bg-destructive/10'
-                                : 'bg-emerald-500/10'
+                            isZeroTransaction(transaction)
+                                ? 'bg-muted/70'
+                                : isDebitTransaction(transaction)
+                                    ? 'bg-destructive/10'
+                                    : 'bg-emerald-500/10'
                         "
                     >
                         <component
                             :is="getTransactionIcon(transaction)"
                             class="size-4"
                             :class="
-                                isDebitTransaction(transaction)
-                                    ? 'text-destructive'
-                                    : 'text-emerald-600 dark:text-emerald-400'
+                                isZeroTransaction(transaction)
+                                    ? 'text-muted-foreground'
+                                    : isDebitTransaction(transaction)
+                                        ? 'text-destructive'
+                                        : 'text-emerald-600 dark:text-emerald-400'
                             "
                         />
                     </div>
                     <div class="min-w-0 flex-1">
-                        <p
-                            class="text-sm font-medium break-words text-foreground"
-                        >
-                            {{ transaction.description }}
-                        </p>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <p
+                                class="text-sm font-medium break-words text-foreground"
+                            >
+                                {{ transaction.description }}
+                            </p>
+                            <Link
+                                v-if="isOrderTransaction(transaction)"
+                                :href="orderShow.url(transaction.transactionable_id)"
+                                class="inline-flex items-center gap-1 rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary hover:bg-primary/20 transition-colors"
+                            >
+                                <Eye class="size-3" />
+                                Ver Pedido
+                            </Link>
+                        </div>
                         <p
                             class="mt-0.5 text-xs text-muted-foreground"
                         >
@@ -88,15 +116,19 @@ function getTransactionIcon(transaction: Transaction) {
                         <p
                             class="text-sm font-semibold"
                             :class="
-                                isDebitTransaction(transaction)
-                                    ? 'text-destructive'
-                                    : 'text-emerald-600 dark:text-emerald-400'
+                                isZeroTransaction(transaction)
+                                    ? 'text-muted-foreground'
+                                    : isDebitTransaction(transaction)
+                                        ? 'text-destructive'
+                                        : 'text-emerald-600 dark:text-emerald-400'
                             "
                         >
                             {{
-                                isDebitTransaction(transaction)
-                                    ? '-'
-                                    : '+'
+                                isZeroTransaction(transaction)
+                                    ? ''
+                                    : isDebitTransaction(transaction)
+                                        ? '-'
+                                        : '+'
                             }}{{ formatCurrency(Math.abs(Number(transaction.amount))) }}
                         </p>
                         <p

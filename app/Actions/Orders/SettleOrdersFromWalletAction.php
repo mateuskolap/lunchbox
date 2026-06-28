@@ -45,7 +45,16 @@ readonly class SettleOrdersFromWalletAction
                 $pendingAmount = $order->total_amount - $order->paid_amount;
                 $allocatedAmount = min($remainingBalance, $pendingAmount);
 
-                $this->createOrderTransaction->execute($order, -$allocatedAmount, "Baixa no pedido #{$order->id}", $customer);
+                $order->update([
+                    'paid_amount' => $order->paid_amount + $allocatedAmount,
+                ]);
+
+                $order->transactions()->create([
+                    'customer_id' => $customer->id,
+                    'amount' => 0.00,
+                    'description' => "Baixa no pedido #{$order->id}",
+                    'customer_balance' => $customer->balance,
+                ]);
 
                 $remainingBalance -= $allocatedAmount;
 

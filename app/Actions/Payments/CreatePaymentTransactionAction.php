@@ -16,7 +16,7 @@ class CreatePaymentTransactionAction
 
         $payment->transactions()->create([
             'customer_id' => $customer->id,
-            'amount' => $payment->value,
+            'amount' => $debit ? -$payment->value : $payment->value,
             'description' => $description,
             'customer_balance' => $customer->balance,
         ]);

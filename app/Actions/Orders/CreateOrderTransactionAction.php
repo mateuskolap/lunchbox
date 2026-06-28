@@ -14,10 +14,6 @@ readonly class CreateOrderTransactionAction
             'balance' => $customer->balance + $amount,
         ]);
 
-        $order->update([
-            'paid_amount' => $order->paid_amount - $amount,
-        ]);
-
         $order->transactions()->create([
             'customer_id' => $customer->id,
             'amount' => $amount,

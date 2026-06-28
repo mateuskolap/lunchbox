@@ -27,7 +27,15 @@ readonly class ReopenOrderAction
 
         DB::transaction(function () use ($order) {
             if ($order->status === OrderStatusEnum::CANCELED) {
+                $customer = $order->customer;
+                $balanceBefore = (float)$customer->balance;
+
                 $this->createOrderTransaction->execute($order, -$order->total_amount, "Valor referente ao pedido #{$order->id}");
+
+                $paidAmount = max(0.00, min((float)$order->total_amount, $balanceBefore));
+                $order->update([
+                    'paid_amount' => $paidAmount,
+                ]);
             }
 
             $order->reopen();

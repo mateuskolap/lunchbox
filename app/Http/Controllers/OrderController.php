@@ -81,7 +81,7 @@ class OrderController extends Controller
     public function show(Order $order): Response
     {
         return Inertia::render('Orders/Show', [
-            'order' => $order->load(['customer', 'items.product']),
+            'order' => $order->load(['customer', 'items.product', 'transactions']),
             'list_url' => session('orders_list_url', route('orders.index')),
         ]);
     }

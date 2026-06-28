@@ -5,6 +5,7 @@ import { index as ordersIndex } from '@/routes/orders';
 import type { Order } from '@/types';
 import OrderInfoCards from './components/OrderInfoCards.vue';
 import OrderItemsTable from './components/OrderItemsTable.vue';
+import OrderTransactionsTable from './components/OrderTransactionsTable.vue';
 import OrderShowHeader from './components/OrderShowHeader.vue';
 
 const isMounted = ref(false);
@@ -44,16 +45,13 @@ defineOptions({
             :is-mounted="isMounted"
         />
 
-        <div class="grid gap-6 md:grid-cols-12">
-            <!-- Left Side: Summary Info Cards -->
-            <div class="order-2 min-w-0 space-y-6 md:order-1 md:col-span-4">
-                <OrderInfoCards :order="order" />
-            </div>
+        <!-- Top Info Cards (Customer, General Info, Observations) -->
+        <OrderInfoCards :order="order" />
 
-            <!-- Right Side: Items List -->
-            <div class="order-1 min-w-0 space-y-6 md:order-2 md:col-span-8">
-                <OrderItemsTable :order="order" />
-            </div>
+        <!-- Products List & Transactions -->
+        <div class="space-y-6">
+            <OrderItemsTable :order="order" />
+            <OrderTransactionsTable :order="order" />
         </div>
     </div>
 </template>

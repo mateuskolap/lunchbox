@@ -66,15 +66,28 @@ readonly class UpdateOrderWithItemsAction
     {
         $newTotal = (float)$order->total_amount;
         $previousTotal = (float)$previousTotal;
+        $customer = $order->customer;
 
         if ($newTotal > $previousTotal) {
             $difference = $newTotal - $previousTotal;
+            $balanceBefore = (float)$customer->balance;
+
             $this->createOrderTransaction->execute($order, -$difference, "Ajuste de valor por aumento no pedido #{$order->id}");
+
+            if ($balanceBefore > 0) {
+                $additionalPaid = min($difference, $balanceBefore);
+                $order->increment('paid_amount', $additionalPaid);
+            }
         } elseif ($newTotal < $previousTotal) {
             $difference = $previousTotal - $newTotal;
+
             $this->createOrderTransaction->execute($order, $difference, "Ajuste de valor por redução no pedido #{$order->id}");
+
+            $order->update([
+                'paid_amount' => min((float)$order->paid_amount, $newTotal),
+            ]);
         }
 
-        $this->settleOrdersFromWallet->execute($order->customer);
+        $this->settleOrdersFromWallet->execute($customer);
     }
 }

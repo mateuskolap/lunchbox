@@ -24,14 +24,15 @@ readonly class CancelOrderAction
         }
 
         DB::transaction(function () use ($order) {
-            $paidAmount = $order->paid_amount;
+            $totalAmount = (float)$order->total_amount;
 
             $order->cancel();
+            $order->update([
+                'paid_amount' => 0.00,
+            ]);
 
-            if ($paidAmount > 0) {
-                $this->createOrderTransaction->execute($order, $paidAmount, "Estorno por cancelamento do pedido #{$order->id}");
-                $this->settleOrdersFromWallet->execute($order->customer);
-            }
+            $this->createOrderTransaction->execute($order, $totalAmount, "Estorno por cancelamento do pedido #{$order->id}");
+            $this->settleOrdersFromWallet->execute($order->customer);
         });
     }
 }

@@ -1,5 +1,6 @@
 import type { Customer } from './customer';
 import type { Product } from './product';
+import type { Transaction } from './transaction';
 
 export type OrderStatus = 'pending' | 'concluded' | 'canceled';
 
@@ -29,4 +30,5 @@ export type Order = {
     deleted_at?: string | null;
     customer?: Customer;
     items?: OrderItem[];
+    transactions?: Transaction[];
 };

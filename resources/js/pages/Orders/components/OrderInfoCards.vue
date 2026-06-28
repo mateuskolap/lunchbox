@@ -9,7 +9,7 @@ defineProps<{
 </script>
 
 <template>
-    <div class="min-w-0 space-y-6">
+    <div class="grid gap-6 sm:grid-cols-3">
         <!-- Customer info -->
         <div
             class="rounded-xl border border-sidebar-border/70 bg-card p-5 dark:border-sidebar-border"

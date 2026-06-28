@@ -30,7 +30,7 @@ readonly class CancelPaymentAction
             $payment->cancel();
 
             $this->createPaymentTransaction->execute($payment, "Cancelamento do pagamento #{$payment->id}", true);
-            $this->revertOrdersSettlement->execute($payment->customer);
+            $this->revertOrdersSettlement->execute($payment->customer, $payment);
         });
     }
 }

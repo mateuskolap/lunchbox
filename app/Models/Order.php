@@ -66,6 +66,14 @@ class Order extends Model
             ->where('status', '!=', OrderStatusEnum::CANCELED);
     }
 
+    #[Scope]
+    protected function partiallyPaid(Builder $query): void
+    {
+        $query->where('paid_amount', '>', 0)
+            ->whereColumn('paid_amount', '<', 'total_amount')
+            ->where('status', '!=', OrderStatusEnum::CANCELED);
+    }
+
     public function isClosed(): bool
     {
         return in_array($this->status, [OrderStatusEnum::CONCLUDED, OrderStatusEnum::CANCELED]);
