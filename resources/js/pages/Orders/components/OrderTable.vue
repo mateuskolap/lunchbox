@@ -56,6 +56,7 @@ const { can } = usePermissions();
                         <TableHead>Cliente</TableHead>
                         <TableHead>Data</TableHead>
                         <TableHead class="text-right">Valor Total</TableHead>
+                        <TableHead class="text-right">Valor Pago</TableHead>
                         <TableHead class="w-[120px] text-center"
                             >Status</TableHead
                         >
@@ -71,6 +72,16 @@ const { can } = usePermissions();
                         <TableCell>{{ formatDate(order.date) }}</TableCell>
                         <TableCell class="text-right font-medium">
                             {{ formatCurrency(order.total_amount) }}
+                        </TableCell>
+                        <TableCell class="text-right font-medium">
+                            <span :class="{
+                                'text-muted-foreground': order.status === 'canceled',
+                                'text-emerald-600 dark:text-emerald-400 font-semibold': order.status !== 'canceled' && Number(order.paid_amount) >= Number(order.total_amount),
+                                'text-amber-500 font-semibold': order.status !== 'canceled' && Number(order.paid_amount) > 0 && Number(order.paid_amount) < Number(order.total_amount),
+                                'text-destructive': order.status !== 'canceled' && Number(order.paid_amount) <= 0
+                            }">
+                                {{ formatCurrency(order.paid_amount) }}
+                            </span>
                         </TableCell>
                         <TableCell class="text-center">
                             <Badge

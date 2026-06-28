@@ -54,9 +54,9 @@ defineOptions({
         />
 
         <!-- Content Grid -->
-        <div class="grid gap-6 lg:grid-cols-12">
+        <div class="grid gap-6 lg:grid-cols-2">
             <!-- Payments Table -->
-            <div class="min-w-0 lg:col-span-7">
+            <div class="min-w-0">
                 <PaymentTable
                     :customer="customer"
                     :payments="payments"
@@ -65,7 +65,7 @@ defineOptions({
             </div>
 
             <!-- Transactions (Audit) -->
-            <div class="min-w-0 lg:col-span-5">
+            <div class="min-w-0">
                 <TransactionAuditList :transactions="transactions" />
             </div>
         </div>
