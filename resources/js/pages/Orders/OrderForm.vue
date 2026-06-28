@@ -139,6 +139,15 @@ const removeItem = (productId: number) => {
         (item) => item.product_id !== productId,
     );
 };
+
+// Check if unit price was edited from product default
+const isPriceEdited = (item: SelectedItem) => {
+    const product = props.products.find((p) => p.id === item.product_id);
+    if (!product) {
+        return false;
+    }
+    return Number(item.price) !== Number(product.price);
+};
 </script>
 
 <template>
@@ -154,6 +163,12 @@ const removeItem = (productId: number) => {
                 type="hidden"
                 :name="`order_items[${index}][quantity]`"
                 :value="item.quantity"
+            />
+            <input
+                v-if="isPriceEdited(item)"
+                type="hidden"
+                :name="`order_items[${index}][unit_price]`"
+                :value="item.price"
             />
         </template>
 
@@ -334,9 +349,17 @@ const removeItem = (productId: number) => {
                                     <TableCell class="font-medium">{{
                                         item.name
                                     }}</TableCell>
-                                    <TableCell class="text-right">{{
-                                        formatCurrency(item.price)
-                                    }}</TableCell>
+                                    <TableCell class="text-right">
+                                        <div class="flex items-center justify-end gap-1">
+                                            <span class="text-xs text-muted-foreground">R$</span>
+                                            <Input
+                                                type="number"
+                                                step="0.01"
+                                                v-model.number="item.price"
+                                                class="h-8 w-20 text-right p-1 text-xs"
+                                            />
+                                        </div>
+                                    </TableCell>
                                     <TableCell class="text-center">{{
                                         item.quantity
                                     }}</TableCell>

@@ -22,12 +22,13 @@ class PrepareOrderItemsAction
         return $items->map(function (RawOrderItemData $item) use ($products) {
             $product = $products->get($item->product_id);
             $price = $product ? (float)$product->price : 0.00;
+            $resolvedPrice = $item->unit_price ?? $price;
 
             return new OrderItemData(
                 product_id: $item->product_id,
-                unit_price: $price,
+                unit_price: $resolvedPrice,
                 quantity: $item->quantity,
-                total_amount: $price * $item->quantity
+                total_amount: $resolvedPrice * $item->quantity
             );
         });
     }

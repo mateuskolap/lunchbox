@@ -38,11 +38,11 @@ readonly class CreateOrderWithItemsAction
             $order->items()->createMany($orderItems->toArray());
             $order->recalculateTotals();
 
-            $balanceBefore = (float)$customer->balance;
+            $balanceBefore = $customer->balance;
 
             $this->createOrderTransaction->execute($order, -$order->total_amount, "Valor referente ao pedido #{$order->id}");
 
-            $paidAmount = max(0.00, min((float)$order->total_amount, $balanceBefore));
+            $paidAmount = max(0.00, min($order->total_amount, $balanceBefore));
             $order->update([
                 'paid_amount' => $paidAmount,
             ]);

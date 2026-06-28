@@ -117,6 +117,7 @@ class OrderController extends Controller
             'order_items' => ['required', 'array'],
             'order_items.*.product_id' => ['required', 'exists:products,id'],
             'order_items.*.quantity' => ['required', 'integer', 'min:1'],
+            'order_items.*.unit_price' => ['nullable', 'numeric', 'min:0.01']
         ]);
 
         try {
@@ -151,6 +152,7 @@ class OrderController extends Controller
             'order_items' => ['required', 'array'],
             'order_items.*.product_id' => ['required', 'exists:products,id'],
             'order_items.*.quantity' => ['required', 'integer', 'min:1'],
+            'order_items.*.unit_price' => ['nullable', 'numeric', 'min:0.01']
         ]);
 
         try {

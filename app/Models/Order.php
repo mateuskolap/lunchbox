@@ -81,7 +81,7 @@ class Order extends Model
 
     public function recalculateTotals(): void
     {
-        $total = (float)$this->items()->sum('total_amount');
+        $total = $this->items()->sum('total_amount');
 
         $this->update([
             'total_amount' => $total,

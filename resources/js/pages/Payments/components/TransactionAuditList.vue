@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Link } from '@inertiajs/vue3';
 import {
     ArrowDownCircle,
     ArrowUpCircle,
@@ -7,12 +8,11 @@ import {
 } from 'lucide-vue-next';
 import EmptyState from '@/components/EmptyState.vue';
 import TablePagination from '@/components/TablePagination.vue';
-import { Link } from '@inertiajs/vue3';
-import { show as orderShow } from '@/routes/orders';
 import {
     formatCurrency,
     formatDateTime,
 } from '@/lib/formatters';
+import { show as orderShow } from '@/routes/orders';
 import type { PaginatedResponse, Transaction } from '@/types';
 
 defineProps<{
@@ -35,6 +35,7 @@ function getTransactionIcon(transaction: Transaction) {
     if (isZeroTransaction(transaction)) {
         return Receipt;
     }
+
     return isDebitTransaction(transaction) ? ArrowDownCircle : ArrowUpCircle;
 }
 </script>

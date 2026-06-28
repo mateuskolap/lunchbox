@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';
-import { index as ordersIndex } from '@/routes/orders';
-import type { Order } from '@/types';
 import OrderInfoCards from './components/OrderInfoCards.vue';
 import OrderItemsTable from './components/OrderItemsTable.vue';
-import OrderTransactionsTable from './components/OrderTransactionsTable.vue';
 import OrderShowHeader from './components/OrderShowHeader.vue';
+import OrderTransactionsTable from './components/OrderTransactionsTable.vue';
+import { index as ordersIndex } from '@/routes/orders';
+import type { Order } from '@/types';
 
 const isMounted = ref(false);
 onMounted(() => {

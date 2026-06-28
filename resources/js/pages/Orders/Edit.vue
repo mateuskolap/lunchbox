@@ -42,7 +42,7 @@ defineOptions({
                 as-child
                 class="mt-1 shrink-0 sm:mt-0"
             >
-                <Link :href="list_url || ordersIndex()">
+                <Link :href="$page.props.previousUrl || list_url || ordersIndex()">
                     <ArrowLeft class="size-4" />
                     <span class="sr-only">Voltar</span>
                 </Link>
