@@ -2,7 +2,6 @@
 
 namespace App\Actions\Orders;
 
-use App\Actions\Payments\SettleOrdersFromWalletAction;
 use App\Enums\OrderStatusEnum;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
@@ -13,9 +12,7 @@ readonly class CancelOrderAction
     public function __construct(
         private SettleOrdersFromWalletAction $settleOrdersFromWallet,
         private CreateOrderTransactionAction $createOrderTransaction,
-    )
-    {
-    }
+    ) {}
 
     /**
      * @throws Throwable

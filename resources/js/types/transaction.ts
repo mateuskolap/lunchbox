@@ -5,6 +5,7 @@ export type Transaction = {
     customer_id: number;
     amount: string | number;
     description: string;
+    customer_balance: string | number;
     transactionable_type: string;
     transactionable_id: number;
     created_at: string;

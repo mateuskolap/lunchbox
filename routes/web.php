@@ -37,6 +37,7 @@ Route::middleware(['auth', 'verified', 'throttle:120,1'])->group(function () {
         });
     });
 
+    // Roles routes
     Route::prefix('/papeis')->name('roles.')->group(function () {
         Route::middleware('can:roles.index')->get('/', [RoleController::class, 'index'])->name('index');
         Route::middleware('can:roles.store')->post('/', [RoleController::class, 'store'])->name('store');
@@ -64,7 +65,7 @@ Route::middleware(['auth', 'verified', 'throttle:120,1'])->group(function () {
             Route::middleware('can:payments.store')->post('/', [PaymentController::class, 'store'])->name('store');
 
             Route::prefix('/{payment}')->group(function () {
-                Route::middleware('can:payments.index')->get('/', [PaymentController::class, 'show'])->name('show');
+                Route::middleware('can:payments.update')->patch('/', [PaymentController::class, 'cancel'])->name('cancel');
             });
         });
     });

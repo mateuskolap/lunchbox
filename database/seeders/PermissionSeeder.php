@@ -39,6 +39,7 @@ class PermissionSeeder extends Seeder
             'orders.update',
             'payments.index',
             'payments.store',
+            'payments.update',
         ];
 
         Permission::whereNotIn('name', $permissions)->delete();

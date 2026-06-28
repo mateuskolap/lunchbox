@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { Contact } from 'lucide-vue-next';
+import { Link } from '@inertiajs/vue3';
+import { Contact, Wallet } from 'lucide-vue-next';
 import EmptyState from '@/components/EmptyState.vue';
 import TablePagination from '@/components/TablePagination.vue';
+import { Button } from '@/components/ui/button';
 import {
     Table,
     TableBody,
@@ -11,7 +13,8 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { usePermissions } from '@/composables/usePermissions';
-import { formatPhone } from '@/lib/formatters';
+import { customerIndex as customerPaymentsIndex } from '@/routes/customers/payments';
+import { formatCurrency, formatPhone } from '@/lib/formatters';
 import type { Customer, PaginatedResponse } from '@/types';
 import CreateCustomerDialog from '../CreateCustomerDialog.vue';
 import DeleteCustomerDialog from '../DeleteCustomerDialog.vue';
@@ -43,14 +46,16 @@ const { can, canAny } = usePermissions();
                     <TableRow>
                         <TableHead>Nome</TableHead>
                         <TableHead>Telefone</TableHead>
+                        <TableHead class="text-right">Carteira</TableHead>
                         <TableHead
                             v-if="
                                 canAny([
                                     'customers.update',
                                     'customers.destroy',
+                                    'payments.index',
                                 ])
                             "
-                            class="w-[100px] text-right"
+                            class="w-[140px] text-right"
                             >Ações</TableHead
                         >
                     </TableRow>
@@ -64,16 +69,38 @@ const { can, canAny } = usePermissions();
                             customer.name
                         }}</TableCell>
                         <TableCell>{{ formatPhone(customer.phone) }}</TableCell>
+                        <TableCell class="text-right font-medium">
+                            {{ formatCurrency(customer.balance) }}
+                        </TableCell>
                         <TableCell
                             v-if="
                                 canAny([
                                     'customers.update',
                                     'customers.destroy',
+                                    'payments.index',
                                 ])
                             "
                             class="text-right"
                         >
                             <div class="flex items-center justify-end gap-1">
+                                <Button
+                                    v-if="can('payments.index')"
+                                    variant="ghost"
+                                    size="icon"
+                                    title="Pagamentos"
+                                    as-child
+                                >
+                                    <Link
+                                        :href="
+                                            customerPaymentsIndex(customer.id)
+                                        "
+                                    >
+                                        <Wallet
+                                            class="size-4 text-muted-foreground"
+                                        />
+                                        <span class="sr-only">Pagamentos</span>
+                                    </Link>
+                                </Button>
                                 <EditCustomerDialog
                                     v-if="can('customers.update')"
                                     :customer="customer"

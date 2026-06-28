@@ -53,6 +53,13 @@ class Order extends Model
     }
 
     #[Scope]
+    protected function paid(Builder $query): void
+    {
+        $query->whereColumn('paid_amount', 'total_amount')
+            ->where('status', '!=', OrderStatusEnum::CANCELED);
+    }
+
+    #[Scope]
     protected function unpaid(Builder $query): void
     {
         $query->whereColumn('paid_amount', '<', 'total_amount')

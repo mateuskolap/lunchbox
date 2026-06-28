@@ -61,11 +61,37 @@ export function formatTime(dateStr: string | null | undefined): string {
     return `${hours}:${minutes}`;
 }
 
+export function formatDateTime(dateStr: string | null | undefined): string {
+    if (!dateStr) {
+        return '';
+    }
+
+    const datePart = formatDate(dateStr);
+    const timePart = dateStr.includes('T')
+        ? dateStr.split('T')[1]?.substring(0, 5)
+        : '';
+
+    return timePart ? `${datePart} ${timePart}` : datePart;
+}
+
 export function getOrderStatusBadgeVariant(
     status: string,
 ): 'default' | 'destructive' | 'secondary' {
     switch (status) {
         case 'concluded':
+            return 'default';
+        case 'canceled':
+            return 'destructive';
+        default:
+            return 'secondary';
+    }
+}
+
+export function getPaymentStatusBadgeVariant(
+    status: string,
+): 'default' | 'destructive' | 'secondary' {
+    switch (status) {
+        case 'confirmed':
             return 'default';
         case 'canceled':
             return 'destructive';

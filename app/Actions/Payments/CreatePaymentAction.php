@@ -2,6 +2,7 @@
 
 namespace App\Actions\Payments;
 
+use App\Actions\Orders\SettleOrdersFromWalletAction;
 use App\Data\Payments\CreatePaymentData;
 use App\Enums\PaymentStatusEnum;
 use App\Models\Customer;
@@ -12,7 +13,8 @@ use Throwable;
 readonly class CreatePaymentAction
 {
     public function __construct(
-        private SettleOrdersFromWalletAction $settleOrdersFromWallet,
+        private SettleOrdersFromWalletAction   $settleOrdersFromWallet,
+        private CreatePaymentTransactionAction $createPaymentTransaction,
     )
     {
     }
@@ -27,17 +29,11 @@ readonly class CreatePaymentAction
                 'method' => $data->method,
                 'status' => PaymentStatusEnum::CONFIRMED,
                 'value' => $data->value,
-                'paid_at' => $data->paid_at,
+                'paid_at' => $data->paid_at ?? now(),
             ]);
 
-            $customer->transactions()->create([
-                'amount' => $payment->value,
-                'description' => "Crédito do pagamento #{$payment->id}",
-                'transactionable_id' => $payment->id,
-                'transactionable_type' => Payment::class,
-            ]);
-
-//            $this->settleOrdersFromWallet->execute($customer);
+            $this->createPaymentTransaction->execute($payment, "Valor referente ao pagamento #{$payment->id}");
+            $this->settleOrdersFromWallet->execute($customer);
 
             return $payment;
         });

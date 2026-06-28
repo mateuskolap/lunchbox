@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Payments\CancelPaymentAction;
 use App\Actions\Payments\CreatePaymentAction;
 use App\Data\Payments\CreatePaymentData;
 use App\Enums\PaymentMethodEnum;
@@ -19,6 +20,7 @@ class PaymentController extends Controller
 {
     public function __construct(
         private readonly CreatePaymentAction $createPayment,
+        private readonly CancelPaymentAction $cancelPayment,
     )
     {
     }
@@ -26,16 +28,9 @@ class PaymentController extends Controller
     public function customerIndex(Customer $customer): Response
     {
         return Inertia::render('Payments/CustomerIndex', [
-            'payments' => $customer->payments()->paginate(25),
+            'payments' => $customer->payments()->latest()->paginate(15, ['*'], 'payments_page')->toArray(),
+            'transactions' => $customer->transactions()->latest()->paginate(15, ['*'], 'transactions_page'),
             'customer' => $customer,
-        ]);
-    }
-
-    public function show(Payment $payment): Response
-    {
-        return Inertia::render('Payments/Show', [
-            'payment' => $payment,
-            'customer' => $payment->customer,
         ]);
     }
 
@@ -66,6 +61,32 @@ class PaymentController extends Controller
             Inertia::flash('toast', [
                 'type' => 'error',
                 'message' => 'Ocorreu um erro ao registrar o pagamento.',
+            ]);
+
+            return back();
+        }
+    }
+
+    public function cancel(Customer $customer, Payment $payment): RedirectResponse
+    {
+        try {
+            $this->cancelPayment->execute($payment);
+
+            Inertia::flash('toast', [
+                'type' => 'success',
+                'message' => 'Pagamento cancelado com sucesso!',
+            ]);
+
+            return redirect()->route('customers.payments.customer-index', $customer);
+        } catch (Throwable $e) {
+            Log::error('Erro ao cancelar pagamento: ' . $e->getMessage(), [
+                'customer_id' => $customer->id,
+                'exception' => $e,
+            ]);
+
+            Inertia::flash('toast', [
+                'type' => 'error',
+                'message' => 'Ocorreu um erro ao cancelar o pagamento.',
             ]);
 
             return back();

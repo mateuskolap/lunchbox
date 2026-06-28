@@ -2,7 +2,6 @@
 
 namespace App\Actions\Orders;
 
-use App\Actions\Payments\SettleOrdersFromWalletAction;
 use App\Enums\OrderStatusEnum;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;

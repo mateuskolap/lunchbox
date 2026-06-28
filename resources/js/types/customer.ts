@@ -6,6 +6,7 @@ export type Customer = {
     id: number;
     name: string;
     phone?: string;
+    balance: string | number;
     created_at: string;
     updated_at: string;
     deleted_at?: string | null;

@@ -2,5 +2,12 @@
     "pending": "Pendente",
     "concluded": "Concluído",
     "canceled": "Cancelado",
+    "confirmed": "Confirmado",
+    "cash": "Dinheiro",
+    "pix": "Pix",
+    "credit_card": "Cartão de Crédito",
+    "debit_card": "Cartão de Débito",
+    "food_voucher": "Vale Refeição",
+    "other": "Outro",
     "Welcome!": "Bem-vindo!"
 }

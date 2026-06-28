@@ -2,7 +2,6 @@
 
 namespace App\Actions\Orders;
 
-use App\Actions\Payments\SettleOrdersFromWalletAction;
 use App\Data\Orders\CreateOrderWithItemsData;
 use App\Enums\OrderStatusEnum;
 use App\Models\Customer;
@@ -39,7 +38,7 @@ readonly class CreateOrderWithItemsAction
             $order->items()->createMany($orderItems->toArray());
             $order->recalculateTotals();
 
-            $this->createOrderTransaction->execute($order, -$order->total_amount, "Valor referente ao pedido #{$order->id}", $customer);
+            $this->createOrderTransaction->execute($order, -$order->total_amount, "Valor referente ao pedido #{$order->id}");
             $this->settleOrdersFromWallet->execute($customer);
 
             return $order;

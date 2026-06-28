@@ -2,7 +2,6 @@
 
 namespace App\Actions\Orders;
 
-use App\Actions\Payments\SettleOrdersFromWalletAction;
 use App\Data\Orders\OrderItemData;
 use App\Data\Orders\UpdateOrderWithItemsData;
 use App\Models\Order;
@@ -42,7 +41,7 @@ readonly class UpdateOrderWithItemsAction
             $orderItems->each(function (OrderItemData $item) use ($order) {
                 $order->items()->updateOrCreate(
                     [
-                        'product_id' => $item->product_id
+                        'product_id' => $item->product_id,
                     ],
                     [
                         'unit_price' => $item->unit_price,

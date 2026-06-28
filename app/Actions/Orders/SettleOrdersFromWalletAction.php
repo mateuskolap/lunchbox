@@ -1,14 +1,12 @@
 <?php
 
-namespace App\Actions\Payments;
+namespace App\Actions\Orders;
 
-use App\Actions\Orders\CreateOrderTransactionAction;
 use App\Models\Customer;
-use App\Models\Order;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-class SettleOrdersFromWalletAction
+readonly class SettleOrdersFromWalletAction
 {
     public function __construct(
         private CreateOrderTransactionAction $createOrderTransaction,

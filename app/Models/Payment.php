@@ -37,4 +37,18 @@ class Payment extends Model
     {
         return $this->morphMany(Transaction::class, 'transactionable');
     }
+
+    public function confirm(): void
+    {
+        $this->update([
+            'status' => PaymentStatusEnum::CONFIRMED,
+        ]);
+    }
+
+    public function cancel(): void
+    {
+        $this->update([
+            'status' => PaymentStatusEnum::CANCELED,
+        ]);
+    }
 }
