@@ -16,15 +16,12 @@ defineProps<{
     transactions: PaginatedResponse<Transaction>;
 }>();
 
-function getTransactionIcon(transaction: Transaction) {
-    if (transaction.description.toLowerCase().includes('cancelamento') || transaction.description.toLowerCase().includes('estorno')) {
-        return ArrowUpCircle;
-    }
-    return ArrowDownCircle;
+function isDebitTransaction(transaction: Transaction) {
+    return Number(transaction.amount) < 0;
 }
 
-function isDebitTransaction(transaction: Transaction) {
-    return transaction.description.toLowerCase().includes('cancelamento') || transaction.description.toLowerCase().includes('estorno');
+function getTransactionIcon(transaction: Transaction) {
+    return isDebitTransaction(transaction) ? ArrowDownCircle : ArrowUpCircle;
 }
 </script>
 
@@ -100,7 +97,7 @@ function isDebitTransaction(transaction: Transaction) {
                                 isDebitTransaction(transaction)
                                     ? '-'
                                     : '+'
-                            }}{{ formatCurrency(transaction.amount) }}
+                            }}{{ formatCurrency(Math.abs(Number(transaction.amount))) }}
                         </p>
                         <p
                             class="mt-0.5 text-xs text-muted-foreground"
