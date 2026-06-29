@@ -33,6 +33,7 @@ export default defineConfig({
             injectRegister: false,
             workbox: {
                 globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+                navigateFallback: null,
             },
             manifest: {
                 name: 'Ale Marmitas',
