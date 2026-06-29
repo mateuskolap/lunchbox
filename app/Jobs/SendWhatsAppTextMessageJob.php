@@ -2,20 +2,21 @@
 
 namespace App\Jobs;
 
-use App\Data\WhatsApp\SendTextMessageData;
+use App\Enums\MessageStatusEnum;
+use App\Models\Message;
 use App\Services\WhatsAppService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
+use Throwable;
 
 class SendWhatsAppTextMessageJob implements ShouldQueue
 {
     use Queueable;
 
-    /**
-     * Create a new job instance.
-     */
     public function __construct(
-        public SendTextMessageData $data
+        public Message $message
     )
     {
     }
@@ -25,11 +26,23 @@ class SendWhatsAppTextMessageJob implements ShouldQueue
         return 3;
     }
 
-    /**
-     * Execute the job.
-     */
-    public function handle(): void
+    public function backoff(): array
     {
-        app(WhatsAppService::class)->sendText($this->data);
+        return [10, 30, 60];
+    }
+
+    /**
+     * @throws RequestException
+     * @throws Throwable
+     * @throws ConnectionException
+     */
+    public function handle(WhatsAppService $whatsAppService): void
+    {
+        $whatsAppService->send($this->message);
+    }
+
+    public function failed(Throwable $exception): void
+    {
+        $this->message->update(['status' => MessageStatusEnum::FAILED->value]);
     }
 }

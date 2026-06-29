@@ -23,13 +23,9 @@ class EvolutionProvider implements WhatsAppProviderInterface
         ])->throw()->json();
 
         return new SendTextMessageResponseData(
-            message_id: $response['data']['Info']['ID'],
-            chat: $response['data']['Info']['Chat'] ?? $data->phone_number,
-            sender: $response['data']['Info']['Sender'] ?? '',
-            is_from_me: $response['data']['Info']['IsFromMe'] ?? true,
-            type: $response['data']['Info']['Type'] ?? 'ExtendedTextMessage',
+            external_id: $response['data']['Info']['ID'],
             text: $response['data']['Message']['extendedTextMessage']['text'] ?? $data->content,
-            timestamp: Carbon::parse($response['data']['Info']['Timestamp'] ?? now())
+            sent_at: Carbon::parse($response['data']['Info']['Timestamp'] ?? now())
         );
     }
 }
