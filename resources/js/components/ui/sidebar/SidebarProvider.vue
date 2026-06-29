@@ -24,25 +24,19 @@ const isMobileQuery = useMediaQuery("(max-width: 768px)")
 const isMobile = ref(false)
 const openMobile = ref(false)
 
-let removeNavigateListener: (() => void) | null = null
-
 onMounted(() => {
   watchEffect(() => {
     isMobile.value = isMobileQuery.value
   })
+})
 
-  removeNavigateListener = router.on("navigate", () => {
+onUnmounted(
+  router.on("navigate", () => {
     if (isMobile.value) {
       openMobile.value = false
     }
   })
-})
-
-onUnmounted(() => {
-  if (removeNavigateListener) {
-    removeNavigateListener()
-  }
-})
+)
 
 const open = useVModel(props, "open", emits, {
   defaultValue: props.defaultOpen ?? false,

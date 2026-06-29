@@ -1,5 +1,6 @@
 import { createInertiaApp } from '@inertiajs/vue3';
 import { i18nVue } from 'laravel-vue-i18n';
+import { registerSW } from 'virtual:pwa-register';
 import { createApp, h } from 'vue';
 import { initializeTheme } from '@/composables/useAppearance';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -43,7 +44,7 @@ createInertiaApp({
         return app;
     },
     progress: {
-        color: '#4B5563',
+        color: '#BD5A27',
     },
 });
 
@@ -51,4 +52,14 @@ if (typeof window !== 'undefined') {
     initializeTheme();
 
     initializeFlashToast();
+
+    registerSW({
+        immediate: true,
+        onNeedRefresh() {
+            console.log('Nova versão do PWA disponível!');
+        },
+        onOfflineReady() {
+            console.log('PWA pronto para uso offline.');
+        }
+    });
 }

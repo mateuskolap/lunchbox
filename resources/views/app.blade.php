@@ -22,17 +22,26 @@
         {{-- Inline style to set the HTML background color based on our theme in app.css --}}
         <style>
             html {
-                background-color: oklch(1 0 0);
+                background-color: hsl(30 40% 98%);
             }
 
             html.dark {
-                background-color: oklch(0.145 0 0);
+                background-color: hsl(20 15% 8%);
             }
         </style>
 
         <link rel="icon" href="/favicon.ico" sizes="any">
         <link rel="icon" href="/logo.png" type="image/png">
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+        <!-- Meta tags PWA -->
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <meta name="apple-mobile-web-app-title" content="Ale Marmitas">
+        <meta name="theme-color" content="#BD5A27">
+        
+        <!-- Manifesto gerado pelo VitePWA -->
+        <link rel="manifest" href="/manifest.webmanifest">
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
