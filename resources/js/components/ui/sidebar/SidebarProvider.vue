@@ -2,9 +2,10 @@
 import type { HTMLAttributes, Ref } from "vue"
 import { defaultDocument, useEventListener, useMediaQuery, useVModel } from "@vueuse/core"
 import { TooltipProvider } from "reka-ui"
-import { computed, onMounted, ref, watchEffect } from "vue"
+import { computed, onMounted, onUnmounted, ref, watchEffect } from "vue"
 import { cn } from "@/lib/utils"
 import { provideSidebarContext, SIDEBAR_COOKIE_MAX_AGE, SIDEBAR_COOKIE_NAME, SIDEBAR_KEYBOARD_SHORTCUT, SIDEBAR_WIDTH, SIDEBAR_WIDTH_ICON } from "./utils"
+import { router } from "@inertiajs/vue3"
 
 const props = withDefaults(defineProps<{
   defaultOpen?: boolean
@@ -23,10 +24,24 @@ const isMobileQuery = useMediaQuery("(max-width: 768px)")
 const isMobile = ref(false)
 const openMobile = ref(false)
 
+let removeNavigateListener: (() => void) | null = null
+
 onMounted(() => {
   watchEffect(() => {
     isMobile.value = isMobileQuery.value
   })
+
+  removeNavigateListener = router.on("navigate", () => {
+    if (isMobile.value) {
+      openMobile.value = false
+    }
+  })
+})
+
+onUnmounted(() => {
+  if (removeNavigateListener) {
+    removeNavigateListener()
+  }
 })
 
 const open = useVModel(props, "open", emits, {
