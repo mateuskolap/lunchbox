@@ -68,4 +68,3 @@ const { filters, clearFilters, hasActiveFilters } =
         <CustomerTable :customers="customers" />
     </div>
 </template>
-

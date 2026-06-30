@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import {
+    BarChart3,
     Contact,
     Package,
     Shield,
@@ -20,13 +21,18 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    SidebarGroup,
+    SidebarGroupLabel,
 } from '@/components/ui/sidebar';
+import { usePermissions } from '@/composables/usePermissions';
+import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { dashboard } from '@/routes';
 import { index as customersIndex } from '@/routes/customers';
 import orders, { index as ordersIndex } from '@/routes/orders';
 import { index as productsIndex } from '@/routes/products';
 import { index as rolesIndex } from '@/routes/roles';
 import { index as usersIndex } from '@/routes/users';
+import { salesByCustomer } from '@/routes/reports';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
@@ -68,6 +74,9 @@ const mainNavItems: NavItem[] = [
 ];
 
 const footerNavItems: NavItem[] = [];
+
+const { can } = usePermissions();
+const { isCurrentUrl } = useCurrentUrl();
 </script>
 
 <template>
@@ -86,6 +95,24 @@ const footerNavItems: NavItem[] = [];
 
         <SidebarContent>
             <NavMain :items="mainNavItems" />
+
+            <SidebarGroup v-if="can('reports.sales.index')" class="px-2 py-0">
+                <SidebarGroupLabel>Relatórios</SidebarGroupLabel>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton
+                            as-child
+                            :is-active="isCurrentUrl(salesByCustomer.url())"
+                            tooltip="Vendas por Cliente"
+                        >
+                            <Link :href="salesByCustomer.url()">
+                                <BarChart3 class="size-4" />
+                                <span>Vendas por Cliente</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarGroup>
         </SidebarContent>
 
         <SidebarFooter>

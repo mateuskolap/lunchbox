@@ -1,17 +1,9 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import {
-    ArrowDownCircle,
-    ArrowUpCircle,
-    Receipt,
-    Eye,
-} from 'lucide-vue-next';
+import { ArrowDownCircle, ArrowUpCircle, Receipt, Eye } from 'lucide-vue-next';
 import EmptyState from '@/components/EmptyState.vue';
 import TablePagination from '@/components/TablePagination.vue';
-import {
-    formatCurrency,
-    formatDateTime,
-} from '@/lib/formatters';
+import { formatCurrency, formatDateTime } from '@/lib/formatters';
 import { show as orderShow } from '@/routes/orders';
 import type { PaginatedResponse, Transaction } from '@/types';
 
@@ -44,7 +36,9 @@ function getTransactionIcon(transaction: Transaction) {
     <div
         class="flex flex-1 flex-col overflow-hidden rounded-xl border border-sidebar-border/70 bg-card dark:border-sidebar-border"
     >
-        <div class="flex items-center gap-2 border-b border-sidebar-border/50 px-5 py-4">
+        <div
+            class="flex items-center gap-2 border-b border-sidebar-border/50 px-5 py-4"
+        >
             <Receipt class="size-4 text-muted-foreground" />
             <h3 class="text-sm font-semibold text-muted-foreground">
                 Extrato de Transações
@@ -71,8 +65,8 @@ function getTransactionIcon(transaction: Transaction) {
                             isZeroTransaction(transaction)
                                 ? 'bg-muted/70'
                                 : isDebitTransaction(transaction)
-                                    ? 'bg-destructive/10'
-                                    : 'bg-emerald-500/10'
+                                  ? 'bg-destructive/10'
+                                  : 'bg-emerald-500/10'
                         "
                     >
                         <component
@@ -82,8 +76,8 @@ function getTransactionIcon(transaction: Transaction) {
                                 isZeroTransaction(transaction)
                                     ? 'text-muted-foreground'
                                     : isDebitTransaction(transaction)
-                                        ? 'text-destructive'
-                                        : 'text-emerald-600 dark:text-emerald-400'
+                                      ? 'text-destructive'
+                                      : 'text-emerald-600 dark:text-emerald-400'
                             "
                         />
                     </div>
@@ -96,21 +90,19 @@ function getTransactionIcon(transaction: Transaction) {
                             </p>
                             <Link
                                 v-if="isOrderTransaction(transaction)"
-                                :href="orderShow.url(transaction.transactionable_id)"
-                                class="inline-flex items-center gap-1 rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary hover:bg-primary/20 transition-colors"
+                                :href="
+                                    orderShow.url(
+                                        transaction.transactionable_id,
+                                    )
+                                "
+                                class="inline-flex items-center gap-1 rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary transition-colors hover:bg-primary/20"
                             >
                                 <Eye class="size-3" />
                                 Ver Pedido
                             </Link>
                         </div>
-                        <p
-                            class="mt-0.5 text-xs text-muted-foreground"
-                        >
-                            {{
-                                formatDateTime(
-                                    transaction.created_at,
-                                )
-                            }}
+                        <p class="mt-0.5 text-xs text-muted-foreground">
+                            {{ formatDateTime(transaction.created_at) }}
                         </p>
                     </div>
                     <div class="shrink-0 text-right">
@@ -120,27 +112,25 @@ function getTransactionIcon(transaction: Transaction) {
                                 isZeroTransaction(transaction)
                                     ? 'text-muted-foreground'
                                     : isDebitTransaction(transaction)
-                                        ? 'text-destructive'
-                                        : 'text-emerald-600 dark:text-emerald-400'
+                                      ? 'text-destructive'
+                                      : 'text-emerald-600 dark:text-emerald-400'
                             "
                         >
                             {{
                                 isZeroTransaction(transaction)
                                     ? ''
                                     : isDebitTransaction(transaction)
-                                        ? '-'
-                                        : '+'
-                            }}{{ formatCurrency(Math.abs(Number(transaction.amount))) }}
-                        </p>
-                        <p
-                            class="mt-0.5 text-xs text-muted-foreground"
-                        >
-                            Saldo:
-                            {{
+                                      ? '-'
+                                      : '+'
+                            }}{{
                                 formatCurrency(
-                                    transaction.customer_balance,
+                                    Math.abs(Number(transaction.amount)),
                                 )
                             }}
+                        </p>
+                        <p class="mt-0.5 text-xs text-muted-foreground">
+                            Saldo:
+                            {{ formatCurrency(transaction.customer_balance) }}
                         </p>
                     </div>
                 </div>

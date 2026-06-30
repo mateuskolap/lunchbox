@@ -83,9 +83,7 @@ const paymentMethods = [
                                 id="create-payment-method"
                                 class="w-full"
                             >
-                                <SelectValue
-                                    placeholder="Selecione o método"
-                                />
+                                <SelectValue placeholder="Selecione o método" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem

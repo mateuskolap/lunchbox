@@ -5,6 +5,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SalesReportController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -87,6 +88,11 @@ Route::middleware(['auth', 'verified', 'throttle:120,1'])->group(function () {
 
         });
     });
+
+    // Reports routes
+    Route::prefix('/relatorios')->name('reports.')->group(function () {
+        Route::middleware('can:reports.sales.index')->get('/vendas', [SalesReportController::class, 'salesByCustomer'])->name('sales-by-customer');
+    });
 });
 
-require __DIR__ . '/settings.php';
+require __DIR__.'/settings.php';

@@ -5,7 +5,7 @@
             alt=""
             class="size-8 shrink-0 rounded-full object-cover"
         />
-        <span class="truncate text-sm font-semibold leading-tight">
+        <span class="truncate text-sm leading-tight font-semibold">
             Ale Marmitas
         </span>
     </div>

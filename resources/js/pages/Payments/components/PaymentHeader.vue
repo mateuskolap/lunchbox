@@ -43,9 +43,6 @@ defineProps<{
             </div>
         </div>
 
-        <CreatePaymentDialog
-            v-if="canCreatePayment"
-            :customer="customer"
-        />
+        <CreatePaymentDialog v-if="canCreatePayment" :customer="customer" />
     </div>
 </template>
