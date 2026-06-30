@@ -50,7 +50,7 @@ class OrderController extends Controller
         return Inertia::render('Orders/Index', [
             'orders' => Order::with('customer')
                 ->when($validated['customer_name'] ?? null, function ($query) use ($validated) {
-                    $query->whereHas('customer', fn($q) => $q->where('name', 'like', "%{$validated['customer_name']}%"));
+                    $query->whereHas('customer', fn($q) => $q->whereLike('name', 'like', "%{$validated['customer_name']}%"));
                 })
                 ->when($validated['status'] ?? null, function ($query) use ($validated) {
                     $query->where('status', $validated['status']);
