@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-vue-next';
 import OrderController from '@/actions/App/Http/Controllers/OrderController';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
-import { index as ordersIndex } from '@/routes/orders';
+import { show as orderShow, index as ordersIndex } from '@/routes/orders';
 import type { Customer, Product, Order } from '@/types';
 import OrderForm from './OrderForm.vue';
 
@@ -12,7 +12,6 @@ defineProps<{
     order: Order;
     customers: Customer[];
     products: Product[];
-    list_url?: string;
 }>();
 
 defineOptions({
@@ -42,7 +41,7 @@ defineOptions({
                 as-child
                 class="mt-1 shrink-0 sm:mt-0"
             >
-                <Link :href="$page.props.previousUrl || list_url || ordersIndex()">
+                <Link :href="orderShow.url(order.id)">
                     <ArrowLeft class="size-4" />
                     <span class="sr-only">Voltar</span>
                 </Link>

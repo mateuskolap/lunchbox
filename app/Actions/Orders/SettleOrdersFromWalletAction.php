@@ -8,26 +8,13 @@ use Throwable;
 
 readonly class SettleOrdersFromWalletAction
 {
-    public function __construct(
-        private CreateOrderTransactionAction $createOrderTransaction,
-    )
-    {
-    }
-
     /**
-     * @param Customer $customer
-     * @return void
      * @throws Throwable
      */
     public function execute(Customer $customer): void
     {
         DB::transaction(function () use ($customer) {
             $customer->refresh();
-            $customerBalance = $customer->balance;
-
-            if ($customerBalance <= 0) {
-                return;
-            }
 
             $unpaidOrders = $customer->orders()
                 ->unpaid()
@@ -35,7 +22,12 @@ readonly class SettleOrdersFromWalletAction
                 ->orderBy('id')
                 ->get();
 
-            $remainingBalance = $customerBalance;
+            $totalPending = $unpaidOrders->sum(fn($order) => $order->total_amount - $order->paid_amount);
+            $remainingBalance = $customer->balance + $totalPending;
+
+            if ($remainingBalance <= 0) {
+                return;
+            }
 
             $unpaidOrders->each(function ($order) use ($customer, &$remainingBalance) {
                 if ($remainingBalance <= 0) {

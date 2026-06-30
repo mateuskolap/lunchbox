@@ -35,7 +35,7 @@ defineProps<{
                 as-child
                 class="mt-1 shrink-0 sm:mt-0"
             >
-                <Link :href="$page.props.previousUrl || listUrl || ordersIndex()">
+                <Link :href="listUrl || ordersIndex()">
                     <ArrowLeft class="size-4" />
                     <span class="sr-only">Voltar</span>
                 </Link>

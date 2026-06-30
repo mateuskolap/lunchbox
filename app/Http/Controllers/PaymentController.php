@@ -8,6 +8,7 @@ use App\Data\Payments\CreatePaymentData;
 use App\Enums\PaymentMethodEnum;
 use App\Models\Customer;
 use App\Models\Payment;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -25,12 +26,46 @@ class PaymentController extends Controller
     {
     }
 
-    public function customerIndex(Customer $customer): Response
+    public function customerIndex(Request $request, Customer $customer): Response
     {
+        $validated = $request->validate([
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date'],
+        ]);
+
+        $startDate = ($validated['start_date'] ?? null) ? Carbon::parse($validated['start_date'])->startOfDay() : null;
+        $endDate = ($validated['end_date'] ?? null) ? Carbon::parse($validated['end_date'])->startOfDay() : null;
+
         return Inertia::render('Payments/CustomerIndex', [
-            'payments' => $customer->payments()->latest()->paginate(15, ['*'], 'payments_page')->toArray(),
-            'transactions' => $customer->transactions()->latest()->paginate(15, ['*'], 'transactions_page'),
+            'payments' => $customer->payments()
+                ->when($startDate, function ($query) use ($startDate) {
+                    $query->where('paid_at', '>=', Carbon::parse($startDate)->startOfDay());
+                })
+                ->when($endDate, function ($query) use ($endDate) {
+                    $query->where('paid_at', '<=', Carbon::parse($endDate)->endOfDay());
+                })
+                ->latest()
+                ->paginate(15, ['*'], 'payments_page'),
+            'transactions' => $customer->transactions()
+                ->when($startDate, function ($query) use ($startDate) {
+                    $query->where('created_at', '>=', Carbon::parse($startDate)->startOfDay());
+                })
+                ->when($endDate, function ($query) use ($endDate) {
+                    $query->where('created_at', '<=', Carbon::parse($endDate)->endOfDay());
+                })
+                ->latest()
+                ->paginate(15, ['*'], 'transactions_page'),
+            'unpaid_orders' => $customer->orders()
+                ->when($startDate, function ($query) use ($startDate) {
+                    $query->where('date', '>=', Carbon::parse($startDate)->startOfDay());
+                })
+                ->when($endDate, function ($query) use ($endDate) {
+                    $query->where('date', '<=', Carbon::parse($endDate)->endOfDay());
+                })
+                ->unpaid()
+                ->paginate(15, ['*'], 'unpaid_orders_page'),
             'customer' => $customer,
+            'filters' => $request->only(['start_date', 'end_date']),
         ]);
     }
 

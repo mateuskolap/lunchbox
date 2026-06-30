@@ -32,7 +32,6 @@ class OrderController extends Controller
         private readonly UpdateOrderWithItemsAction $updateOrderWithItems,
         private readonly CancelOrderAction          $cancelOrder,
         private readonly ReopenOrderAction          $reopenOrder,
-        private readonly WhatsAppService            $whatsAppService
     )
     {
     }
