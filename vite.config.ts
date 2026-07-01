@@ -31,9 +31,12 @@ export default defineConfig({
         VitePWA({
             registerType: 'autoUpdate',
             injectRegister: false,
+            manifestFilename: 'manifest.webmanifest',
             workbox: {
                 globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
                 navigateFallback: null,
+                clientsClaim: true,
+                skipWaiting: true,
             },
             manifest: {
                 name: 'Ale Marmitas',
@@ -47,19 +50,37 @@ export default defineConfig({
                 scope: '/',
                 icons: [
                     {
-                        src: '/logo.png',
-                        sizes: '512x512',
+                        src: '/icon-192x192.png',
+                        sizes: '192x192',
                         type: 'image/png',
-                        purpose: 'any'
+                        purpose: 'any',
                     },
                     {
-                        src: '/logo.png',
+                        src: '/icon-384x384.png',
+                        sizes: '384x384',
+                        type: 'image/png',
+                        purpose: 'any',
+                    },
+                    {
+                        src: '/icon-512x512.png',
                         sizes: '512x512',
                         type: 'image/png',
-                        purpose: 'maskable'
-                    }
-                ]
-            }
+                        purpose: 'any',
+                    },
+                    {
+                        src: '/icon-192x192.png',
+                        sizes: '192x192',
+                        type: 'image/png',
+                        purpose: 'maskable',
+                    },
+                    {
+                        src: '/icon-512x512.png',
+                        sizes: '512x512',
+                        type: 'image/png',
+                        purpose: 'maskable',
+                    },
+                ],
+            },
         })
     ],
     server: {
