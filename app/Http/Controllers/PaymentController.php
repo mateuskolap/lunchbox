@@ -9,6 +9,9 @@ use App\Enums\PaymentMethodEnum;
 use App\Models\Customer;
 use App\Models\Payment;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -33,35 +36,17 @@ class PaymentController extends Controller
             'end_date' => ['nullable', 'date'],
         ]);
 
-        $startDate = ($validated['start_date'] ?? null) ? Carbon::parse($validated['start_date'])->startOfDay() : null;
-        $endDate = ($validated['end_date'] ?? null) ? Carbon::parse($validated['end_date'])->startOfDay() : null;
+        $start = ($validated['start_date'] ?? null) ? Carbon::parse($validated['start_date'])->startOfDay() : null;
+        $end = ($validated['end_date'] ?? null) ? Carbon::parse($validated['end_date'])->startOfDay() : null;
 
         return Inertia::render('Payments/CustomerIndex', [
-            'payments' => $customer->payments()
-                ->when($startDate, function ($query) use ($startDate) {
-                    $query->where('paid_at', '>=', Carbon::parse($startDate)->startOfDay());
-                })
-                ->when($endDate, function ($query) use ($endDate) {
-                    $query->where('paid_at', '<=', Carbon::parse($endDate)->endOfDay());
-                })
+            'payments' => $this->filterDates($customer->payments(), 'paid_at', $start, $end)
                 ->latest()
                 ->paginate(15, ['*'], 'payments_page'),
-            'transactions' => $customer->transactions()
-                ->when($startDate, function ($query) use ($startDate) {
-                    $query->where('created_at', '>=', Carbon::parse($startDate)->startOfDay());
-                })
-                ->when($endDate, function ($query) use ($endDate) {
-                    $query->where('created_at', '<=', Carbon::parse($endDate)->endOfDay());
-                })
+            'transactions' => $this->filterDates($customer->transactions(), 'created_at', $start, $end)
                 ->latest()
                 ->paginate(15, ['*'], 'transactions_page'),
-            'unpaid_orders' => $customer->orders()
-                ->when($startDate, function ($query) use ($startDate) {
-                    $query->where('date', '>=', Carbon::parse($startDate)->startOfDay());
-                })
-                ->when($endDate, function ($query) use ($endDate) {
-                    $query->where('date', '<=', Carbon::parse($endDate)->endOfDay());
-                })
+            'unpaid_orders' => $this->filterDates($customer->orders(), 'date', $start, $end)
                 ->unpaid()
                 ->paginate(15, ['*'], 'unpaid_orders_page'),
             'customer' => $customer,
@@ -126,5 +111,26 @@ class PaymentController extends Controller
 
             return back();
         }
+    }
+
+    /**
+     * @template TModel of Model
+     *
+     * @param Builder<TModel>|Relation<TModel> $query
+     * @param string $column
+     * @param Carbon $start
+     * @param Carbon $end
+     * @return Builder<TModel>|Relation<TModel>
+     */
+    private function filterDates(
+        Builder|Relation $query,
+        string           $column,
+        Carbon           $start,
+        Carbon           $end
+    ): Builder|Relation
+    {
+        return $query
+            ->when($start, fn($q) => $q->where($column, '>=', $start))
+            ->when($end, fn($q) => $q->where($column, '<=', $end));
     }
 }
