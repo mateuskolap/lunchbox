@@ -118,15 +118,15 @@ class PaymentController extends Controller
      *
      * @param Builder<TModel>|Relation<TModel> $query
      * @param string $column
-     * @param Carbon $start
-     * @param Carbon $end
+     * @param Carbon|null $start
+     * @param Carbon|null $end
      * @return Builder<TModel>|Relation<TModel>
      */
     private function filterDates(
         Builder|Relation $query,
         string           $column,
-        Carbon           $start,
-        Carbon           $end
+        ?Carbon           $start = null,
+        ?Carbon           $end = null
     ): Builder|Relation
     {
         return $query
