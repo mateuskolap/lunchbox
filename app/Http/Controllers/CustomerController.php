@@ -15,14 +15,16 @@ class CustomerController extends Controller
     {
         $validated = $request->validate([
             'name' => ['nullable', 'string'],
+            'debtors_only' => ['nullable', 'bool'],
         ]);
 
         return Inertia::render('Customers/Index', [
             'customers' => Customer::query()
                 ->when($validated['name'] ?? null, fn($q) => $q->whereLike('name', "%{$validated['name']}%"))
+                ->when($validated['debtors_only'] ?? null, fn($q) => $q->where('balance', '<', 0))
                 ->orderBy('name')
                 ->paginate(25),
-            'filters' => $request->only(['name']),
+            'filters' => $request->only(['name', 'debtors_only']),
         ]);
     }
 

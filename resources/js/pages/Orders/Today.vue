@@ -7,6 +7,7 @@ import { create as ordersCreate, today as ordersToday } from '@/routes/orders';
 import type { Order } from '@/types';
 import TodayOrdersList from './components/TodayOrdersList.vue';
 import TodaySummary from './components/TodaySummary.vue';
+import TodayTotalCard from './components/TodayTotalCard.vue';
 
 defineOptions({
     layout: {
@@ -60,6 +61,16 @@ const lunchboxSummary = computed<LunchboxSummaryItem[]>(() => {
         .map(([name, quantity]) => ({ name, quantity }))
         .sort((a, b) => a.name.localeCompare(b.name));
 });
+
+const todayTotal = computed(() => {
+    return props.orders
+        .filter((order) => order.status !== 'canceled')
+        .reduce((sum, order) => sum + Number(order.total_amount), 0);
+});
+
+const todayCount = computed(() => {
+    return props.orders.filter((order) => order.status !== 'canceled').length;
+});
 </script>
 
 <template>
@@ -73,6 +84,9 @@ const lunchboxSummary = computed<LunchboxSummaryItem[]>(() => {
                 description="Acompanhe os pedidos de hoje em tempo real."
             />
         </div>
+
+        <!-- Total open & concluded orders card -->
+        <TodayTotalCard :total="todayTotal" :count="todayCount" />
 
         <!-- Lunchbox Summary -->
         <TodaySummary :summary="lunchboxSummary" />

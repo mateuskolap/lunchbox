@@ -11,6 +11,7 @@ import CreateCustomerDialog from './CreateCustomerDialog.vue';
 
 interface CustomerFiltersState {
     name: string;
+    debtors_only: boolean;
 }
 
 defineOptions({
@@ -28,6 +29,7 @@ const props = defineProps<{
     customers: PaginatedResponse<Customer>;
     filters: {
         name?: string;
+        debtors_only?: string | boolean;
     };
 }>();
 
@@ -38,11 +40,14 @@ const { filters, clearFilters, hasActiveFilters } =
         () => customersIndex(),
         {
             name: props.filters.name || '',
+            debtors_only: String(props.filters.debtors_only) === '1',
         },
         {
             transform: (f) => ({
                 name: f.name || undefined,
+                debtors_only: f.debtors_only ? '1' : '0',
             }),
+            immediateFields: ['debtors_only'],
         },
     );
 </script>
@@ -68,4 +73,3 @@ const { filters, clearFilters, hasActiveFilters } =
         <CustomerTable :customers="customers" />
     </div>
 </template>
-

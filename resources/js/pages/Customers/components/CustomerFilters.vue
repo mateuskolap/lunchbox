@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { Filter, X } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface CustomerFilters {
     name: string;
+    debtors_only: boolean;
 }
 
 defineProps<{
@@ -54,6 +57,21 @@ const model = defineModel<CustomerFilters>({ required: true });
                     placeholder="Nome do cliente"
                     class="h-9"
                 />
+            </div>
+
+            <!-- Debtors Only Filter -->
+            <div class="flex h-9 items-center space-x-2 py-1">
+                <Checkbox
+                    id="filter-debtors-only"
+                    :model-value="model.debtors_only"
+                    @update:model-value="model.debtors_only = !!$event"
+                />
+                <Label
+                    for="filter-debtors-only"
+                    class="cursor-pointer text-sm font-medium text-muted-foreground select-none hover:text-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                    Apenas devedores
+                </Label>
             </div>
         </div>
     </div>
