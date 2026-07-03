@@ -13,7 +13,7 @@ defineProps<{
     <div class="grid gap-4">
         <!-- Total Amount Card -->
         <AppCard
-            title="Total em Pedidos (Abertos e Concluídos)"
+            title="Total em Pedidos"
             :value="formatCurrency(total)"
             :icon="DollarSign"
             icon-bg-class="bg-emerald-500/10"
