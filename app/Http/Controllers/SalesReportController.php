@@ -30,31 +30,29 @@ class SalesReportController extends Controller
 
         $customerName = trim($validated['customer'] ?? '');
 
+        $startDate = Carbon::parse($startDate)->startOfDay();
+        $endDate = Carbon::parse($endDate)->endOfDay();
+
+        $orderFilters = function ($query) use ($startDate, $endDate) {
+            $query->where('date', '>=', $startDate)
+                ->where('date', '<=', $endDate)
+                ->where('status', '!=', OrderStatusEnum::CANCELED);
+        };
+
         $query = Customer::query()
-            ->withCount(['orders' => function ($q) use ($startDate, $endDate) {
-                $q->whereBetween('date', [$startDate, $endDate])
-                    ->where('status', '!=', OrderStatusEnum::CANCELED);
-            }])
-            ->withSum(['orders' => function ($q) use ($startDate, $endDate) {
-                $q->whereBetween('date', [$startDate, $endDate])
-                    ->where('status', '!=', OrderStatusEnum::CANCELED);
-            }], 'total_amount')
-            ->withSum(['orders' => function ($q) use ($startDate, $endDate) {
-                $q->whereBetween('date', [$startDate, $endDate])
-                    ->where('status', '!=', OrderStatusEnum::CANCELED);
-            }], 'paid_amount')
+            ->whereHas('orders', $orderFilters)
+            ->withCount(['orders' => $orderFilters])
+            ->withSum(['orders' => $orderFilters], 'total_amount')
+            ->withSum(['orders' => $orderFilters], 'paid_amount')
             ->when($customerName, function ($query, $customerName) {
-                $query->whereRaw('LOWER(name) like ?', ['%'.mb_strtolower($customerName).'%']);
+                $query->where('name', 'ilike', "%{$customerName}%");
             });
 
         $totalsQuery = Order::query()
-            ->whereBetween('date', [$startDate, $endDate])
-            ->where('status', '!=', OrderStatusEnum::CANCELED)
-            ->when($customerName, function ($query, $customerName) {
-                $query->whereHas('customer', function ($q) use ($customerName) {
-                    $q->whereRaw('LOWER(name) like ?', ['%'.mb_strtolower($customerName).'%']);
-                });
-            });
+            ->where($orderFilters)
+            ->when($customerName, fn($q) =>
+                $q->whereHas('customer', fn($q) => $q->where('name', 'ilike', "%{$customerName}%"))
+            );
 
         $totalSales = $totalsQuery->sum('total_amount');
         $totalPaid = $totalsQuery->sum('paid_amount');
@@ -65,14 +63,10 @@ class SalesReportController extends Controller
 
         return Inertia::render('Reports/SalesByCustomer', [
             'customers' => $customers,
-            'total_sales' => (float) $totalSales,
-            'total_paid' => (float) $totalPaid,
-            'total_balance' => (float) ($totalSales - $totalPaid),
-            'filters' => [
-                'start_date' => $request->input('start_date', $startDate->toDateString()),
-                'end_date' => $request->input('end_date', $endDate->toDateString()),
-                'customer' => $request->input('customer'),
-            ],
+            'total_sales' => $totalSales,
+            'total_paid' => $totalPaid,
+            'total_balance' => $totalSales - $totalPaid,
+            'filters' => $request->only(['start_date', 'end_date', 'customer']),
         ]);
     }
 }
