@@ -31,7 +31,9 @@ defineProps<{
     <div
         class="flex flex-1 flex-col overflow-hidden rounded-xl border border-sidebar-border/70 bg-card dark:border-sidebar-border"
     >
-        <div class="flex items-center gap-2 border-b border-sidebar-border/50 px-5 py-4">
+        <div
+            class="flex items-center gap-2 border-b border-sidebar-border/50 px-5 py-4"
+        >
             <ShoppingCart class="size-4 text-muted-foreground" />
             <h3 class="text-sm font-semibold text-muted-foreground">
                 Pedidos Pendentes de Pagamento
@@ -53,30 +55,49 @@ defineProps<{
                         <TableHead>Data</TableHead>
                         <TableHead class="text-right">Valor Total</TableHead>
                         <TableHead class="text-right">Valor Pago</TableHead>
-                        <TableHead class="w-[120px] text-center">Status</TableHead>
+                        <TableHead class="w-[120px] text-center"
+                            >Status</TableHead
+                        >
                         <TableHead class="w-[80px] text-right">Ações</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow v-for="order in unpaidOrders.data" :key="order.id">
+                    <TableRow
+                        v-for="order in unpaidOrders.data"
+                        :key="order.id"
+                    >
                         <TableCell class="font-bold">#{{ order.id }}</TableCell>
                         <TableCell>{{ formatDate(order.date) }}</TableCell>
                         <TableCell class="text-right font-medium">
                             {{ formatCurrency(order.total_amount) }}
                         </TableCell>
                         <TableCell class="text-right font-medium">
-                            <span :class="{
-                                'text-muted-foreground': order.status === 'canceled',
-                                'text-emerald-600 dark:text-emerald-400 font-semibold': order.status !== 'canceled' && Number(order.paid_amount) >= Number(order.total_amount),
-                                'text-amber-500 font-semibold': order.status !== 'canceled' && Number(order.paid_amount) > 0 && Number(order.paid_amount) < Number(order.total_amount),
-                                'text-destructive': order.status !== 'canceled' && Number(order.paid_amount) <= 0
-                            }">
+                            <span
+                                :class="{
+                                    'text-muted-foreground':
+                                        order.status === 'canceled',
+                                    'font-semibold text-emerald-600 dark:text-emerald-400':
+                                        order.status !== 'canceled' &&
+                                        Number(order.paid_amount) >=
+                                            Number(order.total_amount),
+                                    'font-semibold text-amber-500':
+                                        order.status !== 'canceled' &&
+                                        Number(order.paid_amount) > 0 &&
+                                        Number(order.paid_amount) <
+                                            Number(order.total_amount),
+                                    'text-destructive':
+                                        order.status !== 'canceled' &&
+                                        Number(order.paid_amount) <= 0,
+                                }"
+                            >
                                 {{ formatCurrency(order.paid_amount) }}
                             </span>
                         </TableCell>
                         <TableCell class="text-center">
                             <Badge
-                                :variant="getOrderStatusBadgeVariant(order.status)"
+                                :variant="
+                                    getOrderStatusBadgeVariant(order.status)
+                                "
                                 class="capitalize"
                             >
                                 {{ trans(order.status) }}
@@ -91,7 +112,9 @@ defineProps<{
                                     as-child
                                 >
                                     <Link :href="orderShow.url(order.id)">
-                                        <Eye class="size-4 text-muted-foreground" />
+                                        <Eye
+                                            class="size-4 text-muted-foreground"
+                                        />
                                         <span class="sr-only">Ver</span>
                                     </Link>
                                 </Button>

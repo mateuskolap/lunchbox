@@ -174,7 +174,7 @@ const isPriceEdited = (item: SelectedItem) => {
 
         <div class="grid gap-6 md:grid-cols-12">
             <!-- Left Side: Basic Info -->
-            <div class="space-y-6 md:col-span-4 min-w-0">
+            <div class="min-w-0 space-y-6 md:col-span-4">
                 <div
                     class="rounded-xl border border-sidebar-border/70 bg-card p-5 dark:border-sidebar-border"
                 >
@@ -259,7 +259,7 @@ const isPriceEdited = (item: SelectedItem) => {
             </div>
 
             <!-- Right Side: Items Selection -->
-            <div class="space-y-6 md:col-span-8 min-w-0">
+            <div class="min-w-0 space-y-6 md:col-span-8">
                 <div
                     class="rounded-xl border border-sidebar-border/70 bg-card p-5 dark:border-sidebar-border"
                 >
@@ -299,7 +299,7 @@ const isPriceEdited = (item: SelectedItem) => {
                                 class="h-9"
                             />
                         </div>
-                        <div class="sm:col-span-2 btn-container">
+                        <div class="btn-container sm:col-span-2">
                             <Button
                                 type="button"
                                 variant="outline"
@@ -350,13 +350,18 @@ const isPriceEdited = (item: SelectedItem) => {
                                         item.name
                                     }}</TableCell>
                                     <TableCell class="text-right">
-                                        <div class="flex items-center justify-end gap-1">
-                                            <span class="text-xs text-muted-foreground">R$</span>
+                                        <div
+                                            class="flex items-center justify-end gap-1"
+                                        >
+                                            <span
+                                                class="text-xs text-muted-foreground"
+                                                >R$</span
+                                            >
                                             <Input
                                                 type="number"
                                                 step="0.01"
                                                 v-model.number="item.price"
-                                                class="h-8 w-20 text-right p-1 text-xs"
+                                                class="h-8 w-20 p-1 text-right text-xs"
                                             />
                                         </div>
                                     </TableCell>
@@ -399,12 +404,12 @@ const isPriceEdited = (item: SelectedItem) => {
                             <span
                                 >Total de Itens:
                                 <strong class="text-foreground">{{
-                                        selectedItems.reduce(
-                                            (acc: any, item: { quantity: any }) =>
-                                                acc + item.quantity,
-                                            0
-                                        )
-                                    }}</strong>
+                                    selectedItems.reduce(
+                                        (acc: any, item: { quantity: any }) =>
+                                            acc + item.quantity,
+                                        0,
+                                    )
+                                }}</strong>
                             </span>
                         </div>
                         <div class="text-lg font-bold text-foreground">

@@ -33,7 +33,9 @@ defineProps<{
     <div
         class="flex flex-1 flex-col overflow-hidden rounded-xl border border-sidebar-border/70 bg-card dark:border-sidebar-border"
     >
-        <div class="flex items-center gap-2 border-b border-sidebar-border/50 px-5 py-4">
+        <div
+            class="flex items-center gap-2 border-b border-sidebar-border/50 px-5 py-4"
+        >
             <CreditCard class="size-4 text-muted-foreground" />
             <h3 class="text-sm font-semibold text-muted-foreground">
                 Pagamentos
@@ -67,11 +69,10 @@ defineProps<{
                         v-for="payment in payments.data"
                         :key="payment.id"
                     >
-                        <TableCell class="whitespace-nowrap text-sm">
+                        <TableCell class="text-sm whitespace-nowrap">
                             {{
                                 formatDateTime(
-                                    payment.paid_at ||
-                                        payment.created_at,
+                                    payment.paid_at || payment.created_at,
                                 )
                             }}
                         </TableCell>
@@ -90,19 +91,14 @@ defineProps<{
                         <TableCell class="text-center">
                             <Badge
                                 :variant="
-                                    getPaymentStatusBadgeVariant(
-                                        payment.status,
-                                    )
+                                    getPaymentStatusBadgeVariant(payment.status)
                                 "
                                 class="capitalize"
                             >
                                 {{ trans(payment.status) }}
                             </Badge>
                         </TableCell>
-                        <TableCell
-                            v-if="canCancelPayment"
-                            class="text-right"
-                        >
+                        <TableCell v-if="canCancelPayment" class="text-right">
                             <ConfirmationDialog
                                 v-if="payment.status !== 'canceled'"
                                 title="Cancelar Pagamento"

@@ -74,12 +74,24 @@ const { can } = usePermissions();
                             {{ formatCurrency(order.total_amount) }}
                         </TableCell>
                         <TableCell class="text-right font-medium">
-                            <span :class="{
-                                'text-muted-foreground': order.status === 'canceled',
-                                'text-emerald-600 dark:text-emerald-400 font-semibold': order.status !== 'canceled' && Number(order.paid_amount) >= Number(order.total_amount),
-                                'text-amber-500 font-semibold': order.status !== 'canceled' && Number(order.paid_amount) > 0 && Number(order.paid_amount) < Number(order.total_amount),
-                                'text-destructive': order.status !== 'canceled' && Number(order.paid_amount) <= 0
-                            }">
+                            <span
+                                :class="{
+                                    'text-muted-foreground':
+                                        order.status === 'canceled',
+                                    'font-semibold text-emerald-600 dark:text-emerald-400':
+                                        order.status !== 'canceled' &&
+                                        Number(order.paid_amount) >=
+                                            Number(order.total_amount),
+                                    'font-semibold text-amber-500':
+                                        order.status !== 'canceled' &&
+                                        Number(order.paid_amount) > 0 &&
+                                        Number(order.paid_amount) <
+                                            Number(order.total_amount),
+                                    'text-destructive':
+                                        order.status !== 'canceled' &&
+                                        Number(order.paid_amount) <= 0,
+                                }"
+                            >
                                 {{ formatCurrency(order.paid_amount) }}
                             </span>
                         </TableCell>

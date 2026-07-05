@@ -54,11 +54,18 @@ function getTransactionIcon(transaction: Transaction) {
                         <TableHead>Transação</TableHead>
                         <TableHead>Data</TableHead>
                         <TableHead class="text-right">Valor</TableHead>
-                        <TableHead class="text-right">Saldo do Cliente</TableHead>
+                        <TableHead class="text-right"
+                            >Saldo do Cliente</TableHead
+                        >
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow v-if="!order.transactions || order.transactions.length === 0">
+                    <TableRow
+                        v-if="
+                            !order.transactions ||
+                            order.transactions.length === 0
+                        "
+                    >
                         <TableCell
                             colspan="4"
                             class="py-6 text-center text-sm text-muted-foreground"
@@ -66,7 +73,10 @@ function getTransactionIcon(transaction: Transaction) {
                             Nenhuma transação vinculada a este pedido.
                         </TableCell>
                     </TableRow>
-                    <TableRow v-for="transaction in order.transactions" :key="transaction.id">
+                    <TableRow
+                        v-for="transaction in order.transactions"
+                        :key="transaction.id"
+                    >
                         <TableCell class="font-medium">
                             <div class="flex items-center gap-2">
                                 <div
@@ -75,8 +85,8 @@ function getTransactionIcon(transaction: Transaction) {
                                         isZeroTransaction(transaction)
                                             ? 'bg-muted/70'
                                             : isDebitTransaction(transaction)
-                                                ? 'bg-destructive/10'
-                                                : 'bg-emerald-500/10'
+                                              ? 'bg-destructive/10'
+                                              : 'bg-emerald-500/10'
                                     "
                                 >
                                     <component
@@ -85,9 +95,11 @@ function getTransactionIcon(transaction: Transaction) {
                                         :class="
                                             isZeroTransaction(transaction)
                                                 ? 'text-muted-foreground'
-                                                : isDebitTransaction(transaction)
-                                                    ? 'text-destructive'
-                                                    : 'text-emerald-600 dark:text-emerald-400'
+                                                : isDebitTransaction(
+                                                        transaction,
+                                                    )
+                                                  ? 'text-destructive'
+                                                  : 'text-emerald-600 dark:text-emerald-400'
                                         "
                                     />
                                 </div>
@@ -96,7 +108,9 @@ function getTransactionIcon(transaction: Transaction) {
                                 </span>
                             </div>
                         </TableCell>
-                        <TableCell class="text-sm text-muted-foreground whitespace-nowrap">
+                        <TableCell
+                            class="text-sm whitespace-nowrap text-muted-foreground"
+                        >
                             {{ formatDateTime(transaction.created_at) }}
                         </TableCell>
                         <TableCell
@@ -105,19 +119,25 @@ function getTransactionIcon(transaction: Transaction) {
                                 isZeroTransaction(transaction)
                                     ? 'text-muted-foreground'
                                     : isDebitTransaction(transaction)
-                                        ? 'text-destructive'
-                                        : 'text-emerald-600 dark:text-emerald-400'
+                                      ? 'text-destructive'
+                                      : 'text-emerald-600 dark:text-emerald-400'
                             "
                         >
                             {{
                                 isZeroTransaction(transaction)
                                     ? ''
                                     : isDebitTransaction(transaction)
-                                        ? '-'
-                                        : '+'
-                            }}{{ formatCurrency(Math.abs(Number(transaction.amount))) }}
+                                      ? '-'
+                                      : '+'
+                            }}{{
+                                formatCurrency(
+                                    Math.abs(Number(transaction.amount)),
+                                )
+                            }}
                         </TableCell>
-                        <TableCell class="text-right text-sm text-muted-foreground">
+                        <TableCell
+                            class="text-right text-sm text-muted-foreground"
+                        >
                             {{ formatCurrency(transaction.customer_balance) }}
                         </TableCell>
                     </TableRow>

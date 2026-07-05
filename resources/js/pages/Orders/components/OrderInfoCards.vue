@@ -64,22 +64,41 @@ defineProps<{
                     <span
                         class="text-base font-bold"
                         :class="{
-                            'text-emerald-600 dark:text-emerald-400': order.status !== 'canceled' && Number(order.paid_amount) >= Number(order.total_amount),
-                            'text-amber-500': order.status !== 'canceled' && Number(order.paid_amount) > 0 && Number(order.paid_amount) < Number(order.total_amount),
-                            'text-destructive': order.status !== 'canceled' && Number(order.paid_amount) <= 0,
-                            'text-muted-foreground line-through': order.status === 'canceled'
+                            'text-emerald-600 dark:text-emerald-400':
+                                order.status !== 'canceled' &&
+                                Number(order.paid_amount) >=
+                                    Number(order.total_amount),
+                            'text-amber-500':
+                                order.status !== 'canceled' &&
+                                Number(order.paid_amount) > 0 &&
+                                Number(order.paid_amount) <
+                                    Number(order.total_amount),
+                            'text-destructive':
+                                order.status !== 'canceled' &&
+                                Number(order.paid_amount) <= 0,
+                            'text-muted-foreground line-through':
+                                order.status === 'canceled',
                         }"
                     >
                         {{ formatCurrency(order.paid_amount) }}
                     </span>
                 </div>
                 <div
-                    v-if="Number(order.paid_amount) < Number(order.total_amount) && order.status !== 'canceled'"
+                    v-if="
+                        Number(order.paid_amount) <
+                            Number(order.total_amount) &&
+                        order.status !== 'canceled'
+                    "
                     class="flex flex-wrap items-baseline justify-between gap-1 border-t border-sidebar-border/50 pt-2 text-sm"
                 >
                     <span class="text-muted-foreground">Valor Restante:</span>
                     <span class="text-base font-bold text-amber-500">
-                        {{ formatCurrency(Number(order.total_amount) - Number(order.paid_amount)) }}
+                        {{
+                            formatCurrency(
+                                Number(order.total_amount) -
+                                    Number(order.paid_amount),
+                            )
+                        }}
                     </span>
                 </div>
             </div>

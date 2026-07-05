@@ -59,9 +59,7 @@ onMounted(async () => {
                         :is="isRecoveryCodesVisible ? EyeOff : Eye"
                         class="size-4"
                     />
-                    {{
-                        isRecoveryCodesVisible ? 'Ocultar' : 'Visualizar'
-                    }}
+                    {{ isRecoveryCodesVisible ? 'Ocultar' : 'Visualizar' }}
                     códigos de recuperação
                 </Button>
 

@@ -8,7 +8,10 @@ import AuthLayout from '@/layouts/AuthLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { initializeFlashToast } from '@/lib/flashToast';
 
-const appName = typeof window !== 'undefined' ? (window.document.title || 'Laravel') : 'Laravel';
+const appName =
+    typeof window !== 'undefined'
+        ? window.document.title || 'Laravel'
+        : 'Laravel';
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
@@ -61,7 +64,7 @@ if (typeof window !== 'undefined') {
             },
             onOfflineReady() {
                 console.log('PWA pronto para uso offline.');
-            }
+            },
         });
     }
 }
