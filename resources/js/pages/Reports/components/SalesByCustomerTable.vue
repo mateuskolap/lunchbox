@@ -1,0 +1,114 @@
+<script setup lang="ts">
+import { Contact } from 'lucide-vue-next';
+import EmptyState from '@/components/EmptyState.vue';
+import TablePagination from '@/components/TablePagination.vue';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import { formatCurrency, formatPhone } from '@/lib/formatters';
+import type { PaginatedResponse } from '@/types';
+
+export interface CustomerReportRow {
+    id: number;
+    name: string;
+    phone?: string;
+    balance: string | number;
+    orders_count: number;
+    orders_sum_total_amount: string | null;
+    orders_sum_paid_amount: string | null;
+}
+
+defineProps<{
+    customers: PaginatedResponse<CustomerReportRow>;
+}>();
+</script>
+
+<template>
+    <div
+        class="flex flex-1 flex-col overflow-hidden rounded-xl border border-sidebar-border/70 bg-card dark:border-sidebar-border"
+    >
+        <EmptyState
+            v-if="customers.data.length === 0"
+            :icon="Contact"
+            title="Nenhum registro encontrado"
+            description="Não há vendas registradas para os filtros selecionados no período."
+        />
+
+        <div v-else class="flex flex-1 flex-col overflow-auto">
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Cliente</TableHead>
+                        <TableHead>Telefone</TableHead>
+                        <TableHead class="text-center">Qtd. Pedidos</TableHead>
+                        <TableHead class="text-right">Total Vendido</TableHead>
+                        <TableHead class="text-right">Total Pago</TableHead>
+                        <TableHead class="text-right">Saldo em Aberto</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    <TableRow v-for="item in customers.data" :key="item.id">
+                        <TableCell class="font-medium">
+                            {{ item.name }}
+                        </TableCell>
+                        <TableCell>
+                            {{ formatPhone(item.phone) }}
+                        </TableCell>
+                        <TableCell class="text-center">
+                            {{ item.orders_count }}
+                        </TableCell>
+                        <TableCell class="text-right font-medium">
+                            {{
+                                formatCurrency(
+                                    item.orders_sum_total_amount || 0,
+                                )
+                            }}
+                        </TableCell>
+                        <TableCell
+                            class="text-right font-medium text-emerald-600 dark:text-emerald-400"
+                        >
+                            {{
+                                formatCurrency(
+                                    item.orders_sum_paid_amount || 0,
+                                )
+                            }}
+                        </TableCell>
+                        <TableCell
+                            class="text-right font-medium"
+                            :class="{
+                                'text-destructive':
+                                    Number(
+                                        item.orders_sum_total_amount || 0,
+                                    ) -
+                                        Number(
+                                            item.orders_sum_paid_amount ||
+                                                0,
+                                        ) >
+                                    0,
+                            }"
+                        >
+                            {{
+                                formatCurrency(
+                                    Number(
+                                        item.orders_sum_total_amount || 0,
+                                    ) -
+                                        Number(
+                                            item.orders_sum_paid_amount ||
+                                                0,
+                                        ),
+                                )
+                            }}
+                        </TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+
+            <TablePagination :paginator="customers" />
+        </div>
+    </div>
+</template>

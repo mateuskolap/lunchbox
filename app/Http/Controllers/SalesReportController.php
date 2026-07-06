@@ -30,9 +30,6 @@ class SalesReportController extends Controller
 
         $customerName = trim($validated['customer'] ?? '');
 
-        $startDate = Carbon::parse($startDate)->startOfDay();
-        $endDate = Carbon::parse($endDate)->endOfDay();
-
         $orderFilters = function ($query) use ($startDate, $endDate) {
             $query->where('date', '>=', $startDate)
                 ->where('date', '<=', $endDate)
@@ -45,24 +42,18 @@ class SalesReportController extends Controller
             ->withSum(['orders' => $orderFilters], 'total_amount')
             ->withSum(['orders' => $orderFilters], 'paid_amount')
             ->when($customerName, function ($query, $customerName) {
-                $query->where('name', 'ilike', "%{$customerName}%");
+                $query->whereLike('name', "%{$customerName}%");
             });
 
         $totalsQuery = Order::query()
             ->where($orderFilters)
-            ->when($customerName, fn($q) =>
-                $q->whereHas('customer', fn($q) => $q->where('name', 'ilike', "%{$customerName}%"))
-            );
+            ->when($customerName, fn($q) => $q->whereHas('customer', fn($q) => $q->whereLike('name', "%{$customerName}%")));
 
         $totalSales = $totalsQuery->sum('total_amount');
         $totalPaid = $totalsQuery->sum('paid_amount');
 
-        $customers = $query->orderByDesc('orders_sum_total_amount')
-            ->paginate(15)
-            ->withQueryString();
-
         return Inertia::render('Reports/SalesByCustomer', [
-            'customers' => $customers,
+            'customers' => $query->orderByDesc('orders_sum_total_amount')->paginate(25),
             'total_sales' => $totalSales,
             'total_paid' => $totalPaid,
             'total_balance' => $totalSales - $totalPaid,
