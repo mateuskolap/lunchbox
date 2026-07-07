@@ -37,6 +37,7 @@ class PermissionSeeder extends Seeder
             'orders.index',
             'orders.store',
             'orders.update',
+            'orders.conclude',
             'payments.index',
             'payments.store',
             'payments.update',

@@ -82,7 +82,7 @@ Route::middleware(['auth', 'verified', 'throttle:120,1'])->group(function () {
             Route::middleware('can:orders.index')->get('/', [OrderController::class, 'show'])->name('show');
             Route::middleware('can:orders.update')->get('/editar', [OrderController::class, 'edit'])->name('edit');
             Route::middleware('can:orders.update')->put('/', [OrderController::class, 'update'])->name('update');
-            Route::middleware('can:orders.update')->patch('/concluir', [OrderController::class, 'conclude'])->name('conclude');
+            Route::middleware('can:orders.conclude')->patch('/concluir', [OrderController::class, 'conclude'])->name('conclude');
             Route::middleware('can:orders.update')->patch('/cancelar', [OrderController::class, 'cancel'])->name('cancel');
             Route::middleware('can:orders.update')->patch('/reabrir', [OrderController::class, 'reopen'])->name('reopen');
 
