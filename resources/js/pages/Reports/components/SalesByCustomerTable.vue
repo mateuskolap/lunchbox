@@ -64,7 +64,13 @@ defineProps<{
                         <TableCell class="text-center">
                             {{ item.orders_count }}
                         </TableCell>
-                        <TableCell class="text-right font-medium">
+                        <TableCell
+                            class="text-right font-medium"
+                            :class="{
+                                'text-muted-foreground':
+                                    Number(item.orders_sum_total_amount || 0) === 0,
+                            }"
+                        >
                             {{
                                 formatCurrency(
                                     item.orders_sum_total_amount || 0,
@@ -72,7 +78,12 @@ defineProps<{
                             }}
                         </TableCell>
                         <TableCell
-                            class="text-right font-medium text-emerald-600 dark:text-emerald-400"
+                            class="text-right font-medium"
+                            :class="
+                                Number(item.orders_sum_paid_amount || 0) === 0
+                                    ? 'text-muted-foreground'
+                                    : 'text-emerald-600 dark:text-emerald-400'
+                            "
                         >
                             {{
                                 formatCurrency(item.orders_sum_paid_amount || 0)
@@ -86,6 +97,12 @@ defineProps<{
                                         Number(
                                             item.orders_sum_paid_amount || 0,
                                         ) >
+                                    0,
+                                'text-muted-foreground':
+                                    Number(item.orders_sum_total_amount || 0) -
+                                        Number(
+                                            item.orders_sum_paid_amount || 0,
+                                        ) ===
                                     0,
                             }"
                         >
