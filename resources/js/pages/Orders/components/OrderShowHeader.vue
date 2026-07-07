@@ -13,7 +13,6 @@ import ConfirmationDialog from '@/components/ConfirmationDialog.vue';
 import Heading from '@/components/Heading.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { usePermissions } from '@/composables/usePermissions';
 import { getOrderStatusBadgeVariant } from '@/lib/formatters';
 import { index as ordersIndex, edit as orderEdit } from '@/routes/orders';
 import type { Order } from '@/types';
@@ -23,8 +22,6 @@ defineProps<{
     listUrl?: string;
     isMounted: boolean;
 }>();
-
-const { can } = usePermissions();
 </script>
 
 <template>
@@ -86,7 +83,7 @@ const { can } = usePermissions();
 
             <!-- Conclude Order -->
             <ConfirmationDialog
-                v-if="order.status === 'pending' && can('orders.conclude')"
+                v-if="order.status === 'pending'"
                 title="Concluir Pedido"
                 description="Tem certeza que deseja marcar este pedido como Concluído? Os itens serão fixados."
                 confirm-text="Concluir"
