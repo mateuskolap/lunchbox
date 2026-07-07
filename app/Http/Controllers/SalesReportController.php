@@ -53,7 +53,7 @@ class SalesReportController extends Controller
         $totalPaid = $totalsQuery->sum('paid_amount');
 
         return Inertia::render('Reports/SalesByCustomer', [
-            'customers' => $query->orderByDesc('orders_sum_total_amount')->paginate(25),
+            'customers' => $query->orderByDesc('orders_sum_total_amount')->paginate(25)->withQueryString(),
             'total_sales' => $totalSales,
             'total_paid' => $totalPaid,
             'total_balance' => $totalSales - $totalPaid,

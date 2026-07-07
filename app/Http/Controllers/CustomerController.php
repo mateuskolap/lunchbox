@@ -23,7 +23,8 @@ class CustomerController extends Controller
                 ->when($validated['name'] ?? null, fn($q) => $q->whereLike('name', "%{$validated['name']}%"))
                 ->when($validated['debtors_only'] ?? null, fn($q) => $q->where('balance', '<', 0))
                 ->orderBy('name')
-                ->paginate(25),
+                ->paginate(25)
+                ->withQueryString(),
             'filters' => $request->only(['name', 'debtors_only']),
         ]);
     }

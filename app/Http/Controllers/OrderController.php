@@ -66,7 +66,8 @@ class OrderController extends Controller
                     $query->where('customer_id', $customerId);
                 })
                 ->latest()
-                ->paginate(25),
+                ->paginate(25)
+                ->withQueryString(),
             'order_statuses' => OrderStatusEnum::cases(),
             'filters' => $request->only(['customer_name', 'status', 'start_date', 'end_date', 'customer_id']),
         ]);

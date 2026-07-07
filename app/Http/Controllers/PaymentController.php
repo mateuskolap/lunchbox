@@ -42,13 +42,16 @@ class PaymentController extends Controller
         return Inertia::render('Payments/CustomerIndex', [
             'payments' => $this->filterDates($customer->payments(), 'paid_at', $start, $end)
                 ->latest()
-                ->paginate(15, ['*'], 'payments_page'),
+                ->paginate(15, ['*'], 'payments_page')
+                ->withQueryString(),
             'transactions' => $this->filterDates($customer->transactions(), 'created_at', $start, $end)
                 ->latest()
-                ->paginate(15, ['*'], 'transactions_page'),
+                ->paginate(15, ['*'], 'transactions_page')
+                ->withQueryString(),
             'unpaid_orders' => $this->filterDates($customer->orders(), 'date', $start, $end)
                 ->unpaid()
-                ->paginate(15, ['*'], 'unpaid_orders_page'),
+                ->paginate(15, ['*'], 'unpaid_orders_page')
+                ->withQueryString(),
             'customer' => $customer,
             'filters' => $request->only(['start_date', 'end_date']),
         ]);
