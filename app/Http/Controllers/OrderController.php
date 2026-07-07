@@ -16,7 +16,6 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Services\WhatsAppService;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -44,7 +43,6 @@ class OrderController extends Controller
             'status' => ['nullable', new Enum(OrderStatusEnum::class)],
             'start_date' => ['nullable', 'date'],
             'end_date' => ['nullable', 'date'],
-            'with_canceled' => ['nullable', 'bool'],
             'customer_id' => ['nullable', 'exists:customers,id'],
         ]);
 
@@ -67,14 +65,11 @@ class OrderController extends Controller
                 ->when($validated['customer_id'] ?? null, function ($query, $customerId) {
                     $query->where('customer_id', $customerId);
                 })
-                ->when(filter_var($validated['with_canceled'] ?? false, FILTER_VALIDATE_BOOL) === false, function ($query) {
-                    $query->whereNot('status', OrderStatusEnum::CANCELED);
-                })
                 ->latest()
                 ->paginate(25)
                 ->withQueryString(),
             'order_statuses' => OrderStatusEnum::cases(),
-            'filters' => $request->only(['customer_name', 'status', 'start_date', 'end_date', 'customer_id', 'with_canceled']),
+            'filters' => $request->only(['customer_name', 'status', 'start_date', 'end_date', 'customer_id']),
         ]);
     }
 
