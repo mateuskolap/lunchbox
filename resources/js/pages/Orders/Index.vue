@@ -15,6 +15,7 @@ interface OrderFiltersState {
     status: string;
     start_date: string;
     end_date: string;
+    with_canceled: boolean;
 }
 
 const props = defineProps<{
@@ -25,6 +26,7 @@ const props = defineProps<{
         status?: string;
         start_date?: string;
         end_date?: string;
+        with_canceled?: string | boolean;
     };
 }>();
 
@@ -38,14 +40,16 @@ const { filters, clearFilters, hasActiveFilters } =
             status: props.filters.status || 'all',
             start_date: props.filters.start_date || '',
             end_date: props.filters.end_date || '',
+            with_canceled: String(props.filters.with_canceled) === '1',
         },
         {
-            immediateFields: ['status'],
+            immediateFields: ['status', 'with_canceled'],
             transform: (f) => ({
                 customer_name: f.customer_name || undefined,
                 status: f.status && f.status !== 'all' ? f.status : undefined,
                 start_date: f.start_date || undefined,
                 end_date: f.end_date || undefined,
+                with_canceled: f.with_canceled ? '1' : '0',
             }),
         },
     );

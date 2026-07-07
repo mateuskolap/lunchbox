@@ -4,13 +4,16 @@ import { Filter, X } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppSelect from '@/components/AppSelect.vue';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface OrderFilters {
     customer_name: string;
     status: string;
     start_date: string;
     end_date: string;
+    with_canceled: boolean;
 }
 
 const props = defineProps<{
@@ -116,6 +119,21 @@ const statusOptions = computed(() => {
                         'text-foreground': model.end_date,
                     }"
                 />
+            </div>
+
+            <!-- Show Canceled Filter -->
+            <div class="flex h-9 items-center space-x-2 py-1">
+                <Checkbox
+                    id="filter-with-canceled"
+                    :model-value="model.with_canceled"
+                    @update:model-value="model.with_canceled = !!$event"
+                />
+                <Label
+                    for="filter-with-canceled"
+                    class="cursor-pointer text-sm font-medium text-muted-foreground select-none hover:text-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                    Mostrar cancelados
+                </Label>
             </div>
         </div>
     </div>
