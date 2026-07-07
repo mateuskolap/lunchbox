@@ -48,7 +48,9 @@ defineProps<{
                         <TableHead class="text-center">Qtd. Pedidos</TableHead>
                         <TableHead class="text-right">Total Vendido</TableHead>
                         <TableHead class="text-right">Total Pago</TableHead>
-                        <TableHead class="text-right">Saldo em Aberto</TableHead>
+                        <TableHead class="text-right"
+                            >Saldo em Aberto</TableHead
+                        >
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -73,34 +75,26 @@ defineProps<{
                             class="text-right font-medium text-emerald-600 dark:text-emerald-400"
                         >
                             {{
-                                formatCurrency(
-                                    item.orders_sum_paid_amount || 0,
-                                )
+                                formatCurrency(item.orders_sum_paid_amount || 0)
                             }}
                         </TableCell>
                         <TableCell
                             class="text-right font-medium"
                             :class="{
                                 'text-destructive':
-                                    Number(
-                                        item.orders_sum_total_amount || 0,
-                                    ) -
+                                    Number(item.orders_sum_total_amount || 0) -
                                         Number(
-                                            item.orders_sum_paid_amount ||
-                                                0,
+                                            item.orders_sum_paid_amount || 0,
                                         ) >
                                     0,
                             }"
                         >
                             {{
                                 formatCurrency(
+                                    Number(item.orders_sum_total_amount || 0) -
                                     Number(
-                                        item.orders_sum_total_amount || 0,
-                                    ) -
-                                        Number(
-                                            item.orders_sum_paid_amount ||
-                                                0,
-                                        ),
+                                        item.orders_sum_paid_amount || 0
+                                    )
                                 )
                             }}
                         </TableCell>

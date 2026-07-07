@@ -43,6 +43,7 @@ class OrderController extends Controller
             'status' => ['nullable', new Enum(OrderStatusEnum::class)],
             'start_date' => ['nullable', 'date'],
             'end_date' => ['nullable', 'date'],
+            'customer_id' => ['nullable', 'exists:customers,id'],
         ]);
 
         session(['orders_list_url' => route('orders.index')]);
@@ -61,10 +62,13 @@ class OrderController extends Controller
                 ->when($validated['end_date'] ?? null, function ($query, $endDate) {
                     $query->where('date', '<=', Carbon::parse($endDate)->endOfDay());
                 })
+                ->when($validated['customer_id'] ?? null, function ($query, $customerId) {
+                    $query->where('customer_id', $customerId);
+                })
                 ->latest()
                 ->paginate(25),
             'order_statuses' => OrderStatusEnum::cases(),
-            'filters' => $request->only(['customer_name', 'status', 'start_date', 'end_date']),
+            'filters' => $request->only(['customer_name', 'status', 'start_date', 'end_date', 'customer_id']),
         ]);
     }
 
