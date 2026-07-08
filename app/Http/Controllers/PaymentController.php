@@ -36,6 +36,8 @@ class PaymentController extends Controller
             'end_date' => ['nullable', 'date'],
         ]);
 
+        session(['orders_list_url' => $request->fullUrl()]);
+
         $start = ($validated['start_date'] ?? null) ? Carbon::parse($validated['start_date'])->startOfDay() : null;
         $end = ($validated['end_date'] ?? null) ? Carbon::parse($validated['end_date'])->startOfDay() : null;
 

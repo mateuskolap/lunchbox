@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { Contact } from 'lucide-vue-next';
+import { Link } from '@inertiajs/vue3';
+import { Contact, ShoppingCart } from 'lucide-vue-next';
 import EmptyState from '@/components/EmptyState.vue';
 import TablePagination from '@/components/TablePagination.vue';
+import { Button } from '@/components/ui/button';
 import {
     Table,
     TableBody,
@@ -10,7 +12,9 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { usePermissions } from '@/composables/usePermissions';
 import { formatCurrency, formatPhone } from '@/lib/formatters';
+import { index as ordersIndex } from '@/routes/orders';
 import type { PaginatedResponse } from '@/types';
 
 export interface CustomerReportRow {
@@ -26,6 +30,8 @@ export interface CustomerReportRow {
 defineProps<{
     customers: PaginatedResponse<CustomerReportRow>;
 }>();
+
+const { can } = usePermissions();
 </script>
 
 <template>
@@ -50,6 +56,9 @@ defineProps<{
                         <TableHead class="text-right">Total Pago</TableHead>
                         <TableHead class="text-right"
                             >Saldo em Aberto</TableHead
+                        >
+                        <TableHead v-if="can('orders.index')" class="w-[80px] text-right"
+                            >Ações</TableHead
                         >
                     </TableRow>
                 </TableHeader>
@@ -114,6 +123,31 @@ defineProps<{
                                     )
                                 )
                             }}
+                        </TableCell>
+                        <TableCell v-if="can('orders.index')" class="text-right">
+                            <div class="flex items-center justify-end">
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    title="Ver Pedidos"
+                                    as-child
+                                >
+                                    <Link
+                                        :href="
+                                            ordersIndex.url({
+                                                query: {
+                                                    customer_id: item.id,
+                                                },
+                                            })
+                                        "
+                                    >
+                                        <ShoppingCart
+                                            class="size-4 text-muted-foreground"
+                                        />
+                                        <span class="sr-only">Ver Pedidos</span>
+                                    </Link>
+                                </Button>
+                            </div>
                         </TableCell>
                     </TableRow>
                 </TableBody>

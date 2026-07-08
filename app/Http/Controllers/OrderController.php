@@ -46,7 +46,7 @@ class OrderController extends Controller
             'customer_id' => ['nullable', 'exists:customers,id'],
         ]);
 
-        session(['orders_list_url' => route('orders.index')]);
+        session(['orders_list_url' => $request->fullUrl()]);
 
         return Inertia::render('Orders/Index', [
             'orders' => Order::with('customer')
@@ -75,7 +75,7 @@ class OrderController extends Controller
 
     public function todayIndex(): Response
     {
-        session(['orders_list_url' => route('orders.today')]);
+        session(['orders_list_url' => request()->fullUrl()]);
 
         return Inertia::render('Orders/Today', [
             'orders' => Order::with('customer')
