@@ -1,20 +1,21 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import { Plus } from 'lucide-vue-next';
-import OrderFilters from './components/OrderFilters.vue';
-import OrderTable from './components/OrderTable.vue';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { useFilters } from '@/composables/useFilters';
 import { usePermissions } from '@/composables/usePermissions';
 import { create as ordersCreate, index as ordersIndex } from '@/routes/orders';
 import type { Order, PaginatedResponse } from '@/types';
+import OrderFilters from './components/OrderFilters.vue';
+import OrderTable from './components/OrderTable.vue';
 
 interface OrderFiltersState {
     customer_name: string;
     status: string;
     start_date: string;
     end_date: string;
+    customer_id: string;
 }
 
 const props = defineProps<{
@@ -25,6 +26,7 @@ const props = defineProps<{
         status?: string;
         start_date?: string;
         end_date?: string;
+        customer_id?: string;
     };
 }>();
 
@@ -38,6 +40,7 @@ const { filters, clearFilters, hasActiveFilters } =
             status: props.filters.status || 'all',
             start_date: props.filters.start_date || '',
             end_date: props.filters.end_date || '',
+            customer_id: props.filters.customer_id || '',
         },
         {
             immediateFields: ['status'],
@@ -46,6 +49,7 @@ const { filters, clearFilters, hasActiveFilters } =
                 status: f.status && f.status !== 'all' ? f.status : undefined,
                 start_date: f.start_date || undefined,
                 end_date: f.end_date || undefined,
+                customer_id: f.customer_id || undefined,
             }),
         },
     );
