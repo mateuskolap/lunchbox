@@ -10,7 +10,7 @@ import type { Order, PaginatedResponse } from '@/types';
 import OrderFilters from './components/OrderFilters.vue';
 import OrderTable from './components/OrderTable.vue';
 
-interface OrderFiltersState {
+interface OrderFilters {
     customer_name: string;
     status: string;
     start_date: string;
@@ -21,38 +21,31 @@ interface OrderFiltersState {
 const props = defineProps<{
     orders: PaginatedResponse<Order>;
     order_statuses: string[];
-    filters: {
-        customer_name?: string;
-        status?: string;
-        start_date?: string;
-        end_date?: string;
-        customer_id?: string;
-    };
+    filters: Partial<OrderFilters>;
 }>();
 
 const { can } = usePermissions();
 
-const { filters, clearFilters, hasActiveFilters } =
-    useFilters<OrderFiltersState>(
-        () => ordersIndex(),
-        {
-            customer_name: props.filters.customer_name || '',
-            status: props.filters.status || 'all',
-            start_date: props.filters.start_date || '',
-            end_date: props.filters.end_date || '',
-            customer_id: props.filters.customer_id || '',
-        },
-        {
-            immediateFields: ['status'],
-            transform: (f) => ({
-                customer_name: f.customer_name || undefined,
-                status: f.status && f.status !== 'all' ? f.status : undefined,
-                start_date: f.start_date || undefined,
-                end_date: f.end_date || undefined,
-                customer_id: f.customer_id || undefined,
-            }),
-        },
-    );
+const { filters, clearFilters, hasActiveFilters } = useFilters<OrderFilters>(
+    () => ordersIndex(),
+    {
+        customer_name: props.filters.customer_name || '',
+        status: props.filters.status || 'all',
+        start_date: props.filters.start_date || '',
+        end_date: props.filters.end_date || '',
+        customer_id: props.filters.customer_id || '',
+    },
+    {
+        immediateFields: ['status'],
+        transform: (f) => ({
+            customer_name: f.customer_name || undefined,
+            status: f.status && f.status !== 'all' ? f.status : undefined,
+            start_date: f.start_date || undefined,
+            end_date: f.end_date || undefined,
+            customer_id: f.customer_id || undefined,
+        }),
+    },
+);
 </script>
 
 <template>

@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Data\WhatsApp\SendTextMessageData;
 use App\Enums\OrderStatusEnum;
 use App\Models\Customer;
-use App\Services\WhatsAppService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;

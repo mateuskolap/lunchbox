@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import { Filter, X } from 'lucide-vue-next';
-import PaymentHeader from './components/PaymentHeader.vue';
-import PaymentSummaryCards from './components/PaymentSummaryCards.vue';
-import PaymentTable from './components/PaymentTable.vue';
-import TransactionAuditList from './components/TransactionAuditList.vue';
-import UnpaidOrdersTable from './components/UnpaidOrdersTable.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useFilters } from '@/composables/useFilters';
@@ -19,8 +14,13 @@ import type {
     Payment,
     Transaction,
 } from '@/types';
+import PaymentHeader from './components/PaymentHeader.vue';
+import PaymentSummaryCards from './components/PaymentSummaryCards.vue';
+import PaymentTable from './components/PaymentTable.vue';
+import TransactionAuditList from './components/TransactionAuditList.vue';
+import UnpaidOrdersTable from './components/UnpaidOrdersTable.vue';
 
-interface PaymentFiltersState {
+interface PaymentFilters {
     start_date: string;
     end_date: string;
 }
@@ -30,28 +30,24 @@ const props = defineProps<{
     transactions: PaginatedResponse<Transaction>;
     unpaid_orders: PaginatedResponse<Order>;
     customer: Customer;
-    filters: {
-        start_date?: string;
-        end_date?: string;
-    };
+    filters: Partial<PaymentFilters>;
 }>();
 
 const { can } = usePermissions();
 
-const { filters, clearFilters, hasActiveFilters } =
-    useFilters<PaymentFiltersState>(
-        () => customerPaymentsIndex.url(props.customer.id),
-        {
-            start_date: props.filters.start_date || '',
-            end_date: props.filters.end_date || '',
-        },
-        {
-            transform: (f) => ({
-                start_date: f.start_date || undefined,
-                end_date: f.end_date || undefined,
-            }),
-        },
-    );
+const { filters, clearFilters, hasActiveFilters } = useFilters<PaymentFilters>(
+    () => customerPaymentsIndex.url(props.customer.id),
+    {
+        start_date: props.filters.start_date || '',
+        end_date: props.filters.end_date || '',
+    },
+    {
+        transform: (f) => ({
+            start_date: f.start_date || undefined,
+            end_date: f.end_date || undefined,
+        }),
+    },
+);
 
 defineOptions({
     layout: {

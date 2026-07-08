@@ -4,11 +4,12 @@ import Heading from '@/components/Heading.vue';
 import { useFilters } from '@/composables/useFilters';
 import { salesByCustomer } from '@/routes/reports';
 import type { PaginatedResponse } from '@/types';
-import SalesSummaryCards from './components/SalesSummaryCards.vue';
 import SalesByCustomerFilters from './components/SalesByCustomerFilters.vue';
-import SalesByCustomerTable, { type CustomerReportRow } from './components/SalesByCustomerTable.vue';
+import SalesByCustomerTable from './components/SalesByCustomerTable.vue';
+import type { CustomerReportRow } from './components/SalesByCustomerTable.vue';
+import SalesSummaryCards from './components/SalesSummaryCards.vue';
 
-interface SalesReportFiltersState {
+interface SalesReportFilters {
     start_date: string;
     end_date: string;
     customer: string;
@@ -19,15 +20,11 @@ const props = defineProps<{
     total_sales: number;
     total_paid: number;
     total_balance: number;
-    filters: {
-        start_date?: string;
-        end_date?: string;
-        customer?: string;
-    };
+    filters: Partial<SalesReportFilters>;
 }>();
 
 const { filters, clearFilters, hasActiveFilters } =
-    useFilters<SalesReportFiltersState>(
+    useFilters<SalesReportFilters>(
         () => salesByCustomer.url(),
         {
             start_date: props.filters.start_date || '',

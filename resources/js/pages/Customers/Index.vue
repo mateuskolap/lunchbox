@@ -9,7 +9,7 @@ import CustomerFilters from './components/CustomerFilters.vue';
 import CustomerTable from './components/CustomerTable.vue';
 import CreateCustomerDialog from './CreateCustomerDialog.vue';
 
-interface CustomerFiltersState {
+interface CustomerFilters {
     name: string;
     debtors_only: boolean;
 }
@@ -27,29 +27,25 @@ defineOptions({
 
 const props = defineProps<{
     customers: PaginatedResponse<Customer>;
-    filters: {
-        name?: string;
-        debtors_only?: string | boolean;
-    };
+    filters: Partial<CustomerFilters>;
 }>();
 
 const { can } = usePermissions();
 
-const { filters, clearFilters, hasActiveFilters } =
-    useFilters<CustomerFiltersState>(
-        () => customersIndex(),
-        {
-            name: props.filters.name || '',
-            debtors_only: String(props.filters.debtors_only) === '1',
-        },
-        {
-            transform: (f) => ({
-                name: f.name || undefined,
-                debtors_only: f.debtors_only ? '1' : '0',
-            }),
-            immediateFields: ['debtors_only'],
-        },
-    );
+const { filters, clearFilters, hasActiveFilters } = useFilters<CustomerFilters>(
+    () => customersIndex(),
+    {
+        name: props.filters.name || '',
+        debtors_only: String(props.filters.debtors_only) === '1',
+    },
+    {
+        transform: (f) => ({
+            name: f.name || undefined,
+            debtors_only: f.debtors_only ? '1' : '0',
+        }),
+        immediateFields: ['debtors_only'],
+    },
+);
 </script>
 
 <template>
