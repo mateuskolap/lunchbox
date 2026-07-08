@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Enums\MessageStatusEnum;
+use App\Enums\QueueEnum;
 use App\Models\Message;
 use App\Services\WhatsAppService;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,7 +12,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Throwable;
 
-class SendWhatsAppTextMessageJob implements ShouldQueue
+class SendWhatsAppMessageJob implements ShouldQueue
 {
     use Queueable;
 
@@ -19,6 +20,7 @@ class SendWhatsAppTextMessageJob implements ShouldQueue
         public Message $message
     )
     {
+        $this->onQueue(QueueEnum::MESSAGE);
     }
 
     public function retries(): int

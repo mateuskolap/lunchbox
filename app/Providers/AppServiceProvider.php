@@ -37,7 +37,7 @@ class AppServiceProvider extends ServiceProvider
             return Http::withHeader('apikey', config('services.evolution.api_key'))
                 ->asJson()
                 ->acceptJson()
-                ->baseUrl(config('services.evolution.url') . ':' . config('services.evolution.port'));
+                ->baseUrl(config('services.evolution.url'));
         });
     }
 

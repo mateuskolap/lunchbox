@@ -10,7 +10,7 @@ use App\Data\Orders\CreateOrderWithItemsData;
 use App\Data\Orders\UpdateOrderWithItemsData;
 use App\Data\WhatsApp\SendTextMessageData;
 use App\Enums\OrderStatusEnum;
-use App\Jobs\SendWhatsAppTextMessageJob;
+use App\Jobs\SendWhatsAppMessageJob;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;

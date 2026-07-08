@@ -6,7 +6,7 @@ use App\Data\WhatsApp\SendTextMessageData;
 use App\Enums\MessageChannelEnum;
 use App\Enums\MessageStatusEnum;
 use App\Enums\MessageTypeEnum;
-use App\Jobs\SendWhatsAppTextMessageJob;
+use App\Jobs\SendWhatsAppMessageJob;
 use App\Models\Customer;
 use App\Models\Message;
 use App\Providers\WhatsAppProviderInterface;
@@ -59,7 +59,7 @@ readonly class WhatsAppService
             text: $data->content,
         );
 
-        SendWhatsAppTextMessageJob::dispatch($message);
+        SendWhatsAppMessageJob::dispatch($message);
 
         return $message;
     }

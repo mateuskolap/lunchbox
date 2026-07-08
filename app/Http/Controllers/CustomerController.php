@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\WhatsApp\SendTextMessageData;
 use App\Enums\OrderStatusEnum;
 use App\Models\Customer;
+use App\Services\WhatsAppService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -13,6 +15,13 @@ class CustomerController extends Controller
 {
     public function index(Request $request): Response
     {
+        $message = app(WhatsAppService::class)->queueText(new SendTextMessageData(
+            '44991753416',
+            'Apenas um teste de mensagem sendo encaminhada pelo evolution.'
+        ));
+
+        dd($message);
+
         $validated = $request->validate([
             'name' => ['nullable', 'string'],
             'debtors_only' => ['nullable', 'bool'],

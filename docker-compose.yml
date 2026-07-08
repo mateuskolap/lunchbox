@@ -26,7 +26,6 @@ services:
       POSTGRES_DB: ${DB_DATABASE:-mydb}
     volumes:
       - db:/var/lib/postgresql/data
-      - ./.docker/evo-db:/docker-entrypoint-initdb.d
     ports:
       - "${FORWARD_DB_PORT:-5438}:5432"
     healthcheck:
@@ -34,24 +33,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    restart: unless-stopped
-
-  evolution-go:
-    image: evoapicloud/evolution-go:latest
-    ports:
-      - "${EVOLUTION_PORT:-8081}:${EVOLUTION_PORT:-8081}"
-    environment:
-      SERVER_PORT: ${EVOLUTION_PORT:-8081}
-      CLIENT_NAME: evolution
-      GLOBAL_API_KEY: ${EVOLUTION_API_KEY:-sua-chave-segura-aqui}
-      POSTGRES_AUTH_DB: postgresql://${DB_USERNAME:-root}:${DB_PASSWORD:-password}@pgsql:5432/evogo_auth?sslmode=disable
-      POSTGRES_USERS_DB: postgresql://${DB_USERNAME:-root}:${DB_PASSWORD:-password}@pgsql:5432/evogo_users?sslmode=disable
-      DATABASE_SAVE_MESSAGES: "false"
-      WADEBUG: INFO
-      LOGTYPE: console
-    depends_on:
-      pgsql:
-        condition: service_healthy
     restart: unless-stopped
 
 volumes:
