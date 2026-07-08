@@ -15,13 +15,6 @@ class CustomerController extends Controller
 {
     public function index(Request $request): Response
     {
-        $message = app(WhatsAppService::class)->queueText(new SendTextMessageData(
-            '44991753416',
-            'Apenas um teste de mensagem sendo encaminhada pelo evolution.'
-        ));
-
-        dd($message);
-
         $validated = $request->validate([
             'name' => ['nullable', 'string'],
             'debtors_only' => ['nullable', 'bool'],
