@@ -16,6 +16,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Services\WhatsAppService;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -40,10 +41,11 @@ class OrderController extends Controller
     {
         $validated = $request->validate([
             'customer_name' => ['nullable', 'string'],
-            'status' => ['nullable', new Enum(OrderStatusEnum::class)],
             'start_date' => ['nullable', 'date'],
             'end_date' => ['nullable', 'date'],
             'customer_id' => ['nullable', 'exists:customers,id'],
+            'statuses' => ['nullable', 'array'],
+            'statuses.*' => ['nullable', new Enum(OrderStatusEnum::class)],
         ]);
 
         session(['orders_list_url' => $request->fullUrl()]);
@@ -53,8 +55,10 @@ class OrderController extends Controller
                 ->when($validated['customer_name'] ?? null, function ($query) use ($validated) {
                     $query->whereHas('customer', fn($q) => $q->whereLike('name', "%{$validated['customer_name']}%"));
                 })
-                ->when($validated['status'] ?? null, function ($query) use ($validated) {
-                    $query->where('status', $validated['status']);
+                ->when($validated['statuses'] ?? null, function ($query) use ($validated) {
+                    $query->whereIn('status', $validated['statuses']);
+                }, function ($query) {
+                    $query->whereNot('status', OrderStatusEnum::CANCELED);
                 })
                 ->when($validated['start_date'] ?? null, function ($query, $startDate) {
                     $query->where('date', '>=', Carbon::parse($startDate)->startOfDay());
@@ -69,7 +73,7 @@ class OrderController extends Controller
                 ->paginate(25)
                 ->withQueryString(),
             'order_statuses' => OrderStatusEnum::cases(),
-            'filters' => $request->only(['customer_name', 'status', 'start_date', 'end_date', 'customer_id']),
+            'filters' => $request->only(['customer_name', 'statuses', 'start_date', 'end_date', 'customer_id']),
         ]);
     }
 

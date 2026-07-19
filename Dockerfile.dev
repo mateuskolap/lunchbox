@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
     libzip-dev libpq-dev unzip curl supervisor nginx \
     && docker-php-ext-install zip pdo pdo_mysql pdo_pgsql
 
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y nodejs \
     && npm install -g npm@latest
 

@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 
 interface OrderFilters {
     customer_name: string;
-    status: string;
+    statuses: string[];
     start_date: string;
     end_date: string;
 }
@@ -71,15 +71,17 @@ const statusOptions = computed(() => {
             </div>
 
             <!-- Status Filter -->
-            <div class="w-full sm:w-[160px]">
+            <div class="w-full sm:w-[180px]">
                 <label
                     class="mb-1 block text-xs font-medium text-muted-foreground"
                     >Status</label
                 >
                 <AppSelect
-                    v-model="model.status"
+                    v-model="model.statuses"
                     :options="statusOptions"
                     placeholder="Todos os status"
+                    searchable
+                    multi
                 />
             </div>
 

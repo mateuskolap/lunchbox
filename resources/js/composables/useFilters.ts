@@ -111,15 +111,24 @@ export function useFilters<T extends Record<string, any>>(
                 current === undefined ||
                 current === null ||
                 current === '' ||
-                current === 'all';
+                current === 'all' ||
+                (Array.isArray(current) && current.length === 0);
             const isDefaultEmpty =
                 defaultValue === undefined ||
                 defaultValue === null ||
                 defaultValue === '' ||
-                defaultValue === 'all';
+                defaultValue === 'all' ||
+                (Array.isArray(defaultValue) && defaultValue.length === 0);
 
             if (isCurrentEmpty && isDefaultEmpty) {
                 return false;
+            }
+
+            if (Array.isArray(current) && Array.isArray(defaultValue)) {
+                return (
+                    current.length !== defaultValue.length ||
+                    current.some((val, i) => val !== defaultValue[i])
+                );
             }
 
             return current !== defaultValue;

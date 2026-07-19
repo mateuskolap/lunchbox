@@ -12,7 +12,7 @@ import OrderTable from './components/OrderTable.vue';
 
 interface OrderFilters {
     customer_name: string;
-    status: string;
+    statuses: string[];
     start_date: string;
     end_date: string;
     customer_id: string;
@@ -30,16 +30,17 @@ const { filters, clearFilters, hasActiveFilters } = useFilters<OrderFilters>(
     () => ordersIndex(),
     {
         customer_name: props.filters.customer_name || '',
-        status: props.filters.status || 'all',
+        statuses: props.filters.statuses || [],
         start_date: props.filters.start_date || '',
         end_date: props.filters.end_date || '',
         customer_id: props.filters.customer_id || '',
     },
     {
-        immediateFields: ['status'],
+        immediateFields: ['statuses'],
         transform: (f) => ({
             customer_name: f.customer_name || undefined,
-            status: f.status && f.status !== 'all' ? f.status : undefined,
+            statuses:
+                f.statuses && f.statuses.length > 0 ? f.statuses : undefined,
             start_date: f.start_date || undefined,
             end_date: f.end_date || undefined,
             customer_id: f.customer_id || undefined,
