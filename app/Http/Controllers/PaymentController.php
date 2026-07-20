@@ -6,6 +6,7 @@ use App\Actions\Payments\CancelPaymentAction;
 use App\Actions\Payments\CreatePaymentAction;
 use App\Data\Payments\CreatePaymentData;
 use App\Enums\PaymentMethodEnum;
+use App\Enums\PaymentStatusEnum;
 use App\Models\Customer;
 use App\Models\Payment;
 use Carbon\Carbon;
@@ -29,17 +30,42 @@ class PaymentController extends Controller
     {
     }
 
+    public function index(Request $request): Response
+    {
+        $request->validate([
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date'],
+            'statuses' => ['nullable', 'array'],
+            'statuses.*' => ['required', new Enum(PaymentStatusEnum::class)],
+        ]);
+
+        $start = $request->date('start_date')?->startOfDay();
+        $end = $request->date('end_date')?->endOfDay();
+
+        return Inertia::render('Payments/Index', [
+            'payments' => $this->filterDates(Payment::query(), 'paid_at', $start, $end)
+                ->when($request->statuses, function ($query, $statuses) {
+                    $query->whereIn('status', $statuses);
+                }, function ($query) {
+                    $query->whereNot('status', PaymentStatusEnum::CANCELED);
+                })
+                ->latest()
+                ->paginate(25)
+                ->withQueryString(),
+        ]);
+    }
+
     public function customerIndex(Request $request, Customer $customer): Response
     {
-        $validated = $request->validate([
+        $request->validate([
             'start_date' => ['nullable', 'date'],
             'end_date' => ['nullable', 'date'],
         ]);
 
         session(['orders_list_url' => $request->fullUrl()]);
 
-        $start = ($validated['start_date'] ?? null) ? Carbon::parse($validated['start_date'])->startOfDay() : null;
-        $end = ($validated['end_date'] ?? null) ? Carbon::parse($validated['end_date'])->startOfDay() : null;
+        $start = $request->date('start_date')?->startOfDay();
+        $end = $request->date('end_date')?->endOfDay();
 
         return Inertia::render('Payments/CustomerIndex', [
             'payments' => $this->filterDates($customer->payments(), 'paid_at', $start, $end)

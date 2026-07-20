@@ -54,6 +54,11 @@ Route::middleware(['auth', 'verified', 'throttle:120,1'])->group(function () {
         Route::middleware('can:products.destroy')->delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
     });
 
+    // Payments routes
+    Route::prefix('/pagamentos')->name('payments.')->group(function () {
+        Route::middleware('can:payments.index')->get('/', [PaymentController::class, 'index'])->name('index');
+    });
+
     // Customers routes
     Route::prefix('/clientes')->name('customers.')->group(function () {
         Route::middleware('can:customers.index')->get('/', [CustomerController::class, 'index'])->name('index');
@@ -85,7 +90,6 @@ Route::middleware(['auth', 'verified', 'throttle:120,1'])->group(function () {
             Route::middleware('can:orders.conclude')->patch('/concluir', [OrderController::class, 'conclude'])->name('conclude');
             Route::middleware('can:orders.update')->patch('/cancelar', [OrderController::class, 'cancel'])->name('cancel');
             Route::middleware('can:orders.update')->patch('/reabrir', [OrderController::class, 'reopen'])->name('reopen');
-
         });
     });
 
@@ -95,4 +99,4 @@ Route::middleware(['auth', 'verified', 'throttle:120,1'])->group(function () {
     });
 });
 
-require __DIR__.'/settings.php';
+require __DIR__ . '/settings.php';
