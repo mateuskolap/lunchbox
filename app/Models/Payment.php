@@ -5,12 +5,22 @@ namespace App\Models;
 use App\Enums\PaymentMethodEnum;
 use App\Enums\PaymentStatusEnum;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
+/**
+ * @property int $id
+ * @property string $customer_id
+ * @property PaymentMethodEnum $method
+ * @property PaymentStatusEnum $status
+ * @property string $value
+ * @property Carbon|null $paid_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ */
 class Payment extends Model
 {
     use LogsActivity, SoftDeletes;
@@ -30,12 +40,12 @@ class Payment extends Model
         'paid_at' => 'datetime',
     ];
 
-    public function customer(): BelongsTo
+    public function customer()
     {
-        return $this->belongsTo(Customer::class)->withTrashed();
+        return $this->belongsTo(Customer::class);
     }
 
-    public function transactions(): MorphMany
+    public function transactions()
     {
         return $this->morphMany(Transaction::class, 'transactionable');
     }

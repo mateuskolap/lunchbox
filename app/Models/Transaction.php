@@ -3,9 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property string $customer_id
+ * @property string $amount
+ * @property string $description
+ * @property string $transactionable_type
+ * @property string $transactionable_id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property string $customer_balance
+ */
 class Transaction extends Model
 {
     protected $fillable = [
@@ -22,13 +32,13 @@ class Transaction extends Model
         'customer_balance' => 'decimal:2',
     ];
 
-    public function customer(): BelongsTo
+    public function customer()
     {
-        return $this->belongsTo(Customer::class)->withTrashed();
+        return $this->belongsTo(Customer::class);
     }
 
-    public function transactionable(): MorphTo
+    public function transactionable()
     {
-        return $this->morphTo()->withTrashed();
+        return $this->morphTo();
     }
 }

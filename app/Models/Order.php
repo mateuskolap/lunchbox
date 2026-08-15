@@ -7,14 +7,24 @@ use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use LogicException;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
+/**
+ * @property int $id
+ * @property string $customer_id
+ * @property string $total_amount
+ * @property string $paid_amount
+ * @property OrderStatusEnum $status
+ * @property Carbon $date
+ * @property string|null $observation
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ */
 class Order extends Model
 {
     use CascadeSoftDeletes, LogsActivity, SoftDeletes;
@@ -37,17 +47,17 @@ class Order extends Model
         'date' => 'date',
     ];
 
-    public function customer(): BelongsTo
+    public function customer()
     {
-        return $this->belongsTo(Customer::class)->withTrashed();
+        return $this->belongsTo(Customer::class);
     }
 
-    public function items(): HasMany
+    public function items()
     {
         return $this->hasMany(OrderItem::class);
     }
 
-    public function transactions(): MorphMany
+    public function transactions()
     {
         return $this->morphMany(Transaction::class, 'transactionable');
     }
@@ -114,7 +124,7 @@ class Order extends Model
      */
     public function reopen(): void
     {
-        if (!$this->isClosed()) {
+        if (! $this->isClosed()) {
             throw new LogicException('Apenas pedidos concluídos ou cancelados podem ser reabertos.');
         }
 
