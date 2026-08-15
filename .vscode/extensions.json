@@ -1,6 +1,8 @@
 {
     "recommendations": [
         "phpantom.phpantom",
-        "laravel.vscode-laravel"
+        "laravel.vscode-laravel",
+        "bradlc.vscode-tailwindcss",
+        "vue.volar"
     ]
 }
