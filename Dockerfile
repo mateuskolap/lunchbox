@@ -1,12 +1,20 @@
 # Stage 1: PHP dependencies and Wayfinder generation
 FROM php:8.5-alpine AS php-builder
 
-# Install composer and official extension installer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-COPY -e-from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+# Install system dependencies needed for composer and PHP extensions
+RUN apk add --no-cache \
+    git \
+    unzip \
+    zip \
+    libzip-dev \
+    libpq-dev \
+    sqlite-dev
 
-# Install PHP extensions required for Laravel, SQLite, and Wayfinder generator
-RUN install-php-extensions zip pdo pdo_pgsql pdo_mysql pdo_sqlite git
+# Install PHP extensions required for Laravel, SQLite, and the Wayfinder generator
+RUN docker-php-ext-install zip pdo pdo_pgsql pdo_mysql pdo_sqlite
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
@@ -41,7 +49,7 @@ WORKDIR /app
 # Copy configuration files first to use Docker caching
 COPY package.json package-lock.json .npmrc* ./
 
-# Install npm dependencies
+# Install npm dependencies (using npm ci with retry options for network resilience)
 RUN npm ci --fetch-retries=5 --fetch-retry-factor=2 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000
 
 # Copy the rest of standard files
@@ -58,14 +66,23 @@ RUN VITE_WAYFINDER_COMMAND="true" npm run build
 # Stage 3: Production Runtime
 FROM php:8.5-fpm-alpine
 
+# Set working directory
 WORKDIR /var/www/html
 
-# Install runtime tools
-RUN apk add --no-cache nginx supervisor bash curl
-
-# Install PHP extensions via precompiled binary installer
-COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-RUN install-php-extensions zip pdo pdo_mysql pdo_pgsql
+# Install runtime system dependencies (nginx, supervisor, and libraries for PHP extensions)
+RUN apk add --no-cache \
+    nginx \
+    supervisor \
+    libpq \
+    libzip \
+    bash \
+    curl \
+    && apk add --no-cache --virtual .build-deps \
+    $PHPIZE_DEPS \
+    postgresql-dev \
+    libzip-dev \
+    && docker-php-ext-install zip pdo pdo_mysql pdo_pgsql \
+    && apk del .build-deps
 
 # Copy Nginx config
 RUN rm -f /etc/nginx/http.d/default.conf
@@ -84,13 +101,15 @@ RUN mkdir -p /var/lib/nginx && chown -R www-data:www-data /var/lib/nginx
 # Copy application files (inheriting .dockerignore exclusions)
 COPY --chown=www-data:www-data . /var/www/html
 
-# Copy vendor and Wayfinder artifacts from PHP builder
+# Copy the composer packages from the builder stage
 COPY --from=php-builder --chown=www-data:www-data /app/vendor /var/www/html/vendor
+
+# Copy the generated Wayfinder routes from builder stage
 COPY --from=php-builder --chown=www-data:www-data /app/resources/js/actions /var/www/html/resources/js/actions
 COPY --from=php-builder --chown=www-data:www-data /app/resources/js/routes /var/www/html/resources/js/routes
 COPY --from=php-builder --chown=www-data:www-data /app/resources/js/wayfinder /var/www/html/resources/js/wayfinder
 
-# Copy compiled frontend assets
+# Copy the compiled assets from the frontend builder stage
 COPY --from=frontend-builder --chown=www-data:www-data /app/public/build /var/www/html/public/build
 
 # Setup PHP-FPM listening configuration
@@ -105,8 +124,10 @@ RUN mkdir -p /var/www/html/storage/framework/cache/data \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R ug+rwx /var/www/html/storage /var/www/html/bootstrap/cache
 
+# Expose HTTP port 80
 EXPOSE 80
 
+# Configure production environment variables defaults
 ENV RUN_MIGRATIONS=true
 
 CMD ["/usr/local/bin/entrypoint.sh"]
