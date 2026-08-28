@@ -1,3 +1,4 @@
 {
-    "Laravel.phpEnvironment": "local"
+    "Laravel.phpEnvironment": "local",
+    "js/ts.experimental.useTsgo": false
 }

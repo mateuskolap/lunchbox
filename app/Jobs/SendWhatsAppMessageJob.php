@@ -18,8 +18,7 @@ class SendWhatsAppMessageJob implements ShouldQueue
 
     public function __construct(
         public Message $message
-    )
-    {
+    ) {
         $this->onQueue(QueueEnum::MESSAGE);
     }
 

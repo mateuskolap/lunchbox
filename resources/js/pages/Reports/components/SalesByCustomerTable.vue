@@ -57,7 +57,9 @@ const { can } = usePermissions();
                         <TableHead class="text-right"
                             >Saldo em Aberto</TableHead
                         >
-                        <TableHead v-if="can('orders.index')" class="w-[80px] text-right"
+                        <TableHead
+                            v-if="can('orders.index')"
+                            class="w-[80px] text-right"
                             >Ações</TableHead
                         >
                     </TableRow>
@@ -77,7 +79,9 @@ const { can } = usePermissions();
                             class="text-right font-medium"
                             :class="{
                                 'text-muted-foreground':
-                                    Number(item.orders_sum_total_amount || 0) === 0,
+                                    Number(
+                                        item.orders_sum_total_amount || 0,
+                                    ) === 0,
                             }"
                         >
                             {{
@@ -118,13 +122,16 @@ const { can } = usePermissions();
                             {{
                                 formatCurrency(
                                     Number(item.orders_sum_total_amount || 0) -
-                                    Number(
-                                        item.orders_sum_paid_amount || 0
-                                    )
+                                        Number(
+                                            item.orders_sum_paid_amount || 0,
+                                        ),
                                 )
                             }}
                         </TableCell>
-                        <TableCell v-if="can('orders.index')" class="text-right">
+                        <TableCell
+                            v-if="can('orders.index')"
+                            class="text-right"
+                        >
                             <div class="flex items-center justify-end">
                                 <Button
                                     variant="ghost"

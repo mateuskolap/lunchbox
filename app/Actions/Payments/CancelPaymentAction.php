@@ -12,10 +12,8 @@ readonly class CancelPaymentAction
 {
     public function __construct(
         private CreatePaymentTransactionAction $createPaymentTransaction,
-        private RevertOrdersSettlementAction   $revertOrdersSettlement,
-    )
-    {
-    }
+        private RevertOrdersSettlementAction $revertOrdersSettlement,
+    ) {}
 
     /**
      * @throws Throwable

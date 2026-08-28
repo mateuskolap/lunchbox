@@ -11,9 +11,7 @@ readonly class RevertOrdersSettlementAction
 {
     public function __construct(
         private CreateOrderTransactionAction $createOrderTransaction,
-    )
-    {
-    }
+    ) {}
 
     /**
      * @throws Throwable
@@ -23,7 +21,7 @@ readonly class RevertOrdersSettlementAction
         DB::transaction(function () use ($customer, $payment) {
             $customer->refresh();
 
-            $remainingNeeded = (float)$payment->value;
+            $remainingNeeded = (float) $payment->value;
 
             if ($remainingNeeded <= 0) {
                 return;
@@ -45,7 +43,7 @@ readonly class RevertOrdersSettlementAction
                     return false;
                 }
 
-                $revertAmount = min($remainingNeeded, (float)$order->paid_amount);
+                $revertAmount = min($remainingNeeded, (float) $order->paid_amount);
 
                 if ($revertAmount > 0) {
                     $order->update([

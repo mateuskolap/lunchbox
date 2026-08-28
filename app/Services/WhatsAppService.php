@@ -19,9 +19,7 @@ readonly class WhatsAppService
 {
     public function __construct(
         private WhatsAppProviderInterface $provider
-    )
-    {
-    }
+    ) {}
 
     /**
      * @throws RequestException
@@ -31,7 +29,7 @@ readonly class WhatsAppService
     public function send(Message $message): void
     {
         $message->update([
-            'status' => MessageStatusEnum::PROCESSING
+            'status' => MessageStatusEnum::PROCESSING,
         ]);
 
         $response = match ($message->type) {

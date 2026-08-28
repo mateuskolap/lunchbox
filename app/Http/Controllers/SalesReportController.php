@@ -47,7 +47,7 @@ class SalesReportController extends Controller
 
         $totalsQuery = Order::query()
             ->where($orderFilters)
-            ->when($customerName, fn($q) => $q->whereHas('customer', fn($q) => $q->whereLike('name', "%{$customerName}%")));
+            ->when($customerName, fn ($q) => $q->whereHas('customer', fn ($q) => $q->whereLike('name', "%{$customerName}%")));
 
         $totalSales = $totalsQuery->sum('total_amount');
         $totalPaid = $totalsQuery->sum('paid_amount');

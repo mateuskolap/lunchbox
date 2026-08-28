@@ -8,15 +8,11 @@ use App\Actions\Orders\ReopenOrderAction;
 use App\Actions\Orders\UpdateOrderWithItemsAction;
 use App\Data\Orders\CreateOrderWithItemsData;
 use App\Data\Orders\UpdateOrderWithItemsData;
-use App\Data\WhatsApp\SendTextMessageData;
 use App\Enums\OrderStatusEnum;
-use App\Jobs\SendWhatsAppMessageJob;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
-use App\Services\WhatsAppService;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -31,11 +27,9 @@ class OrderController extends Controller
     public function __construct(
         private readonly CreateOrderWithItemsAction $createOrderWithItems,
         private readonly UpdateOrderWithItemsAction $updateOrderWithItems,
-        private readonly CancelOrderAction          $cancelOrder,
-        private readonly ReopenOrderAction          $reopenOrder,
-    )
-    {
-    }
+        private readonly CancelOrderAction $cancelOrder,
+        private readonly ReopenOrderAction $reopenOrder,
+    ) {}
 
     public function index(Request $request): Response
     {
@@ -53,7 +47,7 @@ class OrderController extends Controller
         return Inertia::render('Orders/Index', [
             'orders' => Order::with('customer')
                 ->when($validated['customer_name'] ?? null, function ($query) use ($validated) {
-                    $query->whereHas('customer', fn($q) => $q->whereLike('name', "%{$validated['customer_name']}%"));
+                    $query->whereHas('customer', fn ($q) => $q->whereLike('name', "%{$validated['customer_name']}%"));
                 })
                 ->when($validated['statuses'] ?? null, function ($query) use ($validated) {
                     $query->whereIn('status', $validated['statuses']);
@@ -129,7 +123,7 @@ class OrderController extends Controller
             'order_items' => ['required', 'array'],
             'order_items.*.product_id' => ['required', 'exists:products,id'],
             'order_items.*.quantity' => ['required', 'integer', 'min:1'],
-            'order_items.*.unit_price' => ['nullable', 'numeric', 'min:0.01']
+            'order_items.*.unit_price' => ['nullable', 'numeric', 'min:0.01'],
         ]);
 
         try {
@@ -142,7 +136,7 @@ class OrderController extends Controller
 
             return redirect(session('orders_list_url', route('orders.index')));
         } catch (Throwable $e) {
-            Log::error('Erro ao criar pedido: ' . $e->getMessage(), [
+            Log::error('Erro ao criar pedido: '.$e->getMessage(), [
                 'exception' => $e,
                 'request_data' => $validated,
             ]);
@@ -164,7 +158,7 @@ class OrderController extends Controller
             'order_items' => ['required', 'array'],
             'order_items.*.product_id' => ['required', 'exists:products,id'],
             'order_items.*.quantity' => ['required', 'integer', 'min:1'],
-            'order_items.*.unit_price' => ['nullable', 'numeric', 'min:0.01']
+            'order_items.*.unit_price' => ['nullable', 'numeric', 'min:0.01'],
         ]);
 
         try {
@@ -177,7 +171,7 @@ class OrderController extends Controller
 
             return redirect()->route('orders.show', $order);
         } catch (Throwable $e) {
-            Log::error('Erro ao atualizar pedido: ' . $e->getMessage(), [
+            Log::error('Erro ao atualizar pedido: '.$e->getMessage(), [
                 'order_id' => $order->id,
                 'exception' => $e,
                 'request_data' => $validated,
@@ -222,7 +216,7 @@ class OrderController extends Controller
         try {
             $this->cancelOrder->execute($order);
         } catch (Throwable $e) {
-            Log::error('Erro ao cancelar pedido: ' . $e->getMessage(), [
+            Log::error('Erro ao cancelar pedido: '.$e->getMessage(), [
                 'order_id' => $order->id,
                 'exception' => $e,
             ]);
@@ -255,7 +249,7 @@ class OrderController extends Controller
 
             return redirect(session('orders_list_url', route('orders.index')));
         } catch (Throwable $e) {
-            Log::error('Erro ao reabrir pedido: ' . $e->getMessage(), [
+            Log::error('Erro ao reabrir pedido: '.$e->getMessage(), [
                 'order_id' => $order->id,
                 'exception' => $e,
             ]);

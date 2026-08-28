@@ -77,7 +77,7 @@ A plataforma foi construída como uma **SPA moderna (Single Page Application)** 
 ## 🛠️ Stack Tecnológica
 
 ### Backend
-- **Framework**: [Laravel 13](https://laravel.com/) (PHP 8.3+)
+- **Framework**: [Laravel 13](https://laravel.com/) (PHP 8.5+)
 - **Autenticação & Segurança**: Laravel Fortify + Spatie Laravel Permission
 - **Banco de Dados**: PostgreSQL 16
 - **Auditoria & DTOs**: Spatie Laravel Activitylog & Spatie Laravel Data
@@ -132,7 +132,7 @@ A plataforma foi construída como uma **SPA moderna (Single Page Application)** 
 
 ### Pré-requisitos
 - [Docker](https://www.docker.com/) e [Docker Compose](https://docs.docker.com/compose/) **OU**
-- PHP 8.3+, Composer, Node.js (v20+) e PostgreSQL
+- PHP 8.5+, Composer, Node.js (v24+) e PostgreSQL
 
 ### Opção 1: Via Docker Compose (Recomendado)
 

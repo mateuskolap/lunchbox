@@ -24,7 +24,7 @@ readonly class CancelOrderAction
         }
 
         DB::transaction(function () use ($order) {
-            $totalAmount = (float)$order->total_amount;
+            $totalAmount = (float) $order->total_amount;
 
             $order->cancel();
             $order->update([

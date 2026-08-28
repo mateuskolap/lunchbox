@@ -49,11 +49,7 @@ const model = defineModel<SalesReportFilters>({ required: true });
                     class="mb-1 block text-xs font-medium text-muted-foreground"
                     >Data Inicial</label
                 >
-                <Input
-                    type="date"
-                    v-model="model.start_date"
-                    class="h-9"
-                />
+                <Input type="date" v-model="model.start_date" class="h-9" />
             </div>
 
             <div class="w-full sm:w-[180px]">
@@ -61,11 +57,7 @@ const model = defineModel<SalesReportFilters>({ required: true });
                     class="mb-1 block text-xs font-medium text-muted-foreground"
                     >Data Final</label
                 >
-                <Input
-                    type="date"
-                    v-model="model.end_date"
-                    class="h-9"
-                />
+                <Input type="date" v-model="model.end_date" class="h-9" />
             </div>
 
             <div class="w-full sm:w-[260px]">

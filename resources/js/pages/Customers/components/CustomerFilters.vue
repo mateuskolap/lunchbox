@@ -68,7 +68,7 @@ const model = defineModel<CustomerFilters>({ required: true });
                 />
                 <Label
                     for="filter-debtors-only"
-                    class="cursor-pointer text-sm font-medium text-muted-foreground select-none hover:text-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    class="cursor-pointer text-sm font-medium text-muted-foreground select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 hover:text-foreground"
                 >
                     Apenas devedores
                 </Label>

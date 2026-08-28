@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Form } from '@inertiajs/vue3';
+import { Plus } from 'lucide-vue-next';
 import { ref } from 'vue';
 import ProductController from '@/actions/App/Http/Controllers/ProductController';
 import FormField from '@/components/FormField.vue';
@@ -17,7 +18,6 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
-import { Plus } from 'lucide-vue-next';
 
 const isOpen = ref(false);
 const isLunchbox = ref(false);

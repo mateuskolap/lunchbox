@@ -97,6 +97,13 @@ const totalAmount = computed(() => {
     );
 });
 
+const totalItemsCount = computed(() => {
+    return selectedItems.value.reduce(
+        (total, item) => total + item.quantity,
+        0,
+    );
+});
+
 // Add item to list
 const addItem = () => {
     if (!currentProductId.value) {
@@ -143,9 +150,11 @@ const removeItem = (productId: number) => {
 // Check if unit price was edited from product default
 const isPriceEdited = (item: SelectedItem) => {
     const product = props.products.find((p) => p.id === item.product_id);
+
     if (!product) {
         return false;
     }
+
     return Number(item.price) !== Number(product.price);
 };
 </script>
@@ -401,14 +410,10 @@ const isPriceEdited = (item: SelectedItem) => {
                         <div
                             class="flex gap-4 text-sm font-medium text-muted-foreground"
                         >
-                            <span
-                                >Total de Itens:
+                            <span>
+                                Total de Itens:
                                 <strong class="text-foreground">{{
-                                    selectedItems.reduce(
-                                        (acc: any, item: { quantity: any }) =>
-                                            acc + item.quantity,
-                                        0,
-                                    )
+                                    totalItemsCount
                                 }}</strong>
                             </span>
                         </div>

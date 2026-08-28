@@ -2,15 +2,15 @@
 
 namespace App\Actions\Orders;
 
-use App\Data\Orders\RawOrderItemData;
 use App\Data\Orders\OrderItemData;
+use App\Data\Orders\RawOrderItemData;
 use App\Models\Product;
 use Illuminate\Support\Collection;
 
 class PrepareOrderItemsAction
 {
     /**
-     * @param Collection<int, RawOrderItemData> $items
+     * @param  Collection<int, RawOrderItemData>  $items
      * @return Collection<int, OrderItemData>
      */
     public function execute(Collection $items): Collection
@@ -21,7 +21,7 @@ class PrepareOrderItemsAction
 
         return $items->map(function (RawOrderItemData $item) use ($products) {
             $product = $products->get($item->product_id);
-            $price = $product ? (float)$product->price : 0.00;
+            $price = $product ? (float) $product->price : 0.00;
             $resolvedPrice = $item->unit_price ?? $price;
 
             return new OrderItemData(

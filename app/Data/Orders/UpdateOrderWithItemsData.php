@@ -9,15 +9,11 @@ use Spatie\LaravelData\Data;
 class UpdateOrderWithItemsData extends Data
 {
     /**
-     * @param Carbon $date
-     * @param Collection<int, RawOrderItemData> $order_items
-     * @param string|null $observation
+     * @param  Collection<int, RawOrderItemData>  $order_items
      */
     public function __construct(
-        public Carbon     $date,
+        public Carbon $date,
         public Collection $order_items,
-        public ?string    $observation = null,
-    )
-    {
-    }
+        public ?string $observation = null,
+    ) {}
 }

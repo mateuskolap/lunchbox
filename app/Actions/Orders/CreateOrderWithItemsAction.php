@@ -12,12 +12,10 @@ use Throwable;
 readonly class CreateOrderWithItemsAction
 {
     public function __construct(
-        private PrepareOrderItemsAction      $prepareOrderItems,
+        private PrepareOrderItemsAction $prepareOrderItems,
         private SettleOrdersFromWalletAction $settleOrdersFromWallet,
         private CreateOrderTransactionAction $createOrderTransaction,
-    )
-    {
-    }
+    ) {}
 
     /**
      * @throws Throwable

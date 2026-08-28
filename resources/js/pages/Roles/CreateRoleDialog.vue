@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Form } from '@inertiajs/vue3';
+import { Plus } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 import RoleController from '@/actions/App/Http/Controllers/RoleController';
 import FormField from '@/components/FormField.vue';
@@ -18,7 +19,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import type { Permission } from '@/types/role';
-import { Plus } from 'lucide-vue-next';
 
 const props = defineProps<{
     permissions: Permission[];

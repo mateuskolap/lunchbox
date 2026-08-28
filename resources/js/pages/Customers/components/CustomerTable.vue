@@ -13,8 +13,8 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { usePermissions } from '@/composables/usePermissions';
-import { customerIndex as customerPaymentsIndex } from '@/routes/customers/payments';
 import { formatCurrency, formatPhone } from '@/lib/formatters';
+import { customerIndex as customerPaymentsIndex } from '@/routes/customers/payments';
 import type { Customer, PaginatedResponse } from '@/types';
 import CreateCustomerDialog from '../CreateCustomerDialog.vue';
 import DeleteCustomerDialog from '../DeleteCustomerDialog.vue';

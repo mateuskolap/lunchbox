@@ -22,7 +22,7 @@ readonly class SettleOrdersFromWalletAction
                 ->orderBy('id')
                 ->get();
 
-            $totalPending = $unpaidOrders->sum(fn($order) => $order->total_amount - $order->paid_amount);
+            $totalPending = $unpaidOrders->sum(fn ($order) => $order->total_amount - $order->paid_amount);
             $remainingBalance = $customer->balance + $totalPending;
 
             if ($remainingBalance <= 0) {

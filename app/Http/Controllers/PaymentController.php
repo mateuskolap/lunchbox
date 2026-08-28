@@ -25,9 +25,7 @@ class PaymentController extends Controller
     public function __construct(
         private readonly CreatePaymentAction $createPayment,
         private readonly CancelPaymentAction $cancelPayment,
-    )
-    {
-    }
+    ) {}
 
     public function customerIndex(Request $request, Customer $customer): Response
     {
@@ -77,7 +75,7 @@ class PaymentController extends Controller
 
             return redirect()->route('customers.payments.customer-index', $customer);
         } catch (Throwable $e) {
-            Log::error('Erro ao registrar pagamento: ' . $e->getMessage(), [
+            Log::error('Erro ao registrar pagamento: '.$e->getMessage(), [
                 'customer_id' => $customer->id,
                 'exception' => $e,
                 'request_data' => $validated,
@@ -104,7 +102,7 @@ class PaymentController extends Controller
 
             return redirect()->route('customers.payments.customer-index', $customer);
         } catch (Throwable $e) {
-            Log::error('Erro ao cancelar pagamento: ' . $e->getMessage(), [
+            Log::error('Erro ao cancelar pagamento: '.$e->getMessage(), [
                 'customer_id' => $customer->id,
                 'exception' => $e,
             ]);
@@ -121,18 +119,17 @@ class PaymentController extends Controller
     /**
      * @template TModel of Model
      *
-     * @param Builder<TModel>|Relation<TModel> $query
+     * @param  Builder<TModel>|Relation<TModel>  $query
      * @return Builder<TModel>|Relation<TModel>
      */
     private function filterDates(
         Builder|Relation $query,
-        string           $column,
-        ?Carbon          $start = null,
-        ?Carbon          $end = null
-    ): Builder|Relation
-    {
+        string $column,
+        ?Carbon $start = null,
+        ?Carbon $end = null
+    ): Builder|Relation {
         return $query
-            ->when($start, fn($q) => $q->where($column, '>=', $start))
-            ->when($end, fn($q) => $q->where($column, '<=', $end));
+            ->when($start, fn ($q) => $q->where($column, '>=', $start))
+            ->when($end, fn ($q) => $q->where($column, '<=', $end));
     }
 }

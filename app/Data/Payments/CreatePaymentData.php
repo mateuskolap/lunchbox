@@ -10,9 +10,7 @@ class CreatePaymentData extends Data
 {
     public function __construct(
         public PaymentMethodEnum $method,
-        public float             $value,
-        public ?Carbon           $paid_at
-    )
-    {
-    }
+        public float $value,
+        public ?Carbon $paid_at
+    ) {}
 }

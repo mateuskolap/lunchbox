@@ -13,11 +13,9 @@ use Throwable;
 readonly class CreatePaymentAction
 {
     public function __construct(
-        private SettleOrdersFromWalletAction   $settleOrdersFromWallet,
+        private SettleOrdersFromWalletAction $settleOrdersFromWallet,
         private CreatePaymentTransactionAction $createPaymentTransaction,
-    )
-    {
-    }
+    ) {}
 
     /**
      * @throws Throwable

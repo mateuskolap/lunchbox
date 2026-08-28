@@ -18,7 +18,8 @@ defineProps<{
             :value="formatCurrency(customer.balance)"
             :icon="Wallet"
             :value-class="{
-                'text-emerald-600 dark:text-emerald-400': Number(customer.balance) > 0,
+                'text-emerald-600 dark:text-emerald-400':
+                    Number(customer.balance) > 0,
                 'text-destructive': Number(customer.balance) < 0,
             }"
         />

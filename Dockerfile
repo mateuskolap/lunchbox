@@ -1,5 +1,5 @@
 # Stage 1: PHP dependencies and Wayfinder generation
-FROM php:8.4-alpine AS php-builder
+FROM php:8.5-alpine AS php-builder
 
 # Install system dependencies needed for composer and PHP extensions
 RUN apk add --no-cache \
@@ -42,7 +42,7 @@ RUN DB_CONNECTION=sqlite \
     php artisan wayfinder:generate --with-form --no-interaction
 
 # Stage 2: Frontend assets build
-FROM node:20-alpine AS frontend-builder
+FROM node:24-slim AS frontend-builder
 
 WORKDIR /app
 
@@ -64,7 +64,7 @@ COPY --from=php-builder /app/resources/js/wayfinder ./resources/js/wayfinder
 RUN VITE_WAYFINDER_COMMAND="true" npm run build
 
 # Stage 3: Production Runtime
-FROM php:8.4-fpm-alpine
+FROM php:8.5-fpm-alpine
 
 # Set working directory
 WORKDIR /var/www/html

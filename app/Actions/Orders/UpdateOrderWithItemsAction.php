@@ -11,12 +11,10 @@ use Throwable;
 readonly class UpdateOrderWithItemsAction
 {
     public function __construct(
-        private PrepareOrderItemsAction      $prepareOrderItems,
+        private PrepareOrderItemsAction $prepareOrderItems,
         private SettleOrdersFromWalletAction $settleOrdersFromWallet,
         private CreateOrderTransactionAction $createOrderTransaction,
-    )
-    {
-    }
+    ) {}
 
     /**
      * @throws Throwable
@@ -64,13 +62,13 @@ readonly class UpdateOrderWithItemsAction
      */
     private function handlePaymentReconciliation(Order $order, float|string $previousTotal): void
     {
-        $newTotal = (float)$order->total_amount;
-        $previousTotal = (float)$previousTotal;
+        $newTotal = (float) $order->total_amount;
+        $previousTotal = (float) $previousTotal;
         $customer = $order->customer;
 
         if ($newTotal > $previousTotal) {
             $difference = $newTotal - $previousTotal;
-            $balanceBefore = (float)$customer->balance;
+            $balanceBefore = (float) $customer->balance;
 
             $this->createOrderTransaction->execute($order, -$difference, "Ajuste de valor por aumento no pedido #{$order->id}");
 
@@ -84,7 +82,7 @@ readonly class UpdateOrderWithItemsAction
             $this->createOrderTransaction->execute($order, $difference, "Ajuste de valor por redução no pedido #{$order->id}");
 
             $order->update([
-                'paid_amount' => min((float)$order->paid_amount, $newTotal),
+                'paid_amount' => min((float) $order->paid_amount, $newTotal),
             ]);
         }
 

@@ -27,6 +27,7 @@ function getTransactionIcon(transaction: Transaction) {
     if (isZeroTransaction(transaction)) {
         return Receipt;
     }
+
     return isDebitTransaction(transaction) ? ArrowDownCircle : ArrowUpCircle;
 }
 </script>

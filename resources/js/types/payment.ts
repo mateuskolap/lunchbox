@@ -1,12 +1,7 @@
 import type { Customer } from './customer';
 
 export type PaymentMethod =
-    | 'cash'
-    | 'pix'
-    | 'credit_card'
-    | 'debit_card'
-    | 'food_voucher'
-    | 'other';
+    'cash' | 'pix' | 'credit_card' | 'debit_card' | 'food_voucher' | 'other';
 export type PaymentStatus = 'pending' | 'confirmed' | 'canceled';
 
 export type Payment = {

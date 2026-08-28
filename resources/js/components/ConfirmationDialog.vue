@@ -20,12 +20,7 @@ type Props = {
     confirmingText?: string;
     cancelText?: string;
     variant?:
-        | 'default'
-        | 'destructive'
-        | 'outline'
-        | 'secondary'
-        | 'ghost'
-        | 'link';
+        'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
     formAction: Record<string, unknown>;
     formOptions?: Record<string, unknown>;
 };
