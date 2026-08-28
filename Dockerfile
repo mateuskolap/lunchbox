@@ -47,10 +47,10 @@ FROM node:20-alpine AS frontend-builder
 WORKDIR /app
 
 # Copy configuration files first to use Docker caching
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json .npmrc* ./
 
-# Install npm dependencies (using npm ci for a clean, reproducible production build)
-RUN npm ci
+# Install npm dependencies (using npm ci with retry options for network resilience)
+RUN npm ci --fetch-retries=5 --fetch-retry-factor=2 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000
 
 # Copy the rest of standard files
 COPY . .
