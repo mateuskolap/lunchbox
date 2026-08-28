@@ -1,16 +1,16 @@
 # Stage 1: PHP dependencies and Wayfinder generation
-FROM php:8.4-alpine AS php-builder
+FROM php:8.4-fpm AS php-builder
 
 # Install system dependencies needed for composer and PHP extensions
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     unzip \
     zip \
     libzip-dev \
-    postgresql-dev \
-    sqlite-dev \
-    zlib-dev \
-    && docker-php-ext-install zip pdo_pgsql pdo_mysql bcmath
+    libpq-dev \
+    libsqlite3-dev \
+    && docker-php-ext-install zip pdo_pgsql pdo_mysql bcmath \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -63,32 +63,24 @@ COPY --from=php-builder /app/resources/js/wayfinder ./resources/js/wayfinder
 RUN VITE_WAYFINDER_COMMAND="true" npm run build
 
 # Stage 3: Production Runtime
-FROM php:8.4-fpm-alpine
+FROM php:8.4-fpm
 
 # Set working directory
 WORKDIR /var/www/html
 
 # Install runtime system dependencies (nginx, supervisor, and libraries for PHP extensions)
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     nginx \
     supervisor \
     curl \
-    libzip \
-    libpq \
-    sqlite-libs \
-    && apk add --no-cache --virtual .build-deps \
+    libpq-dev \
     libzip-dev \
-    postgresql-dev \
-    sqlite-dev \
     && docker-php-ext-install zip pdo_mysql pdo_pgsql bcmath \
-    && apk del .build-deps
+    && rm -rf /var/lib/apt/lists/*
 
-# Configure Nginx
-RUN rm -f /etc/nginx/http.d/default.conf /etc/nginx/conf.d/default.conf \
-    && sed -i 's/user nginx;/user www-data;/' /etc/nginx/nginx.conf \
-    && mkdir -p /run/nginx /var/lib/nginx
-
-COPY ./.docker/nginx/default.conf /etc/nginx/http.d/default.conf
+# Copy Nginx config
+RUN rm -f /etc/nginx/conf.d/default.conf /etc/nginx/sites-enabled/default
+COPY ./.docker/nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # Copy production Supervisor config
 COPY ./.docker/supervisord.prod.conf /etc/supervisor/conf.d/supervisord.conf
@@ -96,6 +88,9 @@ COPY ./.docker/supervisord.prod.conf /etc/supervisor/conf.d/supervisord.conf
 # Copy production entrypoint script
 COPY ./.docker/entrypoint.prod.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Configure Nginx run permissions/directory
+RUN mkdir -p /var/lib/nginx && chown -R www-data:www-data /var/lib/nginx
 
 # Copy application files (inheriting .dockerignore exclusions)
 COPY --chown=www-data:www-data . /var/www/html
