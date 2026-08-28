@@ -1,5 +1,5 @@
 # Stage 1: PHP dependencies and Wayfinder generation
-FROM php:8.5-fpm AS php-builder
+FROM php:8.5-fpm-alpine AS php-builder
 
 # Install system dependencies needed for composer and PHP extensions
 RUN apt-get update && apt-get install -y \
