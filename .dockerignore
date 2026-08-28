@@ -8,3 +8,9 @@ vendor
 public/build
 public/hot
 *.log
+storage/inertia-devtools
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+

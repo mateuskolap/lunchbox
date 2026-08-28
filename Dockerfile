@@ -1,17 +1,17 @@
 # Stage 1: PHP dependencies and Wayfinder generation
-FROM php:8.5-alpine AS php-builder
+FROM php:8.5-fpm AS php-builder
 
 # Install system dependencies needed for composer and PHP extensions
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
     git \
     unzip \
     zip \
     libzip-dev \
     libpq-dev \
-    sqlite-dev
-
-# Install PHP extensions required for Laravel, SQLite, and the Wayfinder generator
-RUN docker-php-ext-install zip pdo pdo_pgsql pdo_mysql pdo_sqlite
+    libsqlite3-dev \
+    zlib1g-dev \
+    && docker-php-ext-install zip pdo pdo_pgsql pdo_mysql pdo_sqlite \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -64,29 +64,24 @@ COPY --from=php-builder /app/resources/js/wayfinder ./resources/js/wayfinder
 RUN VITE_WAYFINDER_COMMAND="true" npm run build
 
 # Stage 3: Production Runtime
-FROM php:8.5-fpm-alpine
+FROM php:8.5-fpm
 
 # Set working directory
 WORKDIR /var/www/html
 
 # Install runtime system dependencies (nginx, supervisor, and libraries for PHP extensions)
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
     nginx \
     supervisor \
-    libpq \
-    libzip \
-    bash \
-    curl \
-    && apk add --no-cache --virtual .build-deps \
-    $PHPIZE_DEPS \
-    postgresql-dev \
+    libpq-dev \
     libzip-dev \
+    curl \
     && docker-php-ext-install zip pdo pdo_mysql pdo_pgsql \
-    && apk del .build-deps
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy Nginx config
-RUN rm -f /etc/nginx/http.d/default.conf
-COPY ./.docker/nginx/default.conf /etc/nginx/http.d/default.conf
+RUN rm -f /etc/nginx/conf.d/default.conf /etc/nginx/sites-enabled/default
+COPY ./.docker/nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # Copy production Supervisor config
 COPY ./.docker/supervisord.prod.conf /etc/supervisor/conf.d/supervisord.conf
