@@ -1,17 +1,16 @@
 # Stage 1: PHP dependencies and Wayfinder generation
-FROM php:8.4-alpine AS php-builder
+FROM php:8.4-fpm AS php-builder
 
 # Install system dependencies needed for composer and PHP extensions
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     unzip \
     zip \
     libzip-dev \
     libpq-dev \
-    sqlite-dev
-
-# Install PHP extensions required for Laravel, SQLite, and the Wayfinder generator
-RUN docker-php-ext-install zip pdo pdo_pgsql pdo_mysql pdo_sqlite
+    libsqlite3-dev \
+    && docker-php-ext-install zip pdo_pgsql pdo_mysql bcmath \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -47,10 +46,10 @@ FROM node:24-alpine AS frontend-builder
 WORKDIR /app
 
 # Copy configuration files first to use Docker caching
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json .npmrc* ./
 
-# Install npm dependencies (using npm ci for a clean, reproducible production build)
-RUN npm ci
+# Install npm dependencies (using npm ci with retry options for network resilience)
+RUN npm ci --fetch-retries=5 --fetch-retry-factor=2 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000
 
 # Copy the rest of standard files
 COPY . .
@@ -64,29 +63,24 @@ COPY --from=php-builder /app/resources/js/wayfinder ./resources/js/wayfinder
 RUN VITE_WAYFINDER_COMMAND="true" npm run build
 
 # Stage 3: Production Runtime
-FROM php:8.4-fpm-alpine
+FROM php:8.4-fpm
 
 # Set working directory
 WORKDIR /var/www/html
 
 # Install runtime system dependencies (nginx, supervisor, and libraries for PHP extensions)
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     nginx \
     supervisor \
-    libpq \
-    libzip \
-    bash \
     curl \
-    && apk add --no-cache --virtual .build-deps \
-    $PHPIZE_DEPS \
-    postgresql-dev \
+    libpq-dev \
     libzip-dev \
-    && docker-php-ext-install zip pdo pdo_mysql pdo_pgsql \
-    && apk del .build-deps
+    && docker-php-ext-install zip pdo_mysql pdo_pgsql bcmath \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy Nginx config
-RUN rm -f /etc/nginx/http.d/default.conf
-COPY ./.docker/nginx/default.conf /etc/nginx/http.d/default.conf
+RUN rm -f /etc/nginx/conf.d/default.conf /etc/nginx/sites-enabled/default
+COPY ./.docker/nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # Copy production Supervisor config
 COPY ./.docker/supervisord.prod.conf /etc/supervisor/conf.d/supervisord.conf
@@ -101,8 +95,9 @@ RUN mkdir -p /var/lib/nginx && chown -R www-data:www-data /var/lib/nginx
 # Copy application files (inheriting .dockerignore exclusions)
 COPY --chown=www-data:www-data . /var/www/html
 
-# Copy the composer packages from the builder stage
+# Copy the composer packages and clean bootstrap cache from the builder stage
 COPY --from=php-builder --chown=www-data:www-data /app/vendor /var/www/html/vendor
+COPY --from=php-builder --chown=www-data:www-data /app/bootstrap/cache /var/www/html/bootstrap/cache
 
 # Copy the generated Wayfinder routes from builder stage
 COPY --from=php-builder --chown=www-data:www-data /app/resources/js/actions /var/www/html/resources/js/actions
