@@ -91,7 +91,6 @@ Route::middleware(['auth', 'verified', 'throttle:120,1'])->group(function () {
 
     // Reports routes
     Route::prefix('/relatorios')->name('reports.')->group(function () {
-        Route::middleware('can:reports.sales.index')->get('/geral', [SalesReportController::class, 'generalReport'])->name('general-report');
         Route::middleware('can:reports.sales.index')->get('/vendas', [SalesReportController::class, 'salesByCustomer'])->name('sales-by-customer');
     });
 });
