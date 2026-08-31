@@ -42,7 +42,7 @@ RUN DB_CONNECTION=sqlite \
     php artisan wayfinder:generate --with-form --no-interaction
 
 # Stage 2: Frontend assets build
-FROM node:20-alpine AS frontend-builder
+FROM node:24-alpine AS frontend-builder
 
 WORKDIR /app
 

@@ -16,7 +16,7 @@ defineProps<{
         :description="`Tem certeza que deseja excluir o papel ${role.name}? Esta ação não pode ser desfeita.`"
         confirm-text="Excluir"
         confirming-text="Excluindo..."
-        :form-action="RoleController.destroy.form(String(role.id))"
+        :form-action="RoleController.destroy.form(role.id)"
         :form-options="{ preserveScroll: true }"
     >
         <template #trigger>

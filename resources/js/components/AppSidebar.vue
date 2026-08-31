@@ -3,6 +3,7 @@ import { Link } from '@inertiajs/vue3';
 import {
     BarChart3,
     Contact,
+    LayoutDashboard,
     Package,
     Shield,
     ShoppingCart,
@@ -30,7 +31,7 @@ import { dashboard } from '@/routes';
 import { index as customersIndex } from '@/routes/customers';
 import orders, { index as ordersIndex } from '@/routes/orders';
 import { index as productsIndex } from '@/routes/products';
-import { salesByCustomer } from '@/routes/reports';
+import { generalReport, salesByCustomer } from '@/routes/reports';
 import { index as rolesIndex } from '@/routes/roles';
 import { index as usersIndex } from '@/routes/users';
 import type { NavItem } from '@/types';
@@ -99,6 +100,18 @@ const { isCurrentUrl } = useCurrentUrl();
             <SidebarGroup v-if="can('reports.sales.index')" class="px-2 py-0">
                 <SidebarGroupLabel>Relatórios</SidebarGroupLabel>
                 <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton
+                            as-child
+                            :is-active="isCurrentUrl(generalReport.url())"
+                            tooltip="Relatório Geral"
+                        >
+                            <Link :href="generalReport.url()">
+                                <LayoutDashboard class="size-4" />
+                                <span>Relatório Geral</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
                     <SidebarMenuItem>
                         <SidebarMenuButton
                             as-child
