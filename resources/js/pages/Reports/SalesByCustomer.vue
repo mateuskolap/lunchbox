@@ -3,17 +3,10 @@ import { Head } from '@inertiajs/vue3';
 import Heading from '@/components/Heading.vue';
 import { useFilters } from '@/composables/useFilters';
 import { salesByCustomer } from '@/routes/reports';
-import type { PaginatedResponse } from '@/types';
+import type { CustomerReportRow, PaginatedResponse, SalesReportFilters } from '@/types';
 import SalesByCustomerFilters from './components/SalesByCustomerFilters.vue';
 import SalesByCustomerTable from './components/SalesByCustomerTable.vue';
-import type { CustomerReportRow } from './components/SalesByCustomerTable.vue';
 import SalesSummaryCards from './components/SalesSummaryCards.vue';
-
-interface SalesReportFilters {
-    start_date: string;
-    end_date: string;
-    customer: string;
-}
 
 const props = defineProps<{
     customers: PaginatedResponse<CustomerReportRow>;

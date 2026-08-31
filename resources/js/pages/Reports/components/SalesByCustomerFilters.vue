@@ -2,12 +2,7 @@
 import { Filter, X } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-
-interface SalesReportFilters {
-    start_date: string;
-    end_date: string;
-    customer: string;
-}
+import type { SalesReportFilters } from '@/types';
 
 defineProps<{
     hasActiveFilters: boolean;

@@ -8,3 +8,4 @@ export * from './ui';
 export * from './role';
 export * from './payment';
 export * from './transaction';
+export * from './report';

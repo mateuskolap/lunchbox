@@ -1,4 +1,4 @@
 {
     "Laravel.phpEnvironment": "local",
-    "js/ts.experimental.useTsgo": false
+    "js/ts.experimental.useTsgo": false,
 }

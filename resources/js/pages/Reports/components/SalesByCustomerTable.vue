@@ -15,17 +15,7 @@ import {
 import { usePermissions } from '@/composables/usePermissions';
 import { formatCurrency, formatPhone } from '@/lib/formatters';
 import { index as ordersIndex } from '@/routes/orders';
-import type { PaginatedResponse } from '@/types';
-
-export interface CustomerReportRow {
-    id: number;
-    name: string;
-    phone?: string;
-    balance: string | number;
-    orders_count: number;
-    orders_sum_total_amount: string | null;
-    orders_sum_paid_amount: string | null;
-}
+import type { CustomerReportRow, PaginatedResponse } from '@/types';
 
 defineProps<{
     customers: PaginatedResponse<CustomerReportRow>;

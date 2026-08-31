@@ -100,7 +100,7 @@ const handleCheckboxChange = (
         </DialogTrigger>
         <DialogContent class="max-w-2xl">
             <Form
-                v-bind="RoleController.update.form(String(role.id))"
+                v-bind="RoleController.update.form(role.id)"
                 @success="isOpen = false"
                 class="space-y-6"
                 v-slot="{ errors, processing, reset, clearErrors }"

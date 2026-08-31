@@ -32,6 +32,11 @@ class Product extends Model
         'show_in_prep_summary' => 'boolean',
     ];
 
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
