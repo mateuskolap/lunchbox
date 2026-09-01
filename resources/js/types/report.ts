@@ -11,13 +11,6 @@ export interface TopCustomerItem {
     orders_count: number;
 }
 
-export interface TopProductItem {
-    id: number;
-    name: string;
-    total_quantity: number;
-    total_revenue: number;
-}
-
 export interface PaymentByMethodItem {
     method: string;
     total: number;

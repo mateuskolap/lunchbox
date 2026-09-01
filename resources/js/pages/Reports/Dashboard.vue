@@ -7,7 +7,6 @@ import type {
     PaymentByMethodItem,
     ReportsDashboardFilters,
     TopCustomerItem,
-    TopProductItem,
 } from '@/types';
 import DailyHeatmaps from './components/DailyHeatmaps.vue';
 import DashboardFilters from './components/DashboardFilters.vue';
@@ -15,7 +14,6 @@ import DashboardSummaryCards from './components/DashboardSummaryCards.vue';
 import MonthlyRevenueChart from './components/MonthlyRevenueChart.vue';
 import PaymentMethodChart from './components/PaymentMethodChart.vue';
 import TopCustomersTable from './components/TopCustomersTable.vue';
-import TopProductsTable from './components/TopProductsTable.vue';
 
 const props = defineProps<{
     total_sales: number;
@@ -30,7 +28,6 @@ const props = defineProps<{
     daily_payments: Record<string, number>;
     payments_by_method: PaymentByMethodItem[];
     top_customers: TopCustomerItem[];
-    top_products: TopProductItem[];
     filters: ReportsDashboardFilters;
 }>();
 
@@ -98,9 +95,8 @@ defineOptions({
 
         <PaymentMethodChart :data="payments_by_method" />
 
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div>
             <TopCustomersTable :customers="top_customers" />
-            <TopProductsTable :products="top_products" />
         </div>
     </div>
 </template>

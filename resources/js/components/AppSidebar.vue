@@ -1,4 +1,15 @@
 <script setup lang="ts">
+import { Link } from '@inertiajs/vue3';
+import {
+    BarChart3,
+    Contact,
+    LayoutDashboard,
+    Package,
+    Shield,
+    ShoppingBag,
+    ShoppingCart,
+    Users,
+} from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -20,17 +31,6 @@ import { dashboard as reportsDashboard, salesByCustomer } from '@/routes/reports
 import { index as rolesIndex } from '@/routes/roles';
 import { index as usersIndex } from '@/routes/users';
 import type { NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
-import {
-    BarChart3,
-    Contact,
-    LayoutDashboard,
-    Package,
-    Shield,
-    ShoppingBag,
-    ShoppingCart,
-    Users,
-} from 'lucide-vue-next';
 
 const mainNavItems: NavItem[] = [
     {

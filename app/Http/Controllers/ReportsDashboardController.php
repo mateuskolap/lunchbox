@@ -121,34 +121,6 @@ class ReportsDashboardController extends Controller
                 'orders_count' => (int) ($customer->orders_count ?? 0),
             ]);
 
-        // --- Top 10 Produtos (Eloquent) ---
-        $topProducts = Product::withTrashed()
-            ->whereHas('orderItems.order', function ($query) use ($startDate, $endDate) {
-                $query->where('status', '!=', OrderStatusEnum::CANCELED->value)
-                    ->whereBetween('date', [$startDate, $endDate]);
-            })
-            ->withSum(['orderItems as total_quantity' => function ($query) use ($startDate, $endDate) {
-                $query->whereHas('order', function ($q) use ($startDate, $endDate) {
-                    $q->where('status', '!=', OrderStatusEnum::CANCELED->value)
-                        ->whereBetween('date', [$startDate, $endDate]);
-                });
-            }], 'quantity')
-            ->withSum(['orderItems as total_revenue' => function ($query) use ($startDate, $endDate) {
-                $query->whereHas('order', function ($q) use ($startDate, $endDate) {
-                    $q->where('status', '!=', OrderStatusEnum::CANCELED->value)
-                        ->whereBetween('date', [$startDate, $endDate]);
-                });
-            }], 'total_amount')
-            ->orderByDesc('total_revenue')
-            ->limit(10)
-            ->get(['id', 'name'])
-            ->map(fn ($product) => [
-                'id' => $product->id,
-                'name' => $product->name,
-                'total_quantity' => (float) ($product->total_quantity ?? 0),
-                'total_revenue' => (float) ($product->total_revenue ?? 0),
-            ]);
-
         return Inertia::render('Reports/Dashboard', [
             // KPIs
             'total_sales' => (float) $totalSales,
@@ -167,7 +139,6 @@ class ReportsDashboardController extends Controller
 
             // Rankings
             'top_customers' => $topCustomers,
-            'top_products' => $topProducts,
 
             // Filters
             'filters' => $request->only(['start_date', 'end_date']),
