@@ -72,13 +72,13 @@ const mainNavItems: NavItem[] = [
         title: 'Vendas por Cliente',
         href: salesByCustomer(),
         icon: BarChart3,
-        permission: 'reports.salesByCustomer',
+        permission: 'reports.sales.index',
     },
     {
         title: 'Dashboard',
         href: reportsDashboard(),
         icon: LayoutDashboard,
-        permission: 'reports.dashboard',
+        permission: 'reports.dashboard.index',
     }
 ];
 

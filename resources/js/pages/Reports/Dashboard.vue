@@ -9,7 +9,7 @@ import type {
     TopCustomerItem,
     TopProductItem,
 } from '@/types';
-import CalendarHeatmap from './components/CalendarHeatmap.vue';
+import DailyHeatmaps from './components/DailyHeatmaps.vue';
 import DashboardFilters from './components/DashboardFilters.vue';
 import DashboardSummaryCards from './components/DashboardSummaryCards.vue';
 import MonthlyRevenueChart from './components/MonthlyRevenueChart.vue';
@@ -91,18 +91,10 @@ defineOptions({
             :payments="monthly_payments"
         />
 
-        <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
-            <CalendarHeatmap
-                title="Faturamento Diário"
-                :data="daily_revenue"
-                color-scheme="orange"
-            />
-            <CalendarHeatmap
-                title="Pagamentos Diários"
-                :data="daily_payments"
-                color-scheme="green"
-            />
-        </div>
+        <DailyHeatmaps
+            :daily-revenue="daily_revenue"
+            :daily-payments="daily_payments"
+        />
 
         <PaymentMethodChart :data="payments_by_method" />
 

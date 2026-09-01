@@ -7,6 +7,7 @@ use App\Enums\PaymentStatusEnum;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -92,34 +93,60 @@ class ReportsDashboardController extends Controller
             ->get();
 
         // --- Top 10 Clientes (Eloquent) ---
-        $orderPeriodFilter = function ($query) use ($startDate, $endDate) {
-            $query->where('status', '!=', OrderStatusEnum::CANCELED)
-                ->whereBetween('date', [$startDate, $endDate]);
-        };
-
-        $topCustomers = Customer::query()
-            ->whereHas('orders', $orderPeriodFilter)
-            ->withSum(['orders as total_sales' => $orderPeriodFilter], 'total_amount')
-            ->withSum(['orders as total_paid' => $orderPeriodFilter], 'paid_amount')
-            ->withCount(['orders as orders_count' => $orderPeriodFilter])
+        $topCustomers = Customer::withTrashed()
+            ->whereHas('orders', function ($query) use ($startDate, $endDate) {
+                $query->where('status', '!=', OrderStatusEnum::CANCELED->value)
+                    ->whereBetween('date', [$startDate, $endDate]);
+            })
+            ->withSum(['orders as total_sales' => function ($query) use ($startDate, $endDate) {
+                $query->where('status', '!=', OrderStatusEnum::CANCELED->value)
+                    ->whereBetween('date', [$startDate, $endDate]);
+            }], 'total_amount')
+            ->withSum(['orders as total_paid' => function ($query) use ($startDate, $endDate) {
+                $query->where('status', '!=', OrderStatusEnum::CANCELED->value)
+                    ->whereBetween('date', [$startDate, $endDate]);
+            }], 'paid_amount')
+            ->withCount(['orders as orders_count' => function ($query) use ($startDate, $endDate) {
+                $query->where('status', '!=', OrderStatusEnum::CANCELED->value)
+                    ->whereBetween('date', [$startDate, $endDate]);
+            }])
             ->orderByDesc('total_sales')
             ->limit(10)
-            ->get(['id', 'name']);
+            ->get(['id', 'name'])
+            ->map(fn ($customer) => [
+                'id' => $customer->id,
+                'name' => $customer->name,
+                'total_sales' => (float) ($customer->total_sales ?? 0),
+                'total_paid' => (float) ($customer->total_paid ?? 0),
+                'orders_count' => (int) ($customer->orders_count ?? 0),
+            ]);
 
         // --- Top 10 Produtos (Eloquent) ---
-        $topProducts = OrderItem::query()
-            ->whereHas('order', $orderPeriodFilter)
-            ->with('product:id,name')
-            ->selectRaw('product_id, SUM(quantity) as total_quantity, SUM(total_amount) as total_revenue')
-            ->groupBy('product_id')
+        $topProducts = Product::withTrashed()
+            ->whereHas('orderItems.order', function ($query) use ($startDate, $endDate) {
+                $query->where('status', '!=', OrderStatusEnum::CANCELED->value)
+                    ->whereBetween('date', [$startDate, $endDate]);
+            })
+            ->withSum(['orderItems as total_quantity' => function ($query) use ($startDate, $endDate) {
+                $query->whereHas('order', function ($q) use ($startDate, $endDate) {
+                    $q->where('status', '!=', OrderStatusEnum::CANCELED->value)
+                        ->whereBetween('date', [$startDate, $endDate]);
+                });
+            }], 'quantity')
+            ->withSum(['orderItems as total_revenue' => function ($query) use ($startDate, $endDate) {
+                $query->whereHas('order', function ($q) use ($startDate, $endDate) {
+                    $q->where('status', '!=', OrderStatusEnum::CANCELED->value)
+                        ->whereBetween('date', [$startDate, $endDate]);
+                });
+            }], 'total_amount')
             ->orderByDesc('total_revenue')
             ->limit(10)
-            ->get()
-            ->map(fn ($item) => [
-                'id' => $item->product_id,
-                'name' => $item->product?->name ?? 'Produto não encontrado',
-                'total_quantity' => (float) $item->total_quantity,
-                'total_revenue' => (float) $item->total_revenue,
+            ->get(['id', 'name'])
+            ->map(fn ($product) => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'total_quantity' => (float) ($product->total_quantity ?? 0),
+                'total_revenue' => (float) ($product->total_revenue ?? 0),
             ]);
 
         return Inertia::render('Reports/Dashboard', [
