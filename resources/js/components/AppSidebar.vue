@@ -1,15 +1,4 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
-import {
-    BarChart3,
-    Contact,
-    LayoutDashboard,
-    Package,
-    Shield,
-    ShoppingCart,
-    ShoppingBag,
-    Users,
-} from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -21,12 +10,8 @@ import {
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarGroup,
-    SidebarGroupLabel,
+    SidebarMenuItem
 } from '@/components/ui/sidebar';
-import { useCurrentUrl } from '@/composables/useCurrentUrl';
-import { usePermissions } from '@/composables/usePermissions';
 import { dashboard } from '@/routes';
 import { index as customersIndex } from '@/routes/customers';
 import orders, { index as ordersIndex } from '@/routes/orders';
@@ -35,6 +20,17 @@ import { dashboard as reportsDashboard, salesByCustomer } from '@/routes/reports
 import { index as rolesIndex } from '@/routes/roles';
 import { index as usersIndex } from '@/routes/users';
 import type { NavItem } from '@/types';
+import { Link } from '@inertiajs/vue3';
+import {
+    BarChart3,
+    Contact,
+    LayoutDashboard,
+    Package,
+    Shield,
+    ShoppingBag,
+    ShoppingCart,
+    Users,
+} from 'lucide-vue-next';
 
 const mainNavItems: NavItem[] = [
     {
@@ -72,12 +68,21 @@ const mainNavItems: NavItem[] = [
         icon: Shield,
         permission: 'roles.index',
     },
+    {
+        title: 'Vendas por Cliente',
+        href: salesByCustomer(),
+        icon: BarChart3,
+        permission: 'reports.salesByCustomer',
+    },
+    {
+        title: 'Dashboard',
+        href: reportsDashboard(),
+        icon: LayoutDashboard,
+        permission: 'reports.dashboard',
+    }
 ];
 
 const footerNavItems: NavItem[] = [];
-
-const { can } = usePermissions();
-const { isCurrentUrl } = useCurrentUrl();
 </script>
 
 <template>
@@ -96,36 +101,6 @@ const { isCurrentUrl } = useCurrentUrl();
 
         <SidebarContent>
             <NavMain :items="mainNavItems" />
-
-            <SidebarGroup v-if="can('reports.sales.index') || can('reports.dashboard.index')" class="px-2 py-0">
-                <SidebarGroupLabel>Relatórios</SidebarGroupLabel>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton
-                            as-child
-                            :is-active="isCurrentUrl(reportsDashboard.url())"
-                            tooltip="Dashboard"
-                        >
-                            <Link :href="reportsDashboard.url()">
-                                <LayoutDashboard class="size-4" />
-                                <span>Dashboard</span>
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton
-                            as-child
-                            :is-active="isCurrentUrl(salesByCustomer.url())"
-                            tooltip="Vendas por Cliente"
-                        >
-                            <Link :href="salesByCustomer.url()">
-                                <BarChart3 class="size-4" />
-                                <span>Vendas por Cliente</span>
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
-            </SidebarGroup>
         </SidebarContent>
 
         <SidebarFooter>
